@@ -77,12 +77,22 @@ class ProfileStorage {
   }
 
   static Future<BedrockProfile?> getDefaultProfile() async {
-    final profiles = await loadProfiles();
-    return profiles.firstWhere(
-      (p) => p.isDefault,
-      orElse: () =>
-          profiles.isNotEmpty ? profiles.first : null as BedrockProfile,
-    );
+    try {
+      final profiles = await loadProfiles();
+      
+      if (profiles.isEmpty) {
+        return null;
+      }
+
+      try {
+        return profiles.firstWhere((p) => p.isDefault);
+      } catch (e) {
+        return profiles.first;
+      }
+    } catch (e) {
+      print('Error getting default profile: $e');
+      return null;
+    }
   }
 
   static String generateId() => _uuid.v4();

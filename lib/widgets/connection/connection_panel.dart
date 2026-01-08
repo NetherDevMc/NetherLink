@@ -76,7 +76,7 @@ class _ConnectionPanelState extends State<ConnectionPanel> {
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(AppConstants.borderRadius),
-        border: Border.all(color: const Color(0xFF374151)),
+        border: Border.all(color: const Color(0xFF152228)),
       ),
       padding: const EdgeInsets.all(20),
       child: Column(
@@ -87,12 +87,12 @@ class _ConnectionPanelState extends State<ConnectionPanel> {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF6366F1).withOpacity(0.15),
+                  color: const Color(0xFF00D9FF).withOpacity(0.15),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: const Icon(
                   Icons.settings_input_antenna,
-                  color: Color(0xFF6366F1),
+                  color: Color(0xFF00D9FF),
                   size: 20,
                 ),
               ),
@@ -121,7 +121,7 @@ class _ConnectionPanelState extends State<ConnectionPanel> {
 
           Row(
             children: [
-              const Expanded(child: Divider()),
+              const Expanded(child: Divider(color: Color(0xFF152228))),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 12),
                 child: Text(
@@ -134,7 +134,7 @@ class _ConnectionPanelState extends State<ConnectionPanel> {
                   ),
                 ),
               ),
-              const Expanded(child: Divider()),
+              const Expanded(child: Divider(color: Color(0xFF152228))),
             ],
           ),
 
@@ -180,10 +180,10 @@ class _ConnectionPanelState extends State<ConnectionPanel> {
       return Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: const Color(0xFF6366F1).withOpacity(0.1),
+          color: const Color(0xFF00D9FF).withOpacity(0.1),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: const Color(0xFF6366F1).withOpacity(0.3),
+            color: const Color(0xFF00D9FF).withOpacity(0.3),
             width: 2,
           ),
         ),
@@ -193,7 +193,7 @@ class _ConnectionPanelState extends State<ConnectionPanel> {
               children: [
                 const Icon(
                   Icons.person_add,
-                  color: Color(0xFF6366F1),
+                  color: Color(0xFF00D9FF),
                   size: 24,
                 ),
                 const SizedBox(width: 12),
@@ -229,8 +229,8 @@ class _ConnectionPanelState extends State<ConnectionPanel> {
                 icon: const Icon(Icons.add, size: 18),
                 label: const Text('Create Profile'),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF6366F1),
-                  foregroundColor: Colors.white,
+                  backgroundColor: const Color(0xFF00D9FF),
+                  foregroundColor: Colors.black,
                   padding: const EdgeInsets.symmetric(vertical: 12),
                 ),
               ),
@@ -247,33 +247,33 @@ class _ConnectionPanelState extends State<ConnectionPanel> {
             value: widget.selectedProfile,
             decoration: InputDecoration(
               labelText: 'Bedrock Profile',
-              labelStyle: TextStyle(
-                color: const Color(0xFF6366F1),
+              labelStyle: const TextStyle(
+                color: Color(0xFF00D9FF),
                 fontWeight: FontWeight.w600,
                 fontSize: 13,
               ),
-              prefixIcon: const Icon(Icons.person, color: Color(0xFF6366F1)),
+              prefixIcon: const Icon(Icons.person, color: Color(0xFF00D9FF)),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
                 borderSide: BorderSide(
-                  color: const Color(0xFF6366F1).withOpacity(0.3),
+                  color: const Color(0xFF00D9FF).withOpacity(0.3),
                 ),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
                 borderSide: BorderSide(
-                  color: const Color(0xFF6366F1).withOpacity(0.3),
+                  color: const Color(0xFF00D9FF).withOpacity(0.3),
                 ),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
                 borderSide: const BorderSide(
-                  color: Color(0xFF6366F1),
+                  color: Color(0xFF00D9FF),
                   width: 2,
                 ),
               ),
               filled: true,
-              fillColor: const Color(0xFF6366F1).withOpacity(0.05),
+              fillColor: const Color(0xFF00D9FF).withOpacity(0.05),
               contentPadding: const EdgeInsets.symmetric(
                 horizontal: 12,
                 vertical: 12,
@@ -293,14 +293,14 @@ class _ConnectionPanelState extends State<ConnectionPanel> {
         const SizedBox(width: 8),
         Container(
           decoration: BoxDecoration(
-            color: const Color(0xFF6366F1).withOpacity(0.1),
+            color: const Color(0xFF00D9FF).withOpacity(0.1),
             borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: const Color(0xFF6366F1).withOpacity(0.3)),
+            border: Border.all(color: const Color(0xFF00D9FF).withOpacity(0.3)),
           ),
           child: IconButton(
             onPressed: broadcasting ? null : _showProfileManagement,
             icon: const Icon(Icons.edit, size: 20),
-            color: const Color(0xFF6366F1),
+            color: const Color(0xFF00D9FF),
             tooltip: 'Manage Profiles',
             padding: const EdgeInsets.all(12),
           ),
@@ -327,13 +327,13 @@ class _ConnectionPanelState extends State<ConnectionPanel> {
                   margin: const EdgeInsets.only(right: 8),
                   padding: const EdgeInsets.all(4),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF10B981).withOpacity(0.15),
+                    color: const Color(0xFF00D9FF).withOpacity(0.15),
                     borderRadius: BorderRadius.circular(4),
                   ),
                   child: const Icon(
                     Icons.star,
                     size: 14,
-                    color: Color(0xFF10B981),
+                    color: Color(0xFF00D9FF),
                   ),
                 ),
               Expanded(
@@ -370,7 +370,7 @@ class _ConnectionPanelState extends State<ConnectionPanel> {
                     color: theme.colorScheme.surfaceVariant.withOpacity(0.3),
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(
-                      color: theme.colorScheme.outline.withOpacity(0.2),
+                      color: const Color(0xFF152228),
                     ),
                   ),
                   child: Row(
@@ -397,36 +397,36 @@ class _ConnectionPanelState extends State<ConnectionPanel> {
                   value: _selectedServer,
                   decoration: InputDecoration(
                     labelText: 'Saved Servers',
-                    labelStyle: TextStyle(
-                      color: const Color(0xFF10B981),
+                    labelStyle: const TextStyle(
+                      color: Color(0xFF00D9FF),
                       fontWeight: FontWeight.w600,
                       fontSize: 13,
                     ),
                     prefixIcon: const Icon(
                       Icons.storage,
-                      color: Color(0xFF10B981),
+                      color: Color(0xFF00D9FF),
                     ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                       borderSide: BorderSide(
-                        color: const Color(0xFF10B981).withOpacity(0.3),
+                        color: const Color(0xFF00D9FF).withOpacity(0.3),
                       ),
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                       borderSide: BorderSide(
-                        color: const Color(0xFF10B981).withOpacity(0.3),
+                        color: const Color(0xFF00D9FF).withOpacity(0.3),
                       ),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                       borderSide: const BorderSide(
-                        color: Color(0xFF10B981),
+                        color: Color(0xFF00D9FF),
                         width: 2,
                       ),
                     ),
                     filled: true,
-                    fillColor: const Color(0xFF10B981).withOpacity(0.05),
+                    fillColor: const Color(0xFF00D9FF).withOpacity(0.05),
                     contentPadding: const EdgeInsets.symmetric(
                       horizontal: 12,
                       vertical: 12,
@@ -470,14 +470,14 @@ class _ConnectionPanelState extends State<ConnectionPanel> {
         const SizedBox(width: 8),
         Container(
           decoration: BoxDecoration(
-            color: const Color(0xFF10B981).withOpacity(0.1),
+            color: const Color(0xFF00D9FF).withOpacity(0.1),
             borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: const Color(0xFF10B981).withOpacity(0.3)),
+            border: Border.all(color: const Color(0xFF00D9FF).withOpacity(0.3)),
           ),
           child: IconButton(
             onPressed: broadcasting ? null : widget.onManageServers,
             icon: const Icon(Icons.edit, size: 20),
-            color: const Color(0xFF10B981),
+            color: const Color(0xFF00D9FF),
             tooltip: 'Manage Servers',
             padding: const EdgeInsets.all(12),
           ),
@@ -500,12 +500,12 @@ class _ConnectionPanelState extends State<ConnectionPanel> {
               Container(
                 padding: const EdgeInsets.all(6),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF10B981).withOpacity(0.15),
+                  color: const Color(0xFF00D9FF).withOpacity(0.15),
                   borderRadius: BorderRadius.circular(6),
                 ),
-                child: const Icon(
+                child:  const Icon(
                   Icons.dns,
-                  color: Color(0xFF10B981),
+                  color: Color(0xFF00D9FF),
                   size: 14,
                 ),
               ),
@@ -541,10 +541,24 @@ class _ConnectionPanelState extends State<ConnectionPanel> {
         children: [
           TextField(
             controller: widget.ipController,
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               labelText: 'Server Address',
-              prefixIcon: Icon(Icons.dns),
+              labelStyle: const TextStyle(color: Color(0xFF00D9FF)),
+              prefixIcon: const Icon(Icons.dns, color: Color(0xFF00D9FF)),
               hintText: 'play.example.com',
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(
+                  color: const Color(0xFF00D9FF).withOpacity(0.3),
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: const BorderSide(
+                  color: Color(0xFF00D9FF),
+                  width: 2,
+                ),
+              ),
             ),
             enabled: !broadcasting,
             style: TextStyle(color: theme.colorScheme.onSurface),
@@ -552,9 +566,23 @@ class _ConnectionPanelState extends State<ConnectionPanel> {
           const SizedBox(height: 12),
           TextField(
             controller: widget.portController,
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               labelText: 'Port',
-              prefixIcon: Icon(Icons.numbers),
+              labelStyle: const TextStyle(color: Color(0xFF00D9FF)),
+              prefixIcon: const Icon(Icons.numbers, color: Color(0xFF00D9FF)),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(
+                  color: const Color(0xFF00D9FF).withOpacity(0.3),
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: const BorderSide(
+                  color: Color(0xFF00D9FF),
+                  width: 2,
+                ),
+              ),
             ),
             enabled: !broadcasting,
             keyboardType: TextInputType.number,
@@ -570,10 +598,24 @@ class _ConnectionPanelState extends State<ConnectionPanel> {
             flex: 2,
             child: TextField(
               controller: widget.ipController,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 labelText: 'Server Address',
-                prefixIcon: Icon(Icons.dns),
+                labelStyle: const TextStyle(color: Color(0xFF00D9FF)),
+                prefixIcon: const Icon(Icons.dns, color: Color(0xFF00D9FF)),
                 hintText: 'play.example.com',
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(
+                    color: const Color(0xFF00D9FF).withOpacity(0.3),
+                  ),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: const BorderSide(
+                    color: Color(0xFF00D9FF),
+                    width: 2,
+                  ),
+                ),
               ),
               enabled: !broadcasting,
               style: TextStyle(color: theme.colorScheme.onSurface),
@@ -584,9 +626,23 @@ class _ConnectionPanelState extends State<ConnectionPanel> {
             width: 120,
             child: TextField(
               controller: widget.portController,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 labelText: 'Port',
-                prefixIcon: Icon(Icons.numbers),
+                labelStyle: const TextStyle(color: Color(0xFF00D9FF)),
+                prefixIcon: const Icon(Icons.numbers, color: Color(0xFF00D9FF)),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(
+                    color: const Color(0xFF00D9FF).withOpacity(0.3),
+                  ),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: const BorderSide(
+                    color: Color(0xFF00D9FF),
+                    width: 2,
+                  ),
+                ),
               ),
               enabled: !broadcasting,
               keyboardType: TextInputType.number,
@@ -652,9 +708,10 @@ class _ConnectionPanelState extends State<ConnectionPanel> {
                         label: const Text('Start Broadcasting'),
                         style: ElevatedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 16),
-                          backgroundColor: const Color(0xFF10B981),
+                          backgroundColor: const Color(0xFF00D9FF),
+                          foregroundColor: Colors.black,
                           disabledBackgroundColor: const Color(
-                            0xFF065F46,
+                            0xFF00D9FF,
                           ).withOpacity(0.3),
                           disabledForegroundColor: Colors.white.withOpacity(
                             0.5,
@@ -687,9 +744,10 @@ class _ConnectionPanelState extends State<ConnectionPanel> {
                         label: const Text('Start Broadcasting'),
                         style: ElevatedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 16),
-                          backgroundColor: const Color(0xFF10B981),
+                          backgroundColor: const Color(0xFF00D9FF),
+                          foregroundColor: Colors.black,
                           disabledBackgroundColor: const Color(
-                            0xFF065F46,
+                            0xFF00D9FF,
                           ).withOpacity(0.3),
                           disabledForegroundColor: Colors.white.withOpacity(
                             0.5,

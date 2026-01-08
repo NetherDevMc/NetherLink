@@ -55,16 +55,30 @@ class _ManageServersDialogState extends State<ManageServersDialog> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete Server'),
-        content: Text('Delete "${_servers[index].name}"?'),
+        backgroundColor: const Color(0xFF0A1419),
+        title: const Text(
+          'Delete Server',
+          style: TextStyle(color: Color.fromARGB(255, 208, 209, 209)),
+        ),
+        content: Text(
+          'Delete "${_servers[index].name}"?',
+          style: TextStyle(
+            color: const Color.fromARGB(255, 208, 209, 209).withOpacity(0.7),
+          ),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text(
+              'Cancel',
+              style: TextStyle(
+                color: const Color.fromARGB(255, 208, 209, 209).withOpacity(0.6),
+              ),
+            ),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            style: TextButton.styleFrom(foregroundColor: const Color(0xFFF87171)),
             child: const Text('Delete'),
           ),
         ],
@@ -82,10 +96,11 @@ class _ManageServersDialogState extends State<ManageServersDialog> {
     final theme = Theme.of(context);
 
     return Dialog(
-      backgroundColor: theme.colorScheme.surface,
+      backgroundColor: const Color(0xFF0A1419),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Container(
         constraints: const BoxConstraints(maxWidth: 550, maxHeight: 650),
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.all(20),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -95,37 +110,46 @@ class _ManageServersDialogState extends State<ManageServersDialog> {
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF10B981).withOpacity(0.15),
+                    color: const Color(0xFF00D9FF).withOpacity(0.15),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: const Icon(
                     Icons.storage,
-                    color: Color(0xFF10B981),
+                    color: Color(0xFF00D9FF),
                     size: 24,
                   ),
                 ),
                 const SizedBox(width: 12),
-                const Expanded(
+                Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      const Text(
                         'My Servers',
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
+                          color: Color.fromARGB(255, 208, 209, 209),
                         ),
                       ),
-                      SizedBox(height: 2),
+                      const SizedBox(height: 2),
                       Text(
-                        'Save your favorite servers for quick access',
-                        style: TextStyle(fontSize: 12, color: Colors.grey),
+                        'Quick access servers',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: const Color.fromARGB(255, 208, 209, 209)
+                              .withOpacity(0.5),
+                        ),
                       ),
                     ],
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.close),
+                  icon: Icon(
+                    Icons.close,
+                    color: const Color.fromARGB(255, 208, 209, 209)
+                        .withOpacity(0.6),
+                  ),
                   onPressed: () => Navigator.pop(context),
                 ),
               ],
@@ -133,129 +157,51 @@ class _ManageServersDialogState extends State<ManageServersDialog> {
             const SizedBox(height: 20),
             Expanded(
               child: _loading
-                  ? const Center(child: CircularProgressIndicator())
-                  : _servers.isEmpty
-                  ? Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.dns_outlined,
-                            size: 64,
-                            color: theme.colorScheme.onSurface.withOpacity(0.3),
-                          ),
-                          const SizedBox(height: 16),
-                          const Text(
-                            'No saved servers',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.grey,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          const Text(
-                            'Add servers to quickly connect later',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(fontSize: 13, color: Colors.grey),
-                          ),
-                        ],
+                  ? const Center(
+                      child: CircularProgressIndicator(
+                        color: Color(0xFF00D9FF),
                       ),
                     )
-                  : ListView.builder(
-                      itemCount: _servers.length,
-                      itemBuilder: (context, index) {
-                        final server = _servers[index];
-                        return Card(
-                          margin: const EdgeInsets.only(bottom: 10),
-                          elevation: 2,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            side: BorderSide(
-                              color: theme.colorScheme.outline.withOpacity(0.2),
-                            ),
+                  :  _servers.isEmpty
+                      ?  Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.dns_outlined,
+                                size: 64,
+                                color: const Color(0xFF152228),
+                              ),
+                              const SizedBox(height: 16),
+                              Text(
+                                'No saved servers',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  color: const Color.fromARGB(255, 208, 209, 209)
+                                      .withOpacity(0.6),
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Add servers to quickly connect later',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: const Color.fromARGB(255, 208, 209, 209)
+                                      .withOpacity(0.5),
+                                ),
+                              ),
+                            ],
                           ),
-                          child: ListTile(
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 8,
-                            ),
-                            leading: Container(
-                              padding: const EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                color: const Color(
-                                  0xFF10B981,
-                                ).withOpacity(0.15),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: const Icon(
-                                Icons.dns,
-                                color: Color(0xFF10B981),
-                                size: 24,
-                              ),
-                            ),
-                            title: Text(
-                              server.name,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w600,
-                                fontSize: 15,
-                              ),
-                            ),
-                            subtitle: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const SizedBox(height: 4),
-                                Row(
-                                  children: [
-                                    const Icon(
-                                      Icons.link,
-                                      size: 14,
-                                      color: Colors.grey,
-                                    ),
-                                    const SizedBox(width: 6),
-                                    Text(
-                                      '${server.address}:${server.port}',
-                                      style: const TextStyle(
-                                        fontSize: 13,
-                                        fontFamily: 'monospace',
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                if (server.description != null &&
-                                    server.description!.isNotEmpty) ...[
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    server.description!,
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: theme.colorScheme.onSurface
-                                          .withOpacity(0.6),
-                                    ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ],
-                              ],
-                            ),
-                            trailing: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                IconButton(
-                                  icon: const Icon(Icons.edit, size: 20),
-                                  onPressed: () => _editServer(index),
-                                ),
-                                IconButton(
-                                  icon: const Icon(Icons.delete, size: 20),
-                                  color: Colors.red,
-                                  onPressed: () => _deleteServer(index),
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
-                      },
-                    ),
+                        )
+                      : ListView.builder(
+                          itemCount: _servers.length,
+                          itemBuilder: (context, index) {
+                            final server = _servers[index];
+                            return _buildServerCard(server, index, theme);
+                          },
+                        ),
             ),
             const SizedBox(height: 16),
             SizedBox(
@@ -265,12 +211,155 @@ class _ManageServersDialogState extends State<ManageServersDialog> {
                 icon: const Icon(Icons.add),
                 label: const Text('Add Server'),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF10B981),
-                  foregroundColor: Colors.white,
+                  backgroundColor: const Color(0xFF00D9FF),
+                  foregroundColor: Colors.black,
                   padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                 ),
               ),
             ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildServerCard(UserServer server, int index, ThemeData theme) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      decoration: BoxDecoration(
+        color: const Color(0xFF152228),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: const Color(0xFF00D9FF).withOpacity(0.3),
+          width: 1,
+        ),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF00D9FF).withOpacity(0.15),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Icon(
+                    Icons.dns,
+                    color: Color(0xFF00D9FF),
+                    size: 20,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    server.name,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                      color: Color.fromARGB(255, 208, 209, 209),
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF00D9FF).withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: IconButton(
+                    icon: const Icon(Icons.edit, size: 18),
+                    onPressed: () => _editServer(index),
+                    padding: const EdgeInsets.all(8),
+                    constraints: const BoxConstraints(),
+                    color: const Color(0xFF00D9FF),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Container(
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF87171).withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: IconButton(
+                    icon: const Icon(Icons.delete, size: 18),
+                    onPressed: () => _deleteServer(index),
+                    padding: const EdgeInsets.all(8),
+                    constraints: const BoxConstraints(),
+                    color: const Color(0xFFF87171),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: const Color(0xFF0A1419),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(
+                  color: const Color(0xFF00D9FF).withOpacity(0.2),
+                ),
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.link,
+                    size: 16,
+                    color: const Color(0xFF00D9FF).withOpacity(0.7),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      '${server.address}:${server.port}',
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontFamily: 'monospace',
+                        fontWeight: FontWeight.w500,
+                        color: Color.fromARGB(255, 208, 209, 209),
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if (server.description != null && server.description!.isNotEmpty) ...[
+              const SizedBox(height: 10),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(
+                    Icons.info_outline,
+                    size: 14,
+                    color: const Color.fromARGB(255, 208, 209, 209)
+                        .withOpacity(0.5),
+                  ),
+                  const SizedBox(width: 6),
+                  Expanded(
+                    child: Text(
+                      server.description!,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: const Color.fromARGB(255, 208, 209, 209)
+                            .withOpacity(0.6),
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ],
         ),
       ),
@@ -361,46 +450,137 @@ class _AddServerDialogState extends State<AddServerDialog> {
     final theme = Theme.of(context);
 
     return AlertDialog(
-      backgroundColor: theme.colorScheme.surface,
-      title: Text(widget.server == null ? 'Add Server' : 'Edit Server'),
+      backgroundColor: const Color(0xFF0A1419),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      title: const Text(
+        'Add Server',
+        style: TextStyle(
+          color: Color.fromARGB(255, 208, 209, 209),
+        ),
+      ),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             TextField(
               controller: _nameController,
-              decoration: const InputDecoration(
+              style: const TextStyle(color: Color.fromARGB(255, 208, 209, 209)),
+              decoration: InputDecoration(
                 labelText: 'Server Name *',
                 hintText: 'My Awesome Server',
-                prefixIcon: Icon(Icons.label),
+                hintStyle: TextStyle(
+                  color: const Color.fromARGB(255, 208, 209, 209).withOpacity(0.4),
+                ),
+                prefixIcon: const Icon(Icons.label, color: Color(0xFF00D9FF)),
+                labelStyle: const TextStyle(color: Color(0xFF00D9FF)),
+                filled: true,
+                fillColor: const Color(0xFF152228),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide.none,
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: const BorderSide(color: Color(0xFF152228)),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: const BorderSide(
+                    color: Color(0xFF00D9FF),
+                    width: 2,
+                  ),
+                ),
               ),
               autofocus: true,
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 16),
             TextField(
               controller: _addressController,
-              decoration: const InputDecoration(
+              style: const TextStyle(color: Color.fromARGB(255, 208, 209, 209)),
+              decoration: InputDecoration(
                 labelText: 'Address *',
                 hintText: 'play.example.com',
-                prefixIcon: Icon(Icons.dns),
+                hintStyle: TextStyle(
+                  color: const Color.fromARGB(255, 208, 209, 209).withOpacity(0.4),
+                ),
+                prefixIcon: const Icon(Icons.dns, color: Color(0xFF00D9FF)),
+                labelStyle: const TextStyle(color: Color(0xFF00D9FF)),
+                filled: true,
+                fillColor: const Color(0xFF152228),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide.none,
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: const BorderSide(color: Color(0xFF152228)),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: const BorderSide(
+                    color: Color(0xFF00D9FF),
+                    width: 2,
+                  ),
+                ),
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 16),
             TextField(
               controller: _portController,
-              decoration: const InputDecoration(
+              style: const TextStyle(color: Color.fromARGB(255, 208, 209, 209)),
+              decoration: InputDecoration(
                 labelText: 'Port *',
-                prefixIcon: Icon(Icons.numbers),
+                prefixIcon: const Icon(Icons.numbers, color: Color(0xFF00D9FF)),
+                labelStyle: const TextStyle(color: Color(0xFF00D9FF)),
+                filled: true,
+                fillColor: const Color(0xFF152228),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide.none,
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: const BorderSide(color: Color(0xFF152228)),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: const BorderSide(
+                    color: Color(0xFF00D9FF),
+                    width: 2,
+                  ),
+                ),
               ),
               keyboardType: TextInputType.number,
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 16),
             TextField(
               controller: _descriptionController,
-              decoration: const InputDecoration(
+              style: const TextStyle(color: Color.fromARGB(255, 208, 209, 209)),
+              decoration: InputDecoration(
                 labelText: 'Description (Optional)',
                 hintText: 'Survival server with friends',
-                prefixIcon: Icon(Icons.description),
+                hintStyle: TextStyle(
+                  color: const Color.fromARGB(255, 208, 209, 209).withOpacity(0.4),
+                ),
+                prefixIcon: const Icon(Icons.description, color: Color(0xFF00D9FF)),
+                labelStyle: const TextStyle(color: Color(0xFF00D9FF)),
+                filled: true,
+                fillColor: const Color(0xFF152228),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide.none,
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: const BorderSide(color: Color(0xFF152228)),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: const BorderSide(
+                    color: Color(0xFF00D9FF),
+                    width: 2,
+                  ),
+                ),
               ),
               maxLines: 2,
             ),
@@ -410,13 +590,21 @@ class _AddServerDialogState extends State<AddServerDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Cancel'),
+          child: Text(
+            'Cancel',
+            style: TextStyle(
+              color: const Color.fromARGB(255, 208, 209, 209).withOpacity(0.6),
+            ),
+          ),
         ),
         ElevatedButton(
           onPressed: _save,
           style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFF10B981),
-            foregroundColor: Colors.white,
+            backgroundColor: const Color(0xFF00D9FF),
+            foregroundColor: Colors.black,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
           ),
           child: const Text('Save'),
         ),

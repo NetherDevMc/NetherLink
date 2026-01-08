@@ -61,7 +61,6 @@ class _FloatingConsoleState extends State<FloatingConsole>
   Widget build(BuildContext context) {
     if (!widget.isVisible) return const SizedBox.shrink();
 
-    final theme = Theme.of(context);
     final screenSize = MediaQuery.of(context).size;
     final isMobile = screenSize.width < AppConstants.mobileBreakpoint;
 
@@ -78,29 +77,31 @@ class _FloatingConsoleState extends State<FloatingConsole>
               ),
               height: isMobile ? screenSize.height * 0.7 : 500,
               decoration: BoxDecoration(
-                color: const Color(0xFF111827),
+                color: const Color(0xFF0A1419),
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: const Color(0xFF10B981), width: 2),
+                border: Border.all(
+                  color: const Color(0xFF00D9FF).withOpacity(0.3),
+                  width: 1.5,
+                ),
                 boxShadow: [
                   BoxShadow(
-                    color: const Color(0xFF10B981).withOpacity(0.3),
+                    color: const Color(0xFF00D9FF).withOpacity(0.1),
                     blurRadius: 20,
-                    spreadRadius: 2,
-                  ),
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.5),
-                    blurRadius: 30,
-                    offset: const Offset(0, 10),
+                    spreadRadius: 0,
                   ),
                 ],
               ),
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(12),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    _buildHeader(theme),
-                    const Divider(height: 1, color: Color(0xFF374151)),
+                    _buildHeader(),
+                    Divider(
+                      height: 1,
+                      color: const Color(0xFF152228),
+                      thickness: 1,
+                    ),
                     Expanded(child: _buildLogsList()),
                   ],
                 ),
@@ -117,25 +118,23 @@ class _FloatingConsoleState extends State<FloatingConsole>
             constraints: const BoxConstraints(minHeight: 56, maxHeight: 56),
             height: 56,
             decoration: BoxDecoration(
-              color: const Color(0xFF111827),
+              color: const Color(0xFF0A1419),
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: const Color(0xFF10B981), width: 2),
+              border: Border.all(
+                color: const Color(0xFF00D9FF).withOpacity(0.3),
+                width: 1.5,
+              ),
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFF10B981).withOpacity(0.3),
+                  color: const Color(0xFF00D9FF).withOpacity(0.1),
                   blurRadius: 20,
-                  spreadRadius: 2,
-                ),
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.5),
-                  blurRadius: 30,
-                  offset: const Offset(0, 10),
+                  spreadRadius: 0,
                 ),
               ],
             ),
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: _buildHeader(theme),
+              borderRadius: BorderRadius.circular(12),
+              child: _buildHeader(),
             ),
           ),
         );
@@ -143,21 +142,21 @@ class _FloatingConsoleState extends State<FloatingConsole>
     );
   }
 
-  Widget _buildHeader(ThemeData theme) {
+  Widget _buildHeader() {
     return Container(
-      color: const Color(0xFF111827),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      color: const Color(0xFF0F1419),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(6),
+            padding: const EdgeInsets.all(7),
             decoration: BoxDecoration(
-              color: const Color(0xFF10B981).withOpacity(0.15),
+              color: const Color(0xFF00D9FF).withOpacity(0.15),
               borderRadius: BorderRadius.circular(6),
             ),
             child: const Icon(
               Icons.terminal,
-              color: Color(0xFF10B981),
+              color: Color(0xFF00D9FF),
               size: 16,
             ),
           ),
@@ -166,39 +165,21 @@ class _FloatingConsoleState extends State<FloatingConsole>
             child: Text(
               'Console',
               style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.bold,
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
                 color: Color.fromARGB(255, 208, 209, 209),
               ),
-              overflow: TextOverflow.ellipsis,
             ),
           ),
           if (!_isMinimized) ...[
             _buildDebugToggle(),
-            const SizedBox(width: 4),
+            const SizedBox(width: 6),
             _buildClearButton(),
-            const SizedBox(width: 4),
+            const SizedBox(width: 6),
           ],
-          IconButton(
-            tooltip: _isMinimized ? 'Maximize' : 'Minimize',
-            icon: Icon(
-              _isMinimized ? Icons.expand_less : Icons.expand_more,
-              color: const Color(0xFF10B981),
-              size: 20,
-            ),
-            onPressed: _toggleMinimize,
-            padding: EdgeInsets.zero,
-            constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
-            visualDensity: VisualDensity.compact,
-          ),
-          IconButton(
-            tooltip: 'Close Console',
-            icon: const Icon(Icons.close, color: Color(0xFFF87171), size: 18),
-            onPressed: widget.onClose,
-            padding: EdgeInsets.zero,
-            constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
-            visualDensity: VisualDensity.compact,
-          ),
+          _buildMinimizeButton(),
+          const SizedBox(width: 6),
+          _buildCloseButton(),
         ],
       ),
     );
@@ -207,15 +188,14 @@ class _FloatingConsoleState extends State<FloatingConsole>
   Widget _buildDebugToggle() {
     return StatefulBuilder(
       builder: (context, setState) {
+        final isEnabled = widget.logger.debugEnabled;
         return IconButton(
-          tooltip: 'Toggle Debug',
+          tooltip: isEnabled ? 'Debug: ON' : 'Debug: OFF',
           icon: Icon(
-            widget.logger.debugEnabled
-                ? Icons.bug_report
-                : Icons.bug_report_outlined,
-            color: widget.logger.debugEnabled
-                ? const Color(0xFFF87171)
-                : const Color(0xFF9CA3AF),
+            isEnabled ? Icons.bug_report : Icons.bug_report_outlined,
+            color: isEnabled
+                ? const Color(0xFFFCD34D)
+                : const Color.fromARGB(255, 208, 209, 209).withOpacity(0.5),
             size: 16,
           ),
           onPressed: () {
@@ -226,9 +206,8 @@ class _FloatingConsoleState extends State<FloatingConsole>
               'Debug mode: ${widget.logger.debugEnabled ? 'ON' : 'OFF'}',
             );
           },
-          padding: EdgeInsets.zero,
-          constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
-          visualDensity: VisualDensity.compact,
+          padding: const EdgeInsets.all(6),
+          constraints: const BoxConstraints(),
         );
       },
     );
@@ -237,13 +216,40 @@ class _FloatingConsoleState extends State<FloatingConsole>
   Widget _buildClearButton() {
     return IconButton(
       tooltip: 'Clear Console',
-      icon: const Icon(Icons.clear_all, color: Color(0xFF9CA3AF), size: 16),
+      icon: Icon(
+        Icons.clear_all,
+        color: const Color.fromARGB(255, 208, 209, 209).withOpacity(0.5),
+        size: 16,
+      ),
       onPressed: () {
         widget.logsNotifier.value = [];
       },
-      padding: EdgeInsets.zero,
-      constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
-      visualDensity: VisualDensity.compact,
+      padding: const EdgeInsets.all(6),
+      constraints: const BoxConstraints(),
+    );
+  }
+
+  Widget _buildMinimizeButton() {
+    return IconButton(
+      tooltip: _isMinimized ? 'Maximize' : 'Minimize',
+      icon: Icon(
+        _isMinimized ? Icons.expand_less : Icons.expand_more,
+        color: const Color(0xFF00D9FF),
+        size: 18,
+      ),
+      onPressed: _toggleMinimize,
+      padding: const EdgeInsets.all(6),
+      constraints: const BoxConstraints(),
+    );
+  }
+
+  Widget _buildCloseButton() {
+    return IconButton(
+      tooltip: 'Close Console',
+      icon: const Icon(Icons.close, color: Color(0xFFF87171), size: 16),
+      onPressed: widget.onClose,
+      padding: const EdgeInsets.all(6),
+      constraints: const BoxConstraints(),
     );
   }
 
@@ -253,35 +259,32 @@ class _FloatingConsoleState extends State<FloatingConsole>
       builder: (context, logs, _) {
         if (logs.isEmpty) {
           return Container(
-            color: const Color(0xFF0D1117),
+            color: const Color(0xFF050A0E),
             child: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(
-                    Icons.terminal,
-                    size: 48,
-                    color: Theme.of(
-                      context,
-                    ).colorScheme.onSurface.withOpacity(0.3),
+                    Icons.terminal_outlined,
+                    size: 56,
+                    color: const Color(0xFF00D9FF).withOpacity(0.3),
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 16),
                   Text(
-                    'No logs yet...',
+                    'Console ready',
                     style: TextStyle(
-                      color: Theme.of(
-                        context,
-                      ).colorScheme.onSurface.withOpacity(0.5),
-                      fontSize: 14,
+                      color: const Color.fromARGB(255, 208, 209, 209)
+                          .withOpacity(0.6),
+                      fontSize: 15,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 6),
                   Text(
-                    'Logs will appear here when broadcasting',
+                    'Logs will appear here',
                     style: TextStyle(
-                      color: Theme.of(
-                        context,
-                      ).colorScheme.onSurface.withOpacity(0.4),
+                      color: const Color.fromARGB(255, 208, 209, 209)
+                          .withOpacity(0.4),
                       fontSize: 12,
                     ),
                   ),
@@ -292,32 +295,35 @@ class _FloatingConsoleState extends State<FloatingConsole>
         }
 
         return Container(
-          color: const Color(0xFF0D1117),
+          color: const Color(0xFF050A0E),
           child: ListView.builder(
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
             controller: widget.scrollController,
-            physics: const ClampingScrollPhysics(),
+            physics: const BouncingScrollPhysics(),
             itemCount: logs.length,
             itemBuilder: (context, index) {
               final log = logs[index];
-              final textColor = _getLogColor(log);
-              final icon = _getLogIcon(log);
+              final logInfo = _getLogInfo(log);
 
               return Padding(
-                padding: const EdgeInsets.only(bottom: 6),
+                padding: const EdgeInsets.only(bottom: 4),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Icon(icon, size: 14, color: textColor.withOpacity(0.8)),
+                    Icon(
+                      logInfo.icon,
+                      size: 12,
+                      color: logInfo.color,
+                    ),
                     const SizedBox(width: 8),
                     Expanded(
                       child: SelectableText(
                         log,
                         style: TextStyle(
                           fontFamily: 'monospace',
-                          fontSize: 12,
-                          height: 1.4,
-                          color: textColor,
+                          fontSize: 11,
+                          height: 1.5,
+                          color: logInfo.color,
                         ),
                       ),
                     ),
@@ -331,29 +337,41 @@ class _FloatingConsoleState extends State<FloatingConsole>
     );
   }
 
-  Color _getLogColor(String log) {
+  _LogInfo _getLogInfo(String log) {
     if (log.contains('[ERROR]')) {
-      return const Color(0xFFF87171);
+      return _LogInfo(
+        icon: Icons.error_outline,
+        color: const Color(0xFFF87171),
+      );
     } else if (log.contains('[INFO]')) {
-      return const Color(0xFF60A5FA);
+      return _LogInfo(
+        icon: Icons.info_outline,
+        color: const Color(0xFF00D9FF),
+      );
     } else if (log.contains('[DEBUG]')) {
-      return const Color(0xFFFCD34D);
+      return _LogInfo(
+        icon: Icons.bug_report_outlined,
+        color: const Color(0xFFFCD34D),
+      );
     } else if (log.contains('[SUCCESS]')) {
-      return const Color(0xFF34D399);
+      return _LogInfo(
+        icon: Icons.check_circle_outline,
+        color: const Color(0xFF34D399),
+      );
     }
-    return const Color(0xFFD1D5DB);
+    return _LogInfo(
+      icon: Icons.circle,
+      color: const Color.fromARGB(255, 208, 209, 209).withOpacity(0.7),
+    );
   }
+}
 
-  IconData _getLogIcon(String log) {
-    if (log.contains('[ERROR]')) {
-      return Icons.error_outline;
-    } else if (log.contains('[INFO]')) {
-      return Icons.info_outline;
-    } else if (log.contains('[DEBUG]')) {
-      return Icons.bug_report_outlined;
-    } else if (log.contains('[SUCCESS]')) {
-      return Icons.check_circle_outline;
-    }
-    return Icons.circle;
-  }
+class _LogInfo {
+  final IconData icon;
+  final Color color;
+
+  _LogInfo({
+    required this.icon,
+    required this.color,
+  });
 }
