@@ -44,4 +44,6 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+/android/app/upload_certificate.pem
+/android/app/upload_keystore.jks
 flutter/
