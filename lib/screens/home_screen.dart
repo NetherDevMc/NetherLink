@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -17,6 +18,8 @@ import '../widgets/common/status_indicator.dart';
 import '../widgets/connection/connection_panel.dart';
 import '../widgets/console/floating_console.dart';
 import '../widgets/dialogs/manage_servers_dialog.dart';
+import '../services/github_update_service.dart';
+import '../widgets/dialogs/update_dialog.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -52,7 +55,9 @@ class _HomeScreenState extends State<HomeScreen>
   final ValueNotifier<List<String>> _logsNotifier = ValueNotifier([]);
   final ValueNotifier<List<ServerEntry>> _serversNotifier = ValueNotifier([]);
   final ValueNotifier<bool> _broadcastingNotifier = ValueNotifier(false);
-  final ValueNotifier<List<UserServer>> _userServersNotifier = ValueNotifier([]);
+  final ValueNotifier<List<UserServer>> _userServersNotifier = ValueNotifier(
+    [],
+  );
   final ValueNotifier<bool> _consoleVisibleNotifier = ValueNotifier(false);
 
   @override
@@ -64,6 +69,37 @@ class _HomeScreenState extends State<HomeScreen>
     _loadUserServers();
     _loadDefaultProfile();
     _startServerRotation();
+
+    if (Platform.isWindows || Platform.isMacOS) {
+      _checkForUpdates();
+    }
+  }
+
+  Future<void> _checkForUpdates() async {
+    await Future.delayed(const Duration(seconds: 3));
+
+    if (!mounted) return;
+
+    try {
+      logger.info('🔍 Checking for updates.. .');
+
+      final updateService = GitHubUpdateService();
+      final updateInfo = await updateService.checkForUpdates();
+
+      if (updateInfo != null && mounted) {
+        logger.info('📥 Update available: ${updateInfo.version}');
+
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (_) => UpdateDialog(updateInfo: updateInfo),
+        );
+      } else {
+        logger.info('✅ App is up to date');
+      }
+    } catch (e) {
+      logger.error('❌ Update check failed:  $e');
+    }
   }
 
   void _initializeComponents() {
@@ -150,7 +186,8 @@ class _HomeScreenState extends State<HomeScreen>
   void _startServerRotation() {
     _shuffleTimer = Timer.periodic(AppConstants.serverRotationDuration, (_) {
       if (_serversNotifier.value.isNotEmpty && mounted) {
-        final nextPage = (_currentServerPage + 1) % _serversNotifier.value.length;
+        final nextPage =
+            (_currentServerPage + 1) % _serversNotifier.value.length;
 
         if (_pageController.hasClients) {
           _pageController.animateToPage(
@@ -469,9 +506,7 @@ class _HomeScreenState extends State<HomeScreen>
               controller: _desktopScrollController,
               physics: const ClampingScrollPhysics(),
               child: ConstrainedBox(
-                constraints: BoxConstraints(
-                  minHeight: constraints.maxHeight,
-                ),
+                constraints: BoxConstraints(minHeight: constraints.maxHeight),
                 child: Column(
                   children: [
                     ValueListenableBuilder<List<UserServer>>(
@@ -530,10 +565,8 @@ class _HomeScreenState extends State<HomeScreen>
 
         return Center(
           child: ConstrainedBox(
-            constraints:  const BoxConstraints(
-              maxWidth: 600,
-            ),
-            child:  _buildHorizontalCarousel(servers),
+            constraints: const BoxConstraints(maxWidth: 600),
+            child: _buildHorizontalCarousel(servers),
           ),
         );
       },
@@ -543,9 +576,7 @@ class _HomeScreenState extends State<HomeScreen>
   Widget _buildLoadingCard() {
     return Center(
       child: ConstrainedBox(
-        constraints: const BoxConstraints(
-          maxWidth: 600,
-        ),
+        constraints: const BoxConstraints(maxWidth: 600),
         child: Container(
           height: 180,
           decoration: BoxDecoration(
@@ -554,17 +585,14 @@ class _HomeScreenState extends State<HomeScreen>
             border: Border.all(color: const Color(0xFF152228)),
           ),
           child: const Center(
-        child: Column(
+            child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 CircularProgressIndicator(color: Color(0xFF00D9FF)),
                 SizedBox(height: 16),
                 Text(
                   'Loading advertised servers...',
-                  style: TextStyle(
-                    color: Color(0xFF00D9FF),
-                    fontSize: 14,
-                  ),
+                  style: TextStyle(color: Color(0xFF00D9FF), fontSize: 14),
                 ),
               ],
             ),
@@ -635,10 +663,7 @@ class _HomeScreenState extends State<HomeScreen>
                 ),
                 Text(
                   'Swipe to explore • Auto-rotating',
-                  style: TextStyle(
-                    fontSize: 11,
-                    color: Color(0xFF00D9FF),
-                  ),
+                  style: TextStyle(fontSize: 11, color: Color(0xFF00D9FF)),
                 ),
               ],
             ),
@@ -655,11 +680,7 @@ class _HomeScreenState extends State<HomeScreen>
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(
-                  Icons.dns,
-                  size: 12,
-                  color: Color(0xFF00D9FF),
-                ),
+                const Icon(Icons.dns, size: 12, color: Color(0xFF00D9FF)),
                 const SizedBox(width: 6),
                 Text(
                   '$serverCount',
@@ -702,9 +723,7 @@ class _HomeScreenState extends State<HomeScreen>
       decoration: BoxDecoration(
         color: const Color(0xFF152228),
         borderRadius: BorderRadius.circular(2),
-        border: Border.all(
-          color: const Color(0xFF00D9FF).withOpacity(0.2),
-        ),
+        border: Border.all(color: const Color(0xFF00D9FF).withOpacity(0.2)),
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(2),
@@ -717,10 +736,7 @@ class _HomeScreenState extends State<HomeScreen>
               child: Container(
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
-                    colors: [
-                      Color(0xFF00D9FF),
-                      Color(0xFF00A3CC),
-                    ],
+                    colors: [Color(0xFF00D9FF), Color(0xFF00A3CC)],
                   ),
                   boxShadow: [
                     BoxShadow(
@@ -739,7 +755,8 @@ class _HomeScreenState extends State<HomeScreen>
 
   Widget _buildCarouselCard(ServerEntry server, int index) {
     final isCurrent = index == _currentServerPage;
-    final hasBackground = server.background != null &&
+    final hasBackground =
+        server.background != null &&
         (server.background!.startsWith('http://') ||
             server.background!.startsWith('https://'));
 
@@ -843,8 +860,9 @@ class _HomeScreenState extends State<HomeScreen>
                                 borderRadius: BorderRadius.circular(20),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: 
-                                        const Color(0xFF00D9FF).withOpacity(0.5),
+                                    color: const Color(
+                                      0xFF00D9FF,
+                                    ).withOpacity(0.5),
                                     blurRadius: 8,
                                   ),
                                 ],
@@ -877,14 +895,14 @@ class _HomeScreenState extends State<HomeScreen>
                       ),
                     ),
 
-                    if (! hasBackground)
+                    if (!hasBackground)
                       Center(
                         child: Icon(
                           Icons.dns_outlined,
                           size: 48,
-                          color: const Color(0xFF00D9FF).withOpacity(
-                            isCurrent ? 0.5 : 0.3,
-                          ),
+                          color: const Color(
+                            0xFF00D9FF,
+                          ).withOpacity(isCurrent ? 0.5 : 0.3),
                         ),
                       ),
                   ],
@@ -923,7 +941,7 @@ class _HomeScreenState extends State<HomeScreen>
                       );
                     },
                     splashColor: const Color(0xFF00D9FF).withOpacity(0.1),
-                    child:  Padding(
+                    child: Padding(
                       padding: const EdgeInsets.all(14),
                       child: Row(
                         children: [
@@ -935,8 +953,12 @@ class _HomeScreenState extends State<HomeScreen>
                                 Text(
                                   server.address,
                                   style: TextStyle(
-                                    color: const Color.fromARGB(255, 208, 209, 209)
-                                        .withOpacity(isCurrent ? 1.0 : 0.7),
+                                    color: const Color.fromARGB(
+                                      255,
+                                      208,
+                                      209,
+                                      209,
+                                    ).withOpacity(isCurrent ? 1.0 : 0.7),
                                     fontSize: 15,
                                     fontWeight: FontWeight.w600,
                                   ),
@@ -946,8 +968,12 @@ class _HomeScreenState extends State<HomeScreen>
                                 Text(
                                   'Port: ${server.port}',
                                   style: TextStyle(
-                                    color: const Color.fromARGB(255, 208, 209, 209)
-                                        .withOpacity(0.5),
+                                    color: const Color.fromARGB(
+                                      255,
+                                      208,
+                                      209,
+                                      209,
+                                    ).withOpacity(0.5),
                                     fontSize: 12,
                                     fontFamily: 'monospace',
                                   ),
@@ -969,9 +995,9 @@ class _HomeScreenState extends State<HomeScreen>
                             child: Icon(
                               Icons.arrow_forward,
                               size: 18,
-                              color: const Color(0xFF00D9FF).withOpacity(
-                                isCurrent ? 0.8 : 0.5,
-                              ),
+                              color: const Color(
+                                0xFF00D9FF,
+                              ).withOpacity(isCurrent ? 0.8 : 0.5),
                             ),
                           ),
                         ],
@@ -998,17 +1024,12 @@ class _HomeScreenState extends State<HomeScreen>
                   const Color(0xFF00D9FF).withOpacity(0.15),
                   const Color(0xFF0F1C26),
                 ]
-              : [
-                  const Color(0xFF152228),
-                  const Color(0xFF0A1419),
-                ],
+              : [const Color(0xFF152228), const Color(0xFF0A1419)],
         ),
       ),
       child: CustomPaint(
         painter: _GridPatternPainter(
-          color: const Color(0xFF00D9FF).withOpacity(
-            isCurrent ? 0.08 : 0.03,
-          ),
+          color: const Color(0xFF00D9FF).withOpacity(isCurrent ? 0.08 : 0.03),
         ),
       ),
     );
@@ -1061,7 +1082,10 @@ class _HomeScreenState extends State<HomeScreen>
       itemBuilder: (context) => [
         PopupMenuItem(
           child: ListTile(
-            leading: const Icon(Icons.open_in_browser, color: Color(0xFF00D9FF)),
+            leading: const Icon(
+              Icons.open_in_browser,
+              color: Color(0xFF00D9FF),
+            ),
             title: const Text('Website'),
             onTap: () {
               Navigator.pop(context);
@@ -1130,19 +1154,11 @@ class _GridPatternPainter extends CustomPainter {
     const spacing = 20.0;
 
     for (double i = 0; i < size.width; i += spacing) {
-      canvas.drawLine(
-        Offset(i, 0),
-        Offset(i, size.height),
-        paint,
-      );
+      canvas.drawLine(Offset(i, 0), Offset(i, size.height), paint);
     }
 
     for (double i = 0; i < size.height; i += spacing) {
-      canvas.drawLine(
-        Offset(0, i),
-        Offset(size.width, i),
-        paint,
-      );
+      canvas.drawLine(Offset(0, i), Offset(size.width, i), paint);
     }
   }
 
