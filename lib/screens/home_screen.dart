@@ -16,7 +16,6 @@ import '../constants/app_constants.dart';
 import '../widgets/common/status_indicator.dart';
 import '../widgets/connection/connection_panel.dart';
 import '../widgets/console/floating_console.dart';
-import '../widgets/server/featured_servers.dart';
 import '../widgets/dialogs/manage_servers_dialog.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -47,7 +46,6 @@ class _HomeScreenState extends State<HomeScreen>
   );
 
   final ScrollController _scrollController = ScrollController();
-  final ScrollController _serverScrollController = ScrollController();
   final ScrollController _mainScrollController = ScrollController();
   final ScrollController _desktopScrollController = ScrollController();
 
@@ -350,7 +348,6 @@ class _HomeScreenState extends State<HomeScreen>
     _ipController.dispose();
     _portController.dispose();
     _scrollController.dispose();
-    _serverScrollController.dispose();
     _mainScrollController.dispose();
     _desktopScrollController.dispose();
     _logsNotifier.dispose();
@@ -499,10 +496,7 @@ class _HomeScreenState extends State<HomeScreen>
                       },
                     ),
                     const SizedBox(height: 16),
-                    SizedBox(
-                      height: constraints.maxHeight - 400,
-                      child: _buildFeaturedServers(),
-                    ),
+                    _buildCompactServerSection(),
                     const SizedBox(height: 80),
                   ],
                 ),
@@ -534,33 +528,47 @@ class _HomeScreenState extends State<HomeScreen>
           return _buildLoadingCard();
         }
 
-        return _buildHorizontalCarousel(servers);
+        return Center(
+          child: ConstrainedBox(
+            constraints:  const BoxConstraints(
+              maxWidth: 600,
+            ),
+            child:  _buildHorizontalCarousel(servers),
+          ),
+        );
       },
     );
   }
 
   Widget _buildLoadingCard() {
-    return Container(
-      height: 180,
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFF152228)),
-      ),
-      child: const Center(
+    return Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(
+          maxWidth: 600,
+        ),
+        child: Container(
+          height: 180,
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surface,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: const Color(0xFF152228)),
+          ),
+          child: const Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            CircularProgressIndicator(color: Color(0xFF00D9FF)),
-            SizedBox(height: 16),
-            Text(
-              'Loading advertised servers...',
-              style: TextStyle(
-                color: Color(0xFF00D9FF),
-                fontSize: 14,
-              ),
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                CircularProgressIndicator(color: Color(0xFF00D9FF)),
+                SizedBox(height: 16),
+                Text(
+                  'Loading advertised servers...',
+                  style: TextStyle(
+                    color: Color(0xFF00D9FF),
+                    fontSize: 14,
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
@@ -1043,22 +1051,6 @@ class _HomeScreenState extends State<HomeScreen>
           ),
         );
       }),
-    );
-  }
-
-  Widget _buildFeaturedServers() {
-    return ValueListenableBuilder<List<ServerEntry>>(
-      valueListenable: _serversNotifier,
-      builder: (context, servers, _) {
-        return FeaturedServers(
-          servers: servers,
-          currentServerPage: _currentServerPage,
-          rotationAnimation: _rotationAnimation,
-          scrollController: _serverScrollController,
-          onRefresh: _loadServers,
-          onServerTap: _onServerTap,
-        );
-      },
     );
   }
 

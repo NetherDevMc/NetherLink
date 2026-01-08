@@ -10,12 +10,12 @@ plugins {
 
 val keystorePropertiesFile = file("../key.properties")
 val keystoreProperties = Properties()
-if (keystorePropertiesFile.exists()) {
+val hasKeystore = keystorePropertiesFile.exists()
+
+if (hasKeystore) {
     FileInputStream(keystorePropertiesFile).use {
         keystoreProperties.load(it)
     }
-} else {
-    throw GradleException("key.properties not found at ${keystorePropertiesFile.absolutePath}")
 }
 
 android {
@@ -41,22 +41,25 @@ android {
     }
 
     signingConfigs {
-        create("release") {
-            storeFile = keystoreProperties["storeFile"]?.let { file("../${it as String}") }
-            storePassword = keystoreProperties["storePassword"] as String?
-            keyAlias = keystoreProperties["keyAlias"] as String?
-            keyPassword = keystoreProperties["keyPassword"] as String?
+        if (hasKeystore) {
+            create("release") {
+                storeFile = keystoreProperties["storeFile"]?.let { file("../${it as String}") }
+                storePassword = keystoreProperties["storePassword"] as String?
+                keyAlias = keystoreProperties["keyAlias"] as String?
+                keyPassword = keystoreProperties["keyPassword"] as String?
+            }
         }
     }
 
     buildTypes {
         getByName("release") {
-            signingConfig = signingConfigs.getByName("release")
+            if (hasKeystore) {
+                signingConfig = signingConfigs.getByName("release")
+            }
             // minifyEnabled = false // Indien gewenst
             // shrinkResources = false // Indien gewenst
         }
         getByName("debug") {
-            // Optioneel: debug build config
         }
     }
 }
