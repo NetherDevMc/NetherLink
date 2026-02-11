@@ -1,35 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../services/github_update_service.dart';
+import '../../theme/app_theme.dart';
 
 class UpdateDialog extends StatelessWidget {
   final UpdateInfo updateInfo;
-  
-  const UpdateDialog({Key? key, required this.updateInfo}) : super(key: key);
-  
+
+  const UpdateDialog({super.key, required this.updateInfo});
+
   @override
   Widget build(BuildContext context) {
     return Dialog(
       backgroundColor: Colors.transparent,
       child: Container(
-        constraints: BoxConstraints(maxWidth: 500),
+        constraints: const BoxConstraints(maxWidth: 500),
         decoration: BoxDecoration(
-          gradient: LinearGradient(
+          gradient: const LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [
-              Color(0xFF0F172A),
-              Color(0xFF1E293B),
-            ],
+            colors: [AppTheme.surfaceDark, AppTheme.backgroundDark],
           ),
           borderRadius: BorderRadius.circular(24),
           border: Border.all(
-            color: Color(0xFF00D9FF).withOpacity(0.3),
+            color: AppTheme.primaryAccent.withOpacity(0.3),
             width: 1,
           ),
           boxShadow: [
             BoxShadow(
-              color: Color(0xFF00D9FF).withOpacity(0.2),
+              color: AppTheme.primaryAccent.withOpacity(0.2),
               blurRadius: 20,
               spreadRadius: 2,
             ),
@@ -40,49 +38,46 @@ class UpdateDialog extends StatelessWidget {
           children: [
             Container(
               height: 4,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [
-                    Color(0xFF00D9FF), 
-                    Color(0xFF3B82F6),
-                  ],
+                  colors: [AppTheme.primaryAccent, AppTheme.primaryAccentDark],
                 ),
                 borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
               ),
             ),
-            
+
             Padding(
-              padding: EdgeInsets.all(24),
+              padding: const EdgeInsets.all(24),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Container(
-                    padding: EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: Color(0xFF00D9FF).withOpacity(0.1),
+                      color: AppTheme.primaryAccent.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
-                        color: Color(0xFF00D9FF).withOpacity(0.3),
+                        color: AppTheme.primaryAccent.withOpacity(0.3),
                       ),
                     ),
-                    child: Icon(
+                    child: const Icon(
                       Icons.system_update_rounded,
                       size: 48,
-                      color: Color(0xFF00D9FF),
+                      color: AppTheme.primaryAccent,
                     ),
                   ),
-                  
-                  SizedBox(height: 20),
-                  
+
+                  const SizedBox(height: 20),
+
                   ShaderMask(
-                    shaderCallback: (bounds) => LinearGradient(
+                    shaderCallback: (bounds) => const LinearGradient(
                       colors: [
-                        Color(0xFF00D9FF),
-                        Color(0xFF3B82F6),
-                        Color(0xFF00D9FF),
+                        AppTheme.primaryAccent,
+                        AppTheme.primaryAccentDark,
+                        AppTheme.primaryAccent,
                       ],
                     ).createShader(bounds),
-                    child: Text(
+                    child: const Text(
                       'Update Available',
                       style: TextStyle(
                         fontSize: 28,
@@ -91,97 +86,102 @@ class UpdateDialog extends StatelessWidget {
                       ),
                     ),
                   ),
-                  
-                  SizedBox(height: 8),
-                  
+
+                  const SizedBox(height: 8),
+
                   Container(
-                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         colors: [
-                          Color(0xFF00D9FF).withOpacity(0.2),
-                          Color(0xFF3B82F6).withOpacity(0.2),
+                          AppTheme.primaryAccent.withOpacity(0.2),
+                          AppTheme.primaryAccentDark.withOpacity(0.2),
                         ],
                       ),
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(
-                        color: Color(0xFF00D9FF).withOpacity(0.3),
+                        color: AppTheme.primaryAccent.withOpacity(0.3),
                       ),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(
+                        const Icon(
                           Icons.new_releases,
                           size: 16,
-                          color: Color(0xFF00D9FF),
+                          color: AppTheme.primaryAccent,
                         ),
-                        SizedBox(width: 8),
+                        const SizedBox(width: 8),
                         Text(
                           'Version ${updateInfo.version}',
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 16,
-                            color: Color(0xFF00D9FF),
+                            color: AppTheme.primaryAccent,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
                       ],
                     ),
                   ),
-                  
-                  SizedBox(height: 24),
-                  
+
+                  const SizedBox(height: 24),
+
                   Container(
-                    constraints: BoxConstraints(maxHeight: 200),
-                    padding: EdgeInsets.all(16),
+                    constraints: const BoxConstraints(maxHeight: 200),
+                    padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: Color(0xFF1E293B).withOpacity(0.5),
+                      color: AppTheme.surfaceDark.withOpacity(0.5),
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
-                        color: Color(0xFF00D9FF).withOpacity(0.2),
+                        color: AppTheme.primaryAccent.withOpacity(0.2),
                       ),
                     ),
                     child: SingleChildScrollView(
                       child: Text(
                         updateInfo.releaseNotes,
-                        style: TextStyle(
-                          color: Colors.grey[300],
+                        style: const TextStyle(
+                          color: AppTheme.textSecondary,
                           fontSize: 14,
                           height: 1.6,
                         ),
                       ),
                     ),
                   ),
-                  
-                  SizedBox(height: 24),
-                  
+
+                  const SizedBox(height: 24),
+
                   Row(
                     children: [
                       Expanded(
                         child: TextButton(
                           onPressed: () => Navigator.pop(context),
                           style: TextButton.styleFrom(
-                            padding: EdgeInsets.symmetric(vertical: 14),
-                            backgroundColor: Color(0xFF1E293B).withOpacity(0.5),
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            backgroundColor: AppTheme.surfaceDark.withOpacity(
+                              0.5,
+                            ),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
                               side: BorderSide(
-                                color: Color(0xFF00D9FF).withOpacity(0.3),
+                                color: AppTheme.primaryAccent.withOpacity(0.3),
                               ),
                             ),
                           ),
-                          child: Text(
+                          child: const Text(
                             'Later',
                             style: TextStyle(
-                              color: Colors.grey[400],
+                              color: AppTheme.textMuted,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
                         ),
                       ),
-                      
-                      SizedBox(width: 12),
-                      
+
+                      const SizedBox(width: 12),
+
                       Expanded(
                         flex: 2,
                         child: ElevatedButton(
@@ -193,19 +193,23 @@ class UpdateDialog extends StatelessWidget {
                                 mode: LaunchMode.externalApplication,
                               );
                             }
-                            Navigator.pop(context);
+                            if (context.mounted) {
+                              Navigator.pop(context);
+                            }
                           },
                           style: ElevatedButton.styleFrom(
-                            padding: EdgeInsets.symmetric(vertical: 14),
-                            backgroundColor: Color(0xFF00D9FF),
-                            foregroundColor: Colors.black,
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            backgroundColor: AppTheme.primaryAccent,
+                            foregroundColor: AppTheme.backgroundDark,
                             elevation: 0,
-                            shadowColor: Color(0xFF00D9FF).withOpacity(0.5),
+                            shadowColor: AppTheme.primaryAccent.withOpacity(
+                              0.5,
+                            ),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
                           ),
-                          child: Row(
+                          child: const Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Icon(Icons.download_rounded, size: 20),
