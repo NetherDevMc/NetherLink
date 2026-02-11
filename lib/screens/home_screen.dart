@@ -1,5 +1,5 @@
-import 'dart:async';
 import 'dart:io';
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -16,6 +16,9 @@ import '../theme/app_theme.dart';
 import '../widgets/common/status_indicator.dart';
 import '../widgets/connection/connection_panel.dart';
 import '../widgets/dialogs/manage_servers_dialog.dart';
+import '../widgets/dialogs/support_dialog.dart';
+import '../services/github_update_service.dart';
+import '../widgets/dialogs/update_dialog.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -47,7 +50,6 @@ class _HomeScreenState extends State<HomeScreen>
   final ValueNotifier<List<String>> _logsNotifier = ValueNotifier([]);
   final ValueNotifier<bool> _broadcastingNotifier = ValueNotifier(false);
   final ValueNotifier<List<UserServer>> _userServersNotifier = ValueNotifier([]);
-  final ValueNotifier<bool> _consoleVisibleNotifier = ValueNotifier(false);
 
   @override
   void initState() {
@@ -55,7 +57,10 @@ class _HomeScreenState extends State<HomeScreen>
     _initializeComponents();
     _loadUserServers();
     _loadDefaultProfile();
-    _startServerRotation();
+
+    if (Platform.isWindows || Platform.isMacOS) {
+      _checkForUpdates();
+    }
   }
 
   void _initializeComponents() {
@@ -68,6 +73,33 @@ class _HomeScreenState extends State<HomeScreen>
 
     _broadcastManager.onAutoDisconnect = _handleAutoDisconnect;
     _broadcastManager.onRelayError = _handleRelayError;
+  }
+
+  Future<void> _checkForUpdates() async {
+    await Future.delayed(const Duration(seconds: 3));
+
+    if (!mounted) return;
+
+    try {
+      logger.info('🔍 Checking for updates...');
+
+      final updateService = GitHubUpdateService();
+      final updateInfo = await updateService.checkForUpdates();
+
+      if (updateInfo != null && mounted) {
+        logger.info('📥 Update available: ${updateInfo.version}');
+
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (_) => UpdateDialog(updateInfo: updateInfo),
+        );
+      } else {
+        logger.info('✅ App is up to date');
+      }
+    } catch (e) {
+      logger.error('❌ Update check failed: $e');
+    }
   }
 
   Future<void> _loadDefaultProfile() async {
@@ -130,35 +162,30 @@ class _HomeScreenState extends State<HomeScreen>
     logger.info('Auto-disconnect: All clients inactive');
   }
 
-  void _startServerRotation() {
-    _shuffleTimer = Timer.periodic(AppConstants.serverRotationDuration, (_) {
-      if (_serversNotifier.value.isNotEmpty && mounted) {
-        final nextPage = (_currentServerPage + 1) % _serversNotifier.value.length;
+  void _handleRelayError(String message) {
+    if (!mounted) return;
 
-        if (_pageController.hasClients) {
-          _pageController.animateToPage(
-            nextPage,
-            duration: const Duration(milliseconds: 500),
-            curve: Curves.easeInOut,
-          );
-        }
-
-        setState(() {
-          _currentServerPage = nextPage;
-        });
-        _animationController.forward(from: 0.0);
-      }
-    });
-  }
-
-  Future<void> _loadServers() async {
-    final loader = ServerLoader(jsonUrl: AppConstants.serversApiUrl);
-    try {
-      final servers = await loader.loadServers();
-      _serversNotifier.value = servers;
-    } catch (e) {
-      logger.error(e.toString());
-    }
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            const Icon(Icons.error_outline, color: Colors.white),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(message, style: const TextStyle(fontSize: 14)),
+            ),
+          ],
+        ),
+        backgroundColor: AppTheme.error,
+        duration: const Duration(seconds: 6),
+        behavior: SnackBarBehavior.floating,
+        action: SnackBarAction(
+          label: 'OK',
+          textColor: Colors.white,
+          onPressed: () {},
+        ),
+      ),
+    );
   }
 
   Future<void> _loadUserServers() async {
@@ -546,89 +573,49 @@ class _HomeScreenState extends State<HomeScreen>
   Widget _buildDesktopLayout() {
     return LayoutBuilder(
       builder: (context, constraints) {
-        return Stack(
-          children: [
-            SingleChildScrollView(
-              controller: _desktopScrollController,
-              physics: const ClampingScrollPhysics(),
-              child: ConstrainedBox(
-                constraints: BoxConstraints(
-                  minHeight: constraints.maxHeight,
-                ),
-                child: Column(
-                  children: [
-                    ValueListenableBuilder<List<UserServer>>(
-                      valueListenable: _userServersNotifier,
-                      builder: (context, userServers, _) {
-                        return ConnectionPanel(
-                          ipController: _ipController,
-                          portController: _portController,
-                          broadcastingNotifier: _broadcastingNotifier,
-                          onStartBroadcast: _startBroadcast,
-                          onStopBroadcast: _stopBroadcast,
-                          savedServers: userServers,
-                          onServerSelected: _onUserServerSelected,
-                          onManageServers: _showManageServersDialog,
-                          selectedProfile: _selectedProfile,
-                          onProfileChanged: (profile) {
-                            setState(() {
-                              _selectedProfile = profile;
-                            });
-                          },
-                        );
-                      },
-                    ),
-                    const SizedBox(height: 16),
-                    _buildCompactServerSection(),
-                    const SizedBox(height: 80),
-                  ],
-                ),
-              ),
-            ),
-            ValueListenableBuilder<bool>(
-              valueListenable: _consoleVisibleNotifier,
-              builder: (context, visible, _) {
-                return FloatingConsole(
-                  logsNotifier: _logsNotifier,
-                  scrollController: _scrollController,
-                  logger: logger,
-                  isVisible: visible,
-                  onClose: () => _consoleVisibleNotifier.value = false,
-                );
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  Widget _buildCompactServerSection() {
-    return ValueListenableBuilder<List<ServerEntry>>(
-      valueListenable: _serversNotifier,
-      builder: (context, servers, _) {
-        if (servers.isEmpty) {
-          return _buildLoadingCard();
-        }
-
-        return Center(
+        return SingleChildScrollView(
+          controller: _desktopScrollController,
+          physics: const ClampingScrollPhysics(),
           child: ConstrainedBox(
-            constraints:  const BoxConstraints(
-              maxWidth: 600,
+            constraints: BoxConstraints(minHeight: constraints.maxHeight),
+            child: Column(
+              children: [
+                ValueListenableBuilder<List<UserServer>>(
+                  valueListenable: _userServersNotifier,
+                  builder: (context, userServers, _) {
+                    return ConnectionPanel(
+                      ipController: _ipController,
+                      portController: _portController,
+                      broadcastingNotifier: _broadcastingNotifier,
+                      onStartBroadcast: _startBroadcast,
+                      onStopBroadcast: _stopBroadcast,
+                      savedServers: userServers,
+                      onServerSelected: _onUserServerSelected,
+                      onManageServers: _showManageServersDialog,
+                      selectedProfile: _selectedProfile,
+                      onProfileChanged: (profile) {
+                        setState(() {
+                          _selectedProfile = profile;
+                        });
+                      },
+                    );
+                  },
+                ),
+                const SizedBox(height: 16),
+                _buildConsoleSection(),
+                const SizedBox(height: 16),
+              ],
             ),
-            child:  _buildHorizontalCarousel(servers),
           ),
         );
       },
     );
   }
 
-  Widget _buildLoadingCard() {
+  Widget _buildConsoleSection() {
     return Center(
       child: ConstrainedBox(
-        constraints: const BoxConstraints(
-          maxWidth: 600,
-        ),
+        constraints: const BoxConstraints(maxWidth: 800),
         child: Container(
           height: 400,
           decoration: BoxDecoration(
@@ -636,431 +623,143 @@ class _HomeScreenState extends State<HomeScreen>
             borderRadius: BorderRadius.circular(12),
             border: Border.all(color: AppTheme.borderGray),
           ),
-          child: const Center(
-        child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                CircularProgressIndicator(color: Color(0xFF00D9FF)),
-                SizedBox(height: 16),
-                Text(
-                  'Loading advertised servers...',
-                  style: TextStyle(
-                    color: Color(0xFF00D9FF),
-                    fontSize: 14,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildHorizontalCarousel(List<ServerEntry> servers) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildCarouselHeader(servers.length),
-        const SizedBox(height: 12),
-        _buildProgressBar(),
-        const SizedBox(height: 12),
-        SizedBox(
-          height: 180,
-          child: PageView.builder(
-            controller: _pageController,
-            onPageChanged: (index) {
-              setState(() {
-                _currentServerPage = index;
-              });
-            },
-            itemCount: servers.length,
-            itemBuilder: (context, index) {
-              return _buildCarouselCard(servers[index], index);
-            },
-          ),
-        ),
-        const SizedBox(height: 12),
-        _buildCarouselIndicators(servers.length),
-      ],
-    );
-  }
-
-  Widget _buildCarouselHeader(int serverCount) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 4),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: const Color(0xFF00D9FF).withOpacity(0.15),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: const Icon(
-              Icons.campaign,
-              color: Color(0xFF00D9FF),
-              size: 20,
-            ),
-          ),
-          const SizedBox(width: 12),
-          const Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Featured Servers',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Color.fromARGB(255, 208, 209, 209),
-                  ),
-                ),
-                Text(
-                  'Swipe to explore • Auto-rotating',
-                  style: TextStyle(
-                    fontSize: 11,
-                    color: Color(0xFF00D9FF),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-            decoration: BoxDecoration(
-              color: const Color(0xFF152228),
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(
-                color: const Color(0xFF00D9FF).withOpacity(0.3),
-              ),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Icon(
-                  Icons.dns,
-                  size: 12,
-                  color: Color(0xFF00D9FF),
-                ),
-                const SizedBox(width: 6),
-                Text(
-                  '$serverCount',
-                  style: const TextStyle(
-                    color: Color(0xFF00D9FF),
-                    fontSize: 13,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(width: 8),
-          Container(
-            decoration: BoxDecoration(
-              color: const Color(0xFF00D9FF).withOpacity(0.1),
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(
-                color: const Color(0xFF00D9FF).withOpacity(0.3),
-              ),
-            ),
-            child: IconButton(
-              icon: const Icon(Icons.refresh, size: 18),
-              color: const Color(0xFF00D9FF),
-              onPressed: _loadServers,
-              padding: const EdgeInsets.all(8),
-              constraints: const BoxConstraints(),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildProgressBar() {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 4),
-      height: 4,
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: const Color(0xFF152228),
-        borderRadius: BorderRadius.circular(2),
-        border: Border.all(
-          color: const Color(0xFF00D9FF).withOpacity(0.2),
-        ),
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(2),
-        child: AnimatedBuilder(
-          animation: _rotationAnimation,
-          builder: (context, _) {
-            return FractionallySizedBox(
-              alignment: Alignment.centerLeft,
-              widthFactor: _rotationAnimation.value,
-              child: Container(
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [
-                      Color(0xFF00D9FF),
-                      Color(0xFF00A3CC),
-                    ],
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color(0xFF00D9FF).withOpacity(0.4),
-                      blurRadius: 6,
-                    ),
-                  ],
-                ),
-              ),
-            );
-          },
-        ),
-      ),
-    );
-  }
-
-  Widget _buildCarouselCard(ServerEntry server, int index) {
-    final isCurrent = index == _currentServerPage;
-    final hasBackground = server.background != null &&
-        (server.background!.startsWith('http://') ||
-            server.background!.startsWith('https://'));
-
-    return AnimatedScale(
-      scale: isCurrent ? 1.0 : 0.95,
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeOut,
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 8),
-        decoration: BoxDecoration(
-          color: const Color(0xFF0A1419),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: isCurrent
-                ? const Color(0xFF00D9FF).withOpacity(0.3)
-                : const Color(0xFF152228),
-            width: isCurrent ? 1.5 : 1,
-          ),
-          boxShadow: isCurrent
-              ? [
-                  BoxShadow(
-                    color: const Color(0xFF00D9FF).withOpacity(0.15),
-                    blurRadius: 20,
-                    spreadRadius: 0,
-                  ),
-                ]
-              : null,
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(12),
           child: Column(
             children: [
-              SizedBox(
-                height: 100,
-                child: Stack(
-                  fit: StackFit.expand,
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
+                decoration: BoxDecoration(
+                  color: AppTheme.surfaceDark,
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(12),
+                    topRight: Radius.circular(12),
+                  ),
+                  border: Border(
+                    bottom: BorderSide(
+                      color: AppTheme.primaryAccent.withOpacity(0.3),
+                    ),
+                  ),
+                ),
+                child: Row(
                   children: [
-                    if (hasBackground)
-                      Image.network(
-                        server.background!,
-                        fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) =>
-                            _buildDefaultBanner(isCurrent),
-                        loadingBuilder: (context, child, loadingProgress) {
-                          if (loadingProgress == null) return child;
-                          return _buildDefaultBanner(isCurrent);
-                        },
-                      )
-                    else
-                      _buildDefaultBanner(isCurrent),
-
                     Container(
+                      padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [
-                            Colors.black.withOpacity(0.3),
-                            Colors.black.withOpacity(0.7),
-                          ],
-                        ),
+                        color: AppTheme.primaryAccent.withOpacity(0.15),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: const Icon(
+                        Icons.terminal,
+                        color: AppTheme.primaryAccent,
+                        size: 20,
                       ),
                     ),
-
-                    Positioned(
-                      top: 12,
-                      left: 12,
-                      right: 12,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    const SizedBox(width: 12),
+                    const Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 10,
-                              vertical: 5,
-                            ),
-                            decoration: BoxDecoration(
-                              color: Colors.black.withOpacity(0.7),
-                              borderRadius: BorderRadius.circular(20),
-                              border: Border.all(
-                                color: const Color(0xFF00D9FF).withOpacity(0.4),
-                              ),
-                            ),
-                            child: Text(
-                              '${index + 1}/${_serversNotifier.value.length}',
-                              style: TextStyle(
-                                color: const Color(0xFF00D9FF).withOpacity(0.9),
-                                fontSize: 11,
-                                fontWeight: FontWeight.w600,
-                              ),
+                          Text(
+                            'Console Output',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: AppTheme.textPrimary,
                             ),
                           ),
-                          if (isCurrent)
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 10,
-                                vertical: 5,
-                              ),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFF00D9FF),
-                                borderRadius: BorderRadius.circular(20),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: 
-                                        const Color(0xFF00D9FF).withOpacity(0.5),
-                                    blurRadius: 8,
-                                  ),
-                                ],
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Container(
-                                    width: 6,
-                                    height: 6,
-                                    decoration: const BoxDecoration(
-                                      color: Colors.black,
-                                      shape: BoxShape.circle,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 5),
-                                  const Text(
-                                    'LIVE',
-                                    style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 10,
-                                      fontWeight: FontWeight.bold,
-                                      letterSpacing: 0.5,
-                                    ),
-                                  ),
-                                ],
-                              ),
+                          Text(
+                            'Real-time logs',
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: AppTheme.primaryAccent,
                             ),
+                          ),
                         ],
                       ),
                     ),
-
-                    if (! hasBackground)
-                      Center(
-                        child: Icon(
-                          Icons.dns_outlined,
-                          size: 48,
-                          color: const Color(0xFF00D9FF).withOpacity(
-                            isCurrent ? 0.5 : 0.3,
-                          ),
-                        ),
+                    IconButton(
+                      icon: Icon(
+                        _debugEnabled
+                            ? Icons.bug_report
+                            : Icons.bug_report_outlined,
+                        size: 18,
                       ),
+                      color: _debugEnabled
+                          ? AppTheme.success
+                          : AppTheme.textMuted,
+                      onPressed: _toggleDebugMode,
+                      tooltip: _debugEnabled
+                          ? 'Disable debug logs'
+                          : 'Enable debug logs',
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.delete_outline, size: 18),
+                      color: AppTheme.primaryAccent,
+                      onPressed: () {
+                        _logsNotifier.value = [];
+                        logger.info('Console cleared');
+                      },
+                      tooltip: 'Clear logs',
+                    ),
                   ],
                 ),
               ),
-
               Expanded(
-                child: Material(
-                  color: Colors.transparent,
-                  child: InkWell(
-                    onTap: () {
-                      _onServerTap(server);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Icon(
-                                Icons.check_circle_outline,
-                                color: Color(0xFF00D9FF),
-                                size: 16,
+                child: ValueListenableBuilder<List<String>>(
+                  valueListenable: _logsNotifier,
+                  builder: (context, logs, _) {
+                    if (logs.isEmpty) {
+                      return Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.info_outline,
+                              size: 48,
+                              color: AppTheme.primaryAccent.withOpacity(0.3),
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
+                              'No logs yet',
+                              style: TextStyle(
+                                color: AppTheme.primaryAccent.withOpacity(0.5),
+                                fontSize: 14,
                               ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: Text(
-                                  'Selected: ${server.address}',
-                                  overflow: TextOverflow.ellipsis,
-                                ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              'Start broadcasting to see output',
+                              style: TextStyle(
+                                color: AppTheme.textMuted.withOpacity(0.5),
+                                fontSize: 12,
                               ),
-                            ],
-                          ),
-                          backgroundColor: const Color(0xFF0A1419),
-                          behavior: SnackBarBehavior.floating,
-                          duration: const Duration(seconds: 2),
+                            ),
+                          ],
                         ),
                       );
-                    },
-                    splashColor: const Color(0xFF00D9FF).withOpacity(0.1),
-                    child:  Padding(
-                      padding: const EdgeInsets.all(14),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  server.address,
-                                  style: TextStyle(
-                                    color: const Color.fromARGB(255, 208, 209, 209)
-                                        .withOpacity(isCurrent ? 1.0 : 0.7),
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  'Port: ${server.port}',
-                                  style: TextStyle(
-                                    color: const Color.fromARGB(255, 208, 209, 209)
-                                        .withOpacity(0.5),
-                                    fontSize: 12,
-                                    fontFamily: 'monospace',
-                                  ),
-                                ),
-                              ],
+                    }
+
+                    return ListView.builder(
+                      controller: _scrollController,
+                      padding: const EdgeInsets.all(12),
+                      itemCount: logs.length,
+                      itemBuilder: (context, index) {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 2),
+                          child: Text(
+                            logs[index],
+                            style: TextStyle(
+                              fontFamily: 'monospace',
+                              fontSize: 12,
+                              color: _getLogColor(logs[index]),
                             ),
                           ),
-                          Container(
-                            padding: const EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFF152228),
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(
-                                color: isCurrent
-                                    ? const Color(0xFF00D9FF).withOpacity(0.3)
-                                    : const Color(0xFF1A2832),
-                              ),
-                            ),
-                            child: Icon(
-                              Icons.arrow_forward,
-                              size: 18,
-                              color: const Color(0xFF00D9FF).withOpacity(
-                                isCurrent ? 0.8 : 0.5,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
+                        );
+                      },
+                    );
+                  },
                 ),
               ),
             ],
@@ -1070,110 +769,17 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 
-  Widget _buildDefaultBanner(bool isCurrent) {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: isCurrent
-              ? [
-                  const Color(0xFF00D9FF).withOpacity(0.15),
-                  const Color(0xFF0F1C26),
-                ]
-              : [
-                  const Color(0xFF152228),
-                  const Color(0xFF0A1419),
-                ],
-        ),
-      ),
-      child: CustomPaint(
-        painter: _GridPatternPainter(
-          color: const Color(0xFF00D9FF).withOpacity(
-            isCurrent ? 0.08 : 0.03,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildCarouselIndicators(int count) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: List.generate(count, (index) {
-        final isCurrent = index == _currentServerPage;
-        return GestureDetector(
-          onTap: () {
-            if (_pageController.hasClients) {
-              _pageController.animateToPage(
-                index,
-                duration: const Duration(milliseconds: 300),
-                curve: Curves.easeInOut,
-              );
-            }
-          },
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 300),
-            margin: const EdgeInsets.symmetric(horizontal: 4),
-            height: 6,
-            width: isCurrent ? 24 : 6,
-            decoration: BoxDecoration(
-              color: isCurrent
-                  ? const Color(0xFF00D9FF)
-                  : const Color(0xFF152228),
-              borderRadius: BorderRadius.circular(3),
-              boxShadow: isCurrent
-                  ? [
-                      BoxShadow(
-                        color: const Color(0xFF00D9FF).withOpacity(0.5),
-                        blurRadius: 8,
-                      ),
-                    ]
-                  : null,
-            ),
-          ),
-        );
-      }),
-    );
-  }
-
-  Widget _buildMenuButton(ThemeData theme) {
-    return PopupMenuButton(
-      icon: const Icon(Icons.menu),
-      color: theme.colorScheme.surface,
-      itemBuilder: (context) => [
-        PopupMenuItem(
-          child: ListTile(
-            leading: const Icon(Icons.open_in_browser, color: Color(0xFF00D9FF)),
-            title: const Text('Website'),
-            onTap: () {
-              Navigator.pop(context);
-              launchUrl(Uri.parse(AppConstants.websiteUrl));
-            },
-          ),
-        ),
-        PopupMenuItem(
-          child: ListTile(
-            leading: const Icon(Icons.discord, color: Color(0xFF00D9FF)),
-            title: const Text('Join Discord'),
-            onTap: () {
-              Navigator.pop(context);
-              launchUrl(Uri.parse(AppConstants.discordUrl));
-            },
-          ),
-        ),
-        PopupMenuItem(
-          child: ListTile(
-            leading: const Icon(Icons.info_outline, color: Color(0xFF00D9FF)),
-            title: const Text('How to use'),
-            onTap: () {
-              Navigator.pop(context);
-              _showHelpDialog(theme);
-            },
-          ),
-        ),
-      ],
-    );
+  Color _getLogColor(String log) {
+    if (log.contains('[ERROR]')) {
+      return AppTheme.error;
+    } else if (log.contains('[WARN]')) {
+      return AppTheme.warning;
+    } else if (log.contains('[INFO]')) {
+      return AppTheme.info;
+    } else if (log.contains('[DEBUG]')) {
+      return AppTheme.success;
+    }
+    return AppTheme.textSecondary;
   }
 
   void _showHelpDialog(ThemeData theme) {
@@ -1205,28 +811,51 @@ class _AnimatedSupportButton extends StatefulWidget {
   const _AnimatedSupportButton({required this.onTap});
 
   @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = color
-      ..strokeWidth = 1;
+  State<_AnimatedSupportButton> createState() => _AnimatedSupportButtonState();
+}
 
-    const spacing = 20.0;
+class _AnimatedSupportButtonState extends State<_AnimatedSupportButton>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _heartbeatAnimation;
+  late Animation<Color?> _colorAnimation;
+  bool _isHovering = false;
 
-    for (double i = 0; i < size.width; i += spacing) {
-      canvas.drawLine(
-        Offset(i, 0),
-        Offset(i, size.height),
-        paint,
-      );
-    }
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 1500),
+      vsync: this,
+    )..repeat(reverse: true);
 
-    for (double i = 0; i < size.height; i += spacing) {
-      canvas.drawLine(
-        Offset(0, i),
-        Offset(size.width, i),
-        paint,
-      );
-    }
+    _heartbeatAnimation = TweenSequence<double>([
+      TweenSequenceItem(
+        tween: Tween<double>(begin: 1.0, end: 1.2)
+            .chain(CurveTween(curve: Curves.easeOut)),
+        weight: 30,
+      ),
+      TweenSequenceItem(
+        tween: Tween<double>(begin: 1.2, end: 1.0)
+            .chain(CurveTween(curve: Curves.easeIn)),
+        weight: 30,
+      ),
+      TweenSequenceItem(
+        tween: Tween<double>(begin: 1.0, end: 1.0),
+        weight: 40,
+      ),
+    ]).animate(_controller);
+
+    _colorAnimation = ColorTween(
+      begin: Colors.pink.shade300,
+      end: Colors.pink.shade400,
+    ).animate(_controller);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   @override
