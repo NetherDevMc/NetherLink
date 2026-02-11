@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../theme/app_theme.dart';
 import '../../util/user_servers.dart';
 import '../../util/user_servers_storage.dart';
 
@@ -55,30 +56,23 @@ class _ManageServersDialogState extends State<ManageServersDialog> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF0A1419),
+        backgroundColor: AppTheme.surfaceDark,
         title: const Text(
           'Delete Server',
-          style: TextStyle(color: Color.fromARGB(255, 208, 209, 209)),
+          style: TextStyle(color: AppTheme.textPrimary),
         ),
         content: Text(
           'Delete "${_servers[index].name}"?',
-          style: TextStyle(
-            color: const Color.fromARGB(255, 208, 209, 209).withOpacity(0.7),
-          ),
+          style: TextStyle(color: AppTheme.textSecondary),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: Text(
-              'Cancel',
-              style: TextStyle(
-                color: const Color.fromARGB(255, 208, 209, 209).withOpacity(0.6),
-              ),
-            ),
+            child: Text('Cancel', style: TextStyle(color: AppTheme.textMuted)),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            style: TextButton.styleFrom(foregroundColor: const Color(0xFFF87171)),
+            style: TextButton.styleFrom(foregroundColor: AppTheme.error),
             child: const Text('Delete'),
           ),
         ],
@@ -96,7 +90,7 @@ class _ManageServersDialogState extends State<ManageServersDialog> {
     final theme = Theme.of(context);
 
     return Dialog(
-      backgroundColor: const Color(0xFF0A1419),
+      backgroundColor: AppTheme.surfaceDark,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Container(
         constraints: const BoxConstraints(maxWidth: 550, maxHeight: 650),
@@ -110,12 +104,12 @@ class _ManageServersDialogState extends State<ManageServersDialog> {
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF00D9FF).withOpacity(0.15),
+                    color: AppTheme.primaryAccent.withOpacity(0.15),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: const Icon(
                     Icons.storage,
-                    color: Color(0xFF00D9FF),
+                    color: AppTheme.primaryAccent,
                     size: 24,
                   ),
                 ),
@@ -129,7 +123,7 @@ class _ManageServersDialogState extends State<ManageServersDialog> {
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
-                          color: Color.fromARGB(255, 208, 209, 209),
+                          color: AppTheme.textPrimary,
                         ),
                       ),
                       const SizedBox(height: 2),
@@ -137,19 +131,14 @@ class _ManageServersDialogState extends State<ManageServersDialog> {
                         'Quick access servers',
                         style: TextStyle(
                           fontSize: 12,
-                          color: const Color.fromARGB(255, 208, 209, 209)
-                              .withOpacity(0.5),
+                          color: AppTheme.textMuted,
                         ),
                       ),
                     ],
                   ),
                 ),
                 IconButton(
-                  icon: Icon(
-                    Icons.close,
-                    color: const Color.fromARGB(255, 208, 209, 209)
-                        .withOpacity(0.6),
-                  ),
+                  icon: Icon(Icons.close, color: AppTheme.textMuted),
                   onPressed: () => Navigator.pop(context),
                 ),
               ],
@@ -159,49 +148,47 @@ class _ManageServersDialogState extends State<ManageServersDialog> {
               child: _loading
                   ? const Center(
                       child: CircularProgressIndicator(
-                        color: Color(0xFF00D9FF),
+                        color: AppTheme.primaryAccent,
                       ),
                     )
-                  :  _servers.isEmpty
-                      ?  Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.dns_outlined,
-                                size: 64,
-                                color: const Color(0xFF152228),
-                              ),
-                              const SizedBox(height: 16),
-                              Text(
-                                'No saved servers',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                  color: const Color.fromARGB(255, 208, 209, 209)
-                                      .withOpacity(0.6),
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                'Add servers to quickly connect later',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  color: const Color.fromARGB(255, 208, 209, 209)
-                                      .withOpacity(0.5),
-                                ),
-                              ),
-                            ],
+                  : _servers.isEmpty
+                  ? Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.dns_outlined,
+                            size: 64,
+                            color: AppTheme.borderGray,
                           ),
-                        )
-                      : ListView.builder(
-                          itemCount: _servers.length,
-                          itemBuilder: (context, index) {
-                            final server = _servers[index];
-                            return _buildServerCard(server, index, theme);
-                          },
-                        ),
+                          const SizedBox(height: 16),
+                          Text(
+                            'No saved servers',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: AppTheme.textMuted,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Add servers to quickly connect later',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: AppTheme.textMuted,
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  : ListView.builder(
+                      itemCount: _servers.length,
+                      itemBuilder: (context, index) {
+                        final server = _servers[index];
+                        return _buildServerCard(server, index, theme);
+                      },
+                    ),
             ),
             const SizedBox(height: 16),
             SizedBox(
@@ -211,8 +198,8 @@ class _ManageServersDialogState extends State<ManageServersDialog> {
                 icon: const Icon(Icons.add),
                 label: const Text('Add Server'),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF00D9FF),
-                  foregroundColor: Colors.black,
+                  backgroundColor: AppTheme.primaryAccent,
+                  foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
@@ -230,10 +217,10 @@ class _ManageServersDialogState extends State<ManageServersDialog> {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: const Color(0xFF152228),
+        color: AppTheme.surfaceLight,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: const Color(0xFF00D9FF).withOpacity(0.3),
+          color: AppTheme.primaryAccent.withOpacity(0.3),
           width: 1,
         ),
       ),
@@ -247,12 +234,12 @@ class _ManageServersDialogState extends State<ManageServersDialog> {
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF00D9FF).withOpacity(0.15),
+                    color: AppTheme.primaryAccent.withOpacity(0.15),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: const Icon(
                     Icons.dns,
-                    color: Color(0xFF00D9FF),
+                    color: AppTheme.primaryAccent,
                     size: 20,
                   ),
                 ),
@@ -263,7 +250,7 @@ class _ManageServersDialogState extends State<ManageServersDialog> {
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
-                      color: Color.fromARGB(255, 208, 209, 209),
+                      color: AppTheme.textPrimary,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -271,7 +258,7 @@ class _ManageServersDialogState extends State<ManageServersDialog> {
                 ),
                 Container(
                   decoration: BoxDecoration(
-                    color: const Color(0xFF00D9FF).withOpacity(0.1),
+                    color: AppTheme.primaryAccent.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: IconButton(
@@ -279,13 +266,13 @@ class _ManageServersDialogState extends State<ManageServersDialog> {
                     onPressed: () => _editServer(index),
                     padding: const EdgeInsets.all(8),
                     constraints: const BoxConstraints(),
-                    color: const Color(0xFF00D9FF),
+                    color: AppTheme.primaryAccent,
                   ),
                 ),
                 const SizedBox(width: 8),
                 Container(
                   decoration: BoxDecoration(
-                    color: const Color(0xFFF87171).withOpacity(0.1),
+                    color: AppTheme.error.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: IconButton(
@@ -293,7 +280,7 @@ class _ManageServersDialogState extends State<ManageServersDialog> {
                     onPressed: () => _deleteServer(index),
                     padding: const EdgeInsets.all(8),
                     constraints: const BoxConstraints(),
-                    color: const Color(0xFFF87171),
+                    color: AppTheme.error,
                   ),
                 ),
               ],
@@ -303,10 +290,10 @@ class _ManageServersDialogState extends State<ManageServersDialog> {
               width: double.infinity,
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: const Color(0xFF0A1419),
+                color: AppTheme.surfaceDark,
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(
-                  color: const Color(0xFF00D9FF).withOpacity(0.2),
+                  color: AppTheme.primaryAccent.withOpacity(0.2),
                 ),
               ),
               child: Row(
@@ -314,7 +301,7 @@ class _ManageServersDialogState extends State<ManageServersDialog> {
                   Icon(
                     Icons.link,
                     size: 16,
-                    color: const Color(0xFF00D9FF).withOpacity(0.7),
+                    color: AppTheme.primaryAccent.withOpacity(0.7),
                   ),
                   const SizedBox(width: 8),
                   Expanded(
@@ -324,7 +311,7 @@ class _ManageServersDialogState extends State<ManageServersDialog> {
                         fontSize: 14,
                         fontFamily: 'monospace',
                         fontWeight: FontWeight.w500,
-                        color: Color.fromARGB(255, 208, 209, 209),
+                        color: AppTheme.textPrimary,
                       ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
@@ -333,25 +320,20 @@ class _ManageServersDialogState extends State<ManageServersDialog> {
                 ],
               ),
             ),
-            if (server.description != null && server.description!.isNotEmpty) ...[
+            if (server.description != null &&
+                server.description!.isNotEmpty) ...[
               const SizedBox(height: 10),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Icon(
-                    Icons.info_outline,
-                    size: 14,
-                    color: const Color.fromARGB(255, 208, 209, 209)
-                        .withOpacity(0.5),
-                  ),
+                  Icon(Icons.info_outline, size: 14, color: AppTheme.textMuted),
                   const SizedBox(width: 6),
                   Expanded(
                     child: Text(
                       server.description!,
                       style: TextStyle(
                         fontSize: 12,
-                        color: const Color.fromARGB(255, 208, 209, 209)
-                            .withOpacity(0.6),
+                        color: AppTheme.textSecondary,
                       ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
@@ -413,9 +395,9 @@ class _AddServerDialogState extends State<AddServerDialog> {
 
     if (name.isEmpty || address.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('⚠️ Name and address are required'),
-          backgroundColor: Colors.orange,
+        SnackBar(
+          content: const Text('⚠️ Name and address are required'),
+          backgroundColor: AppTheme.warning,
         ),
       );
       return;
@@ -424,9 +406,9 @@ class _AddServerDialogState extends State<AddServerDialog> {
     final port = int.tryParse(portStr);
     if (port == null || port < 1 || port > 65535) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('⚠️ Invalid port number'),
-          backgroundColor: Colors.red,
+        SnackBar(
+          content: const Text('⚠️ Invalid port number'),
+          backgroundColor: AppTheme.error,
         ),
       );
       return;
@@ -450,13 +432,11 @@ class _AddServerDialogState extends State<AddServerDialog> {
     final theme = Theme.of(context);
 
     return AlertDialog(
-      backgroundColor: const Color(0xFF0A1419),
+      backgroundColor: AppTheme.surfaceDark,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       title: const Text(
         'Add Server',
-        style: TextStyle(
-          color: Color.fromARGB(255, 208, 209, 209),
-        ),
+        style: TextStyle(color: AppTheme.textPrimary),
       ),
       content: SingleChildScrollView(
         child: Column(
@@ -464,29 +444,30 @@ class _AddServerDialogState extends State<AddServerDialog> {
           children: [
             TextField(
               controller: _nameController,
-              style: const TextStyle(color: Color.fromARGB(255, 208, 209, 209)),
+              style: const TextStyle(color: AppTheme.textPrimary),
               decoration: InputDecoration(
                 labelText: 'Server Name *',
                 hintText: 'My Awesome Server',
-                hintStyle: TextStyle(
-                  color: const Color.fromARGB(255, 208, 209, 209).withOpacity(0.4),
+                hintStyle: TextStyle(color: AppTheme.textMuted),
+                prefixIcon: const Icon(
+                  Icons.label,
+                  color: AppTheme.primaryAccent,
                 ),
-                prefixIcon: const Icon(Icons.label, color: Color(0xFF00D9FF)),
-                labelStyle: const TextStyle(color: Color(0xFF00D9FF)),
+                labelStyle: const TextStyle(color: AppTheme.primaryAccent),
                 filled: true,
-                fillColor: const Color(0xFF152228),
+                fillColor: AppTheme.surfaceLight,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                   borderSide: BorderSide.none,
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
-                  borderSide: const BorderSide(color: Color(0xFF152228)),
+                  borderSide: BorderSide(color: AppTheme.borderGray),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                   borderSide: const BorderSide(
-                    color: Color(0xFF00D9FF),
+                    color: AppTheme.primaryAccent,
                     width: 2,
                   ),
                 ),
@@ -496,29 +477,30 @@ class _AddServerDialogState extends State<AddServerDialog> {
             const SizedBox(height: 16),
             TextField(
               controller: _addressController,
-              style: const TextStyle(color: Color.fromARGB(255, 208, 209, 209)),
+              style: const TextStyle(color: AppTheme.textPrimary),
               decoration: InputDecoration(
                 labelText: 'Address *',
                 hintText: 'play.example.com',
-                hintStyle: TextStyle(
-                  color: const Color.fromARGB(255, 208, 209, 209).withOpacity(0.4),
+                hintStyle: TextStyle(color: AppTheme.textMuted),
+                prefixIcon: const Icon(
+                  Icons.dns,
+                  color: AppTheme.primaryAccent,
                 ),
-                prefixIcon: const Icon(Icons.dns, color: Color(0xFF00D9FF)),
-                labelStyle: const TextStyle(color: Color(0xFF00D9FF)),
+                labelStyle: const TextStyle(color: AppTheme.primaryAccent),
                 filled: true,
-                fillColor: const Color(0xFF152228),
+                fillColor: AppTheme.surfaceLight,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                   borderSide: BorderSide.none,
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
-                  borderSide: const BorderSide(color: Color(0xFF152228)),
+                  borderSide: BorderSide(color: AppTheme.borderGray),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                   borderSide: const BorderSide(
-                    color: Color(0xFF00D9FF),
+                    color: AppTheme.primaryAccent,
                     width: 2,
                   ),
                 ),
@@ -527,25 +509,28 @@ class _AddServerDialogState extends State<AddServerDialog> {
             const SizedBox(height: 16),
             TextField(
               controller: _portController,
-              style: const TextStyle(color: Color.fromARGB(255, 208, 209, 209)),
+              style: const TextStyle(color: AppTheme.textPrimary),
               decoration: InputDecoration(
                 labelText: 'Port *',
-                prefixIcon: const Icon(Icons.numbers, color: Color(0xFF00D9FF)),
-                labelStyle: const TextStyle(color: Color(0xFF00D9FF)),
+                prefixIcon: const Icon(
+                  Icons.numbers,
+                  color: AppTheme.primaryAccent,
+                ),
+                labelStyle: const TextStyle(color: AppTheme.primaryAccent),
                 filled: true,
-                fillColor: const Color(0xFF152228),
+                fillColor: AppTheme.surfaceLight,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                   borderSide: BorderSide.none,
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
-                  borderSide: const BorderSide(color: Color(0xFF152228)),
+                  borderSide: BorderSide(color: AppTheme.borderGray),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                   borderSide: const BorderSide(
-                    color: Color(0xFF00D9FF),
+                    color: AppTheme.primaryAccent,
                     width: 2,
                   ),
                 ),
@@ -555,29 +540,30 @@ class _AddServerDialogState extends State<AddServerDialog> {
             const SizedBox(height: 16),
             TextField(
               controller: _descriptionController,
-              style: const TextStyle(color: Color.fromARGB(255, 208, 209, 209)),
+              style: const TextStyle(color: AppTheme.textPrimary),
               decoration: InputDecoration(
                 labelText: 'Description (Optional)',
                 hintText: 'Survival server with friends',
-                hintStyle: TextStyle(
-                  color: const Color.fromARGB(255, 208, 209, 209).withOpacity(0.4),
+                hintStyle: TextStyle(color: AppTheme.textMuted),
+                prefixIcon: const Icon(
+                  Icons.description,
+                  color: AppTheme.primaryAccent,
                 ),
-                prefixIcon: const Icon(Icons.description, color: Color(0xFF00D9FF)),
-                labelStyle: const TextStyle(color: Color(0xFF00D9FF)),
+                labelStyle: const TextStyle(color: AppTheme.primaryAccent),
                 filled: true,
-                fillColor: const Color(0xFF152228),
+                fillColor: AppTheme.surfaceLight,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                   borderSide: BorderSide.none,
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
-                  borderSide: const BorderSide(color: Color(0xFF152228)),
+                  borderSide: BorderSide(color: AppTheme.borderGray),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                   borderSide: const BorderSide(
-                    color: Color(0xFF00D9FF),
+                    color: AppTheme.primaryAccent,
                     width: 2,
                   ),
                 ),
@@ -590,18 +576,13 @@ class _AddServerDialogState extends State<AddServerDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: Text(
-            'Cancel',
-            style: TextStyle(
-              color: const Color.fromARGB(255, 208, 209, 209).withOpacity(0.6),
-            ),
-          ),
+          child: Text('Cancel', style: TextStyle(color: AppTheme.textMuted)),
         ),
         ElevatedButton(
           onPressed: _save,
           style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFF00D9FF),
-            foregroundColor: Colors.black,
+            backgroundColor: AppTheme.primaryAccent,
+            foregroundColor: Colors.white,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
             ),

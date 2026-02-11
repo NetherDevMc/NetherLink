@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../theme/app_theme.dart';
 import '../../util/bedrock_profile.dart';
 import '../../util/profile_storage.dart';
 
@@ -56,32 +57,23 @@ class _ProfileManagementDialogState extends State<ProfileManagementDialog> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF0A1419),
+        backgroundColor: AppTheme.surfaceDark,
         title: const Text(
           'Delete Profile',
-          style: TextStyle(color: Color.fromARGB(255, 208, 209, 209)),
+          style: TextStyle(color: AppTheme.textPrimary),
         ),
         content: Text(
-          'Delete profile "${profile.label}"? ',
-          style: TextStyle(
-            color: const Color.fromARGB(255, 208, 209, 209).withOpacity(0.7),
-          ),
+          'Delete profile "${profile.label}"?',
+          style: TextStyle(color: AppTheme.textSecondary),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: Text(
-              'Cancel',
-              style: TextStyle(
-                color: const Color.fromARGB(255, 208, 209, 209).withOpacity(0.6),
-              ),
-            ),
+            child: Text('Cancel', style: TextStyle(color: AppTheme.textMuted)),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            style: TextButton.styleFrom(
-              foregroundColor: const Color(0xFFF87171),
-            ),
+            style: TextButton.styleFrom(foregroundColor: AppTheme.error),
             child: const Text('Delete'),
           ),
         ],
@@ -103,7 +95,7 @@ class _ProfileManagementDialogState extends State<ProfileManagementDialog> {
   void _showProfileMenu(BedrockProfile profile) {
     showModalBottomSheet(
       context: context,
-      backgroundColor: const Color(0xFF0A1419),
+      backgroundColor: AppTheme.surfaceDark,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -116,7 +108,7 @@ class _ProfileManagementDialogState extends State<ProfileManagementDialog> {
               width: 40,
               height: 4,
               decoration: BoxDecoration(
-                color: const Color(0xFF152228),
+                color: AppTheme.borderGray,
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -127,12 +119,12 @@ class _ProfileManagementDialogState extends State<ProfileManagementDialog> {
                   Container(
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF00D9FF).withOpacity(0.15),
+                      color: AppTheme.primaryAccent.withOpacity(0.15),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: const Icon(
                       Icons.person,
-                      color: Color(0xFF00D9FF),
+                      color: AppTheme.primaryAccent,
                       size: 24,
                     ),
                   ),
@@ -144,7 +136,7 @@ class _ProfileManagementDialogState extends State<ProfileManagementDialog> {
                         Text(
                           profile.label,
                           style: const TextStyle(
-                            color: Color.fromARGB(255, 208, 209, 209),
+                            color: AppTheme.textPrimary,
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
                           ),
@@ -152,8 +144,7 @@ class _ProfileManagementDialogState extends State<ProfileManagementDialog> {
                         Text(
                           profile.username,
                           style: TextStyle(
-                            color: const Color.fromARGB(255, 208, 209, 209)
-                                .withOpacity(0.6),
+                            color: AppTheme.textMuted,
                             fontSize: 13,
                             fontFamily: 'monospace',
                           ),
@@ -164,16 +155,13 @@ class _ProfileManagementDialogState extends State<ProfileManagementDialog> {
                 ],
               ),
             ),
-            Divider(
-              color: const Color(0xFF152228),
-              height: 1,
-            ),
-            if (! profile.isDefault)
+            Divider(color: AppTheme.borderGray, height: 1),
+            if (!profile.isDefault)
               ListTile(
-                leading: const Icon(Icons.star, color: Color(0xFFFFD700)),
+                leading: const Icon(Icons.star, color: AppTheme.warning),
                 title: const Text(
                   'Set as Default',
-                  style: TextStyle(color: Color.fromARGB(255, 208, 209, 209)),
+                  style: TextStyle(color: AppTheme.textPrimary),
                 ),
                 onTap: () {
                   Navigator.pop(context);
@@ -181,10 +169,10 @@ class _ProfileManagementDialogState extends State<ProfileManagementDialog> {
                 },
               ),
             ListTile(
-              leading: const Icon(Icons.edit, color: Color(0xFF00D9FF)),
+              leading: const Icon(Icons.edit, color: AppTheme.primaryAccent),
               title: const Text(
                 'Edit Profile',
-                style: TextStyle(color: Color.fromARGB(255, 208, 209, 209)),
+                style: TextStyle(color: AppTheme.textPrimary),
               ),
               onTap: () {
                 Navigator.pop(context);
@@ -192,10 +180,10 @@ class _ProfileManagementDialogState extends State<ProfileManagementDialog> {
               },
             ),
             ListTile(
-              leading: const Icon(Icons.delete, color: Color(0xFFF87171)),
+              leading: const Icon(Icons.delete, color: AppTheme.error),
               title: const Text(
                 'Delete Profile',
-                style: TextStyle(color: Color(0xFFF87171)),
+                style: TextStyle(color: AppTheme.error),
               ),
               onTap: () {
                 Navigator.pop(context);
@@ -212,7 +200,7 @@ class _ProfileManagementDialogState extends State<ProfileManagementDialog> {
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      backgroundColor: const Color(0xFF0A1419),
+      backgroundColor: AppTheme.surfaceDark,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Container(
         constraints: const BoxConstraints(maxWidth: 500, maxHeight: 700),
@@ -226,12 +214,12 @@ class _ProfileManagementDialogState extends State<ProfileManagementDialog> {
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF00D9FF).withOpacity(0.15),
+                      color: AppTheme.primaryAccent.withOpacity(0.15),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: const Icon(
                       Icons.account_circle,
-                      color: Color(0xFF00D9FF),
+                      color: AppTheme.primaryAccent,
                       size: 28,
                     ),
                   ),
@@ -245,7 +233,7 @@ class _ProfileManagementDialogState extends State<ProfileManagementDialog> {
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
-                            color: Color.fromARGB(255, 208, 209, 209),
+                            color: AppTheme.textPrimary,
                           ),
                         ),
                         const SizedBox(height: 4),
@@ -253,19 +241,14 @@ class _ProfileManagementDialogState extends State<ProfileManagementDialog> {
                           'Manage your Minecraft Bedrock accounts',
                           style: TextStyle(
                             fontSize: 13,
-                            color: const Color.fromARGB(255, 208, 209, 209)
-                                .withOpacity(0.6),
+                            color: AppTheme.textMuted,
                           ),
                         ),
                       ],
                     ),
                   ),
                   IconButton(
-                    icon: Icon(
-                      Icons.close,
-                      color: const Color.fromARGB(255, 208, 209, 209)
-                          .withOpacity(0.6),
-                    ),
+                    icon: Icon(Icons.close, color: AppTheme.textMuted),
                     onPressed: () => Navigator.pop(context),
                   ),
                 ],
@@ -275,50 +258,48 @@ class _ProfileManagementDialogState extends State<ProfileManagementDialog> {
               child: _loading
                   ? const Center(
                       child: CircularProgressIndicator(
-                        color: Color(0xFF00D9FF),
+                        color: AppTheme.primaryAccent,
                       ),
                     )
-                  :  _profiles.isEmpty
-                      ? Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.person_off_outlined,
-                                size: 64,
-                                color: const Color(0xFF152228),
-                              ),
-                              const SizedBox(height: 16),
-                              Text(
-                                'No profiles yet',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                  color: const Color.fromARGB(255, 208, 209, 209)
-                                      .withOpacity(0.6),
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                'Add your first Bedrock profile to get started',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  color: const Color.fromARGB(255, 208, 209, 209)
-                                      .withOpacity(0.5),
-                                ),
-                              ),
-                            ],
+                  : _profiles.isEmpty
+                  ? Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.person_off_outlined,
+                            size: 64,
+                            color: AppTheme.borderGray,
                           ),
-                        )
-                      : ListView.builder(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          itemCount: _profiles.length,
-                          itemBuilder: (context, index) {
-                            final profile = _profiles[index];
-                            return _buildProfileCard(profile);
-                          },
-                        ),
+                          const SizedBox(height: 16),
+                          Text(
+                            'No profiles yet',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: AppTheme.textMuted,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Add your first Bedrock profile to get started',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: AppTheme.textMuted,
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  : ListView.builder(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      itemCount: _profiles.length,
+                      itemBuilder: (context, index) {
+                        final profile = _profiles[index];
+                        return _buildProfileCard(profile);
+                      },
+                    ),
             ),
             Padding(
               padding: const EdgeInsets.all(20),
@@ -332,8 +313,8 @@ class _ProfileManagementDialogState extends State<ProfileManagementDialog> {
                     style: TextStyle(fontSize: 15),
                   ),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF00D9FF),
-                    foregroundColor: Colors.black,
+                    backgroundColor: AppTheme.primaryAccent,
+                    foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -353,12 +334,12 @@ class _ProfileManagementDialogState extends State<ProfileManagementDialog> {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: const Color(0xFF152228),
+        color: AppTheme.surfaceLight,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: profile.isDefault
-              ? const Color(0xFFFFD700).withOpacity(0.5)
-              : const Color(0xFF00D9FF).withOpacity(0.3),
+              ? AppTheme.warning.withOpacity(0.5)
+              : AppTheme.primaryAccent.withOpacity(0.3),
           width: profile.isDefault ? 2 : 1,
         ),
       ),
@@ -377,15 +358,15 @@ class _ProfileManagementDialogState extends State<ProfileManagementDialog> {
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
                         color: profile.isDefault
-                            ? const Color(0xFFFFD700).withOpacity(0.15)
-                            : const Color(0xFF00D9FF).withOpacity(0.15),
+                            ? AppTheme.warning.withOpacity(0.15)
+                            : AppTheme.primaryAccent.withOpacity(0.15),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Icon(
                         Icons.person,
                         color: profile.isDefault
-                            ?  const Color(0xFFFFD700)
-                            : const Color(0xFF00D9FF),
+                            ? AppTheme.warning
+                            : AppTheme.primaryAccent,
                         size: 28,
                       ),
                     ),
@@ -396,10 +377,10 @@ class _ProfileManagementDialogState extends State<ProfileManagementDialog> {
                         child: Container(
                           padding: const EdgeInsets.all(3),
                           decoration: BoxDecoration(
-                            color: const Color(0xFFFFD700),
+                            color: AppTheme.warning,
                             shape: BoxShape.circle,
                             border: Border.all(
-                              color: const Color(0xFF152228),
+                              color: AppTheme.surfaceLight,
                               width: 2,
                             ),
                           ),
@@ -420,7 +401,7 @@ class _ProfileManagementDialogState extends State<ProfileManagementDialog> {
                       Text(
                         profile.label,
                         style: const TextStyle(
-                          color: Color.fromARGB(255, 208, 209, 209),
+                          color: AppTheme.textPrimary,
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                           height: 1.2,
@@ -433,8 +414,7 @@ class _ProfileManagementDialogState extends State<ProfileManagementDialog> {
                           Icon(
                             Icons.badge,
                             size: 14,
-                            color: const Color.fromARGB(255, 208, 209, 209)
-                                .withOpacity(0.6),
+                            color: AppTheme.textMuted,
                           ),
                           const SizedBox(width: 6),
                           Expanded(
@@ -442,8 +422,7 @@ class _ProfileManagementDialogState extends State<ProfileManagementDialog> {
                               profile.username,
                               style: TextStyle(
                                 fontSize: 13,
-                                color: const Color.fromARGB(255, 208, 209, 209)
-                                    .withOpacity(0.6),
+                                color: AppTheme.textMuted,
                                 fontFamily: 'monospace',
                               ),
                               maxLines: 1,
@@ -456,11 +435,7 @@ class _ProfileManagementDialogState extends State<ProfileManagementDialog> {
                   ),
                 ),
                 const SizedBox(width: 12),
-                Icon(
-                  Icons.more_vert,
-                  color: const Color.fromARGB(255, 208, 209, 209).withOpacity(0.6),
-                  size: 20,
-                ),
+                Icon(Icons.more_vert, color: AppTheme.textMuted, size: 20),
               ],
             ),
           ),
@@ -516,7 +491,7 @@ class _AddProfileDialogState extends State<AddProfileDialog> {
               Text('Username is required'),
             ],
           ),
-          backgroundColor: Colors.orange,
+          backgroundColor: AppTheme.warning,
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
@@ -542,11 +517,11 @@ class _AddProfileDialogState extends State<AddProfileDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      backgroundColor: const Color(0xFF0A1419),
+      backgroundColor: AppTheme.surfaceDark,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       title: Text(
         widget.profile == null ? 'Add Profile' : 'Edit Profile',
-        style: const TextStyle(color: Color.fromARGB(255, 208, 209, 209)),
+        style: const TextStyle(color: AppTheme.textPrimary),
       ),
       content: SingleChildScrollView(
         child: Column(
@@ -554,31 +529,32 @@ class _AddProfileDialogState extends State<AddProfileDialog> {
           children: [
             TextField(
               controller: _usernameController,
-              style: const TextStyle(color: Color.fromARGB(255, 208, 209, 209)),
+              style: const TextStyle(color: AppTheme.textPrimary),
               decoration: InputDecoration(
                 labelText: 'Bedrock Username *',
-                labelStyle: TextStyle(
-                  color: const Color.fromARGB(255, 208, 209, 209).withOpacity(0.6),
-                ),
+                labelStyle: TextStyle(color: AppTheme.textMuted),
                 hintText: 'Your Minecraft username',
                 hintStyle: TextStyle(
-                  color: const Color.fromARGB(255, 208, 209, 209).withOpacity(0.4),
+                  color: AppTheme.textMuted.withOpacity(0.5),
                 ),
-                prefixIcon: const Icon(Icons.badge, color: Color(0xFF00D9FF)),
+                prefixIcon: const Icon(
+                  Icons.badge,
+                  color: AppTheme.primaryAccent,
+                ),
                 filled: true,
-                fillColor: const Color(0xFF152228),
+                fillColor: AppTheme.surfaceLight,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                   borderSide: BorderSide.none,
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
-                  borderSide: const BorderSide(color: Color(0xFF152228)),
+                  borderSide: BorderSide(color: AppTheme.borderGray),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                   borderSide: const BorderSide(
-                    color: Color(0xFF00D9FF),
+                    color: AppTheme.primaryAccent,
                     width: 2,
                   ),
                 ),
@@ -588,31 +564,32 @@ class _AddProfileDialogState extends State<AddProfileDialog> {
             const SizedBox(height: 16),
             TextField(
               controller: _displayNameController,
-              style: const TextStyle(color: Color.fromARGB(255, 208, 209, 209)),
+              style: const TextStyle(color: AppTheme.textPrimary),
               decoration: InputDecoration(
                 labelText: 'Display Name (Optional)',
-                labelStyle: TextStyle(
-                  color: const Color.fromARGB(255, 208, 209, 209).withOpacity(0.6),
-                ),
+                labelStyle: TextStyle(color: AppTheme.textMuted),
                 hintText: 'Friendly name for this profile',
-                hintStyle:  TextStyle(
-                  color: const Color.fromARGB(255, 208, 209, 209).withOpacity(0.4),
+                hintStyle: TextStyle(
+                  color: AppTheme.textMuted.withOpacity(0.5),
                 ),
-                prefixIcon: const Icon(Icons.label, color: Color(0xFF00D9FF)),
+                prefixIcon: const Icon(
+                  Icons.label,
+                  color: AppTheme.primaryAccent,
+                ),
                 filled: true,
-                fillColor: const Color(0xFF152228),
+                fillColor: AppTheme.surfaceLight,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                   borderSide: BorderSide.none,
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
-                  borderSide: const BorderSide(color: Color(0xFF152228)),
+                  borderSide: BorderSide(color: AppTheme.borderGray),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                   borderSide: const BorderSide(
-                    color: Color(0xFF00D9FF),
+                    color: AppTheme.primaryAccent,
                     width: 2,
                   ),
                 ),
@@ -621,32 +598,26 @@ class _AddProfileDialogState extends State<AddProfileDialog> {
             const SizedBox(height: 20),
             Container(
               decoration: BoxDecoration(
-                color: const Color(0xFF152228),
+                color: AppTheme.surfaceLight,
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(
-                  color: const Color(0xFF00D9FF).withOpacity(0.3),
+                  color: AppTheme.primaryAccent.withOpacity(0.3),
                 ),
               ),
               child: SwitchListTile(
                 title: const Text(
                   'Set as default profile',
-                  style: TextStyle(
-                    color: Color.fromARGB(255, 208, 209, 209),
-                    fontSize: 15,
-                  ),
+                  style: TextStyle(color: AppTheme.textPrimary, fontSize: 15),
                 ),
                 subtitle: Text(
                   'Use this profile by default',
-                  style: TextStyle(
-                    color: const Color.fromARGB(255, 208, 209, 209).withOpacity(0.6),
-                    fontSize: 13,
-                  ),
+                  style: TextStyle(color: AppTheme.textMuted, fontSize: 13),
                 ),
                 value: _isDefault,
                 onChanged: (value) {
                   setState(() => _isDefault = value);
                 },
-                activeColor: const Color(0xFFFFD700),
+                activeColor: AppTheme.warning,
                 contentPadding: const EdgeInsets.symmetric(
                   horizontal: 16,
                   vertical: 4,
@@ -659,18 +630,13 @@ class _AddProfileDialogState extends State<AddProfileDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: Text(
-            'Cancel',
-            style: TextStyle(
-              color: const Color.fromARGB(255, 208, 209, 209).withOpacity(0.6),
-            ),
-          ),
+          child: Text('Cancel', style: TextStyle(color: AppTheme.textMuted)),
         ),
         ElevatedButton(
           onPressed: _save,
           style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFF00D9FF),
-            foregroundColor: Colors.black,
+            backgroundColor: AppTheme.primaryAccent,
+            foregroundColor: Colors.white,
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),

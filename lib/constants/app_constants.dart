@@ -1,10 +1,8 @@
 class AppConstants {
-  static const String serversApiUrl =
-      'https://backend.netherlink.net/api/servers';
   static const String websiteUrl = 'https://netherlink.net';
   static const String discordUrl = 'https://discord.gg/xvaNzE35Rs';
 
-  static const String defaultServerAddress = 'test.geysermc.org';
+  static const String defaultServerAddress = 'play.myserver.com';
 
   static const Duration serverRotationDuration = Duration(seconds: 5);
   static const Duration animationDuration = Duration(milliseconds: 300);
@@ -17,11 +15,10 @@ class AppConstants {
   static const double mobileBreakpoint = 700.0;
   static const double narrowBreakpoint = 500.0;
 
-  static const String appVersion = '2.0';
-  static const String appCreator = 'Jens-Co';
+  static const String appCreator = 'NetherDev';
 
   static const String helpText =
-      '''NetherLink version $appVersion
+      '''
 Created by $appCreator.
 
 How to use:

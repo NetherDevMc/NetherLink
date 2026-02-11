@@ -2,7 +2,7 @@ name: NetherLink
 description: "Broadcast a remote server as a local server ."
 
 publish_to: 'none'
-version: 2.0.0+7
+version: 3.0.0+8
 
 environment:
   sdk: ^3.8.1

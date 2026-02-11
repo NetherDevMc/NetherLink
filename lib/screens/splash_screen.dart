@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../theme/app_theme.dart';
 import 'home_screen.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -12,12 +13,10 @@ class _SplashScreenState extends State<SplashScreen>
     with TickerProviderStateMixin {
   late AnimationController _fadeController;
   late AnimationController _scaleController;
-  late AnimationController _rotateController;
   late AnimationController _pulseController;
-  
+
   late Animation<double> _fadeAnimation;
   late Animation<double> _scaleAnimation;
-  late Animation<double> _rotateAnimation;
   late Animation<double> _pulseAnimation;
 
   @override
@@ -25,38 +24,30 @@ class _SplashScreenState extends State<SplashScreen>
     super.initState();
 
     _fadeController = AnimationController(
-      duration: const Duration(milliseconds: 1500),
-      vsync: this,
-    );
-
-    _scaleController = AnimationController(
       duration: const Duration(milliseconds: 1200),
       vsync: this,
     );
 
-    _rotateController = AnimationController(
-      duration: const Duration(seconds: 3),
+    _scaleController = AnimationController(
+      duration: const Duration(milliseconds: 1000),
       vsync: this,
-    )..repeat();
+    );
 
     _pulseController = AnimationController(
-      duration: const Duration(milliseconds: 1500),
+      duration: const Duration(milliseconds: 2000),
       vsync: this,
     )..repeat(reverse: true);
 
-    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _fadeController, curve: Curves.easeIn),
+    _fadeAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _fadeController, curve: Curves.easeIn));
+
+    _scaleAnimation = Tween<double>(begin: 0.5, end: 1.0).animate(
+      CurvedAnimation(parent: _scaleController, curve: Curves.easeOutCubic),
     );
 
-    _scaleAnimation = Tween<double>(begin: 0.3, end: 1.0).animate(
-      CurvedAnimation(parent: _scaleController, curve: Curves.elasticOut),
-    );
-
-    _rotateAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _rotateController, curve: Curves.linear),
-    );
-
-    _pulseAnimation = Tween<double>(begin: 0.8, end: 1.0).animate(
+    _pulseAnimation = Tween<double>(begin: 0.85, end: 1.0).animate(
       CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
     );
 
@@ -68,7 +59,7 @@ class _SplashScreenState extends State<SplashScreen>
     await Future.delayed(const Duration(milliseconds: 200));
     _scaleController.forward();
 
-    await Future.delayed(const Duration(seconds: 3));
+    await Future.delayed(const Duration(milliseconds: 2500));
 
     if (mounted) {
       Navigator.of(context).pushReplacement(
@@ -76,10 +67,7 @@ class _SplashScreenState extends State<SplashScreen>
           pageBuilder: (context, animation, secondaryAnimation) =>
               const HomeScreen(),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            return FadeTransition(
-              opacity: animation,
-              child: child,
-            );
+            return FadeTransition(opacity: animation, child: child);
           },
           transitionDuration: const Duration(milliseconds: 500),
         ),
@@ -91,7 +79,6 @@ class _SplashScreenState extends State<SplashScreen>
   void dispose() {
     _fadeController.dispose();
     _scaleController.dispose();
-    _rotateController.dispose();
     _pulseController.dispose();
     super.dispose();
   }
@@ -102,28 +89,18 @@ class _SplashScreenState extends State<SplashScreen>
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              Color(0xFF050A0E),
-              Color(0xFF0A1419),
-              Color(0xFF0F1C26),
-            ],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [AppTheme.backgroundDark, AppTheme.surfaceDark],
           ),
         ),
         child: Stack(
           children: [
             Positioned.fill(
-              child: AnimatedBuilder(
-                animation: _rotateController,
-                builder: (context, child) {
-                  return CustomPaint(
-                    painter: _GridPainter(
-                      color: const Color(0xFF00D9FF).withOpacity(0.1),
-                      animation: _rotateAnimation.value,
-                    ),
-                  );
-                },
+              child: CustomPaint(
+                painter: _SubtlePatternPainter(
+                  color: AppTheme.primaryAccent.withOpacity(0.05),
+                ),
               ),
             ),
 
@@ -149,14 +126,14 @@ class _SplashScreenState extends State<SplashScreen>
                                 animation: _pulseAnimation,
                                 builder: (context, child) {
                                   return Container(
-                                    width: 180 * _pulseAnimation.value,
-                                    height: 180 * _pulseAnimation.value,
+                                    width: 140 * _pulseAnimation.value,
+                                    height: 140 * _pulseAnimation.value,
                                     decoration: BoxDecoration(
                                       shape: BoxShape.circle,
                                       border: Border.all(
-                                        color: const Color(0xFF00D9FF)
-                                            .withOpacity(0.3),
-                                        width: 2,
+                                        color: AppTheme.primaryAccent
+                                            .withOpacity(0.2),
+                                        width: 1.5,
                                       ),
                                     ),
                                   );
@@ -164,52 +141,32 @@ class _SplashScreenState extends State<SplashScreen>
                               ),
 
                               Container(
-                                width: 150,
-                                height: 150,
+                                width: 100,
+                                height: 100,
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
-                                  border: Border.all(
-                                    color: const Color(0xFF00D9FF)
-                                        .withOpacity(0.5),
-                                    width: 1,
-                                  ),
-                                ),
-                              ),
-
-                              Container(
-                                width: 120,
-                                height: 120,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  gradient: const LinearGradient(
+                                  gradient: LinearGradient(
                                     begin: Alignment.topLeft,
                                     end: Alignment.bottomRight,
                                     colors: [
-                                      Color(0xFF00D9FF),
-                                      Color(0xFF00A3CC),
+                                      AppTheme.primaryAccent,
+                                      AppTheme.primaryAccentDark,
                                     ],
                                   ),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: const Color(0xFF00D9FF)
-                                          .withOpacity(0.5),
-                                      blurRadius: 30,
-                                      spreadRadius: 5,
+                                      color: AppTheme.primaryAccent.withOpacity(
+                                        0.3,
+                                      ),
+                                      blurRadius: 20,
+                                      spreadRadius: 2,
                                     ),
                                   ],
                                 ),
-                                child: AnimatedBuilder(
-                                  animation: _rotateController,
-                                  builder: (context, child) {
-                                    return Transform.rotate(
-                                      angle: _rotateAnimation.value * 2 * 3.14159,
-                                      child: const Icon(
-                                        Icons.track_changes,
-                                        size: 60,
-                                        color: Colors.black,
-                                      ),
-                                    );
-                                  },
+                                child: const Icon(
+                                  Icons.track_changes,
+                                  size: 50,
+                                  color: Colors.white,
                                 ),
                               ),
                             ],
@@ -217,59 +174,35 @@ class _SplashScreenState extends State<SplashScreen>
 
                           const SizedBox(height: 40),
 
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 24,
-                              vertical: 8,
-                            ),
-                            decoration: BoxDecoration(
-                              border: Border(
-                                top: BorderSide(
-                                  color: const Color(0xFF00D9FF).withOpacity(0.3),
-                                  width: 2,
-                                ),
-                                bottom: BorderSide(
-                                  color: const Color(0xFF00D9FF).withOpacity(0.3),
-                                  width: 2,
-                                ),
-                              ),
-                            ),
-                            child: const Text(
-                              'NETHERLINK',
-                              style: TextStyle(
-                                fontSize: 36,
-                                fontWeight: FontWeight.bold,
-                                color: Color(0xFF00D9FF),
-                                letterSpacing: 4,
-                                shadows: [
-                                  Shadow(
-                                    color: Color(0xFF00D9FF),
-                                    blurRadius: 20,
-                                  ),
-                                ],
-                              ),
+                          const Text(
+                            'NETHERLINK',
+                            style: TextStyle(
+                              fontSize: 32,
+                              fontWeight: FontWeight.bold,
+                              color: AppTheme.textPrimary,
+                              letterSpacing: 6,
                             ),
                           ),
 
-                          const SizedBox(height: 12),
+                          const SizedBox(height: 16),
 
                           Container(
                             padding: const EdgeInsets.symmetric(
                               horizontal: 16,
-                              vertical: 6,
+                              vertical: 8,
                             ),
                             decoration: BoxDecoration(
-                              color: const Color(0xFF00D9FF).withOpacity(0.1),
+                              color: AppTheme.surfaceLight.withOpacity(0.5),
                               borderRadius: BorderRadius.circular(20),
                               border: Border.all(
-                                color: const Color(0xFF00D9FF).withOpacity(0.3),
+                                color: AppTheme.primaryAccent.withOpacity(0.3),
                               ),
                             ),
                             child: Text(
-                              'v2.0 • Created by Jens-Co',
+                              'Created by NetherDev',
                               style: TextStyle(
-                                fontSize: 14,
-                                color: const Color(0xFF00D9FF).withOpacity(0.8),
+                                fontSize: 13,
+                                color: AppTheme.textSecondary,
                                 letterSpacing: 1,
                               ),
                             ),
@@ -278,47 +211,13 @@ class _SplashScreenState extends State<SplashScreen>
                           const SizedBox(height: 60),
 
                           SizedBox(
-                            width: 50,
-                            height: 50,
-                            child: Stack(
-                              alignment: Alignment.center,
-                              children: [
-                                AnimatedBuilder(
-                                  animation: _rotateController,
-                                  builder: (context, child) {
-                                    return Transform.rotate(
-                                      angle: _rotateAnimation.value * 2 * 3.14159,
-                                      child: Container(
-                                        width: 50,
-                                        height: 50,
-                                        decoration: BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          border: Border.all(
-                                            color: const Color(0xFF00D9FF),
-                                            width: 3,
-                                          ),
-                                          gradient: const LinearGradient(
-                                            begin: Alignment.topLeft,
-                                            end: Alignment.bottomRight,
-                                            colors: [
-                                              Color(0xFF00D9FF),
-                                              Colors.transparent,
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                ),
-                                Container(
-                                  width: 8,
-                                  height: 8,
-                                  decoration: const BoxDecoration(
-                                    color: Color(0xFF00D9FF),
-                                    shape: BoxShape.circle,
-                                  ),
-                                ),
-                              ],
+                            width: 40,
+                            height: 40,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 3,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                AppTheme.primaryAccent,
+                              ),
                             ),
                           ),
 
@@ -328,13 +227,12 @@ class _SplashScreenState extends State<SplashScreen>
                             animation: _pulseController,
                             builder: (context, child) {
                               return Opacity(
-                                opacity: _pulseAnimation.value,
+                                opacity: _pulseAnimation.value * 0.8,
                                 child: Text(
                                   'Initializing...',
                                   style: TextStyle(
-                                    fontSize: 14,
-                                    color: const Color(0xFF00D9FF)
-                                        .withOpacity(0.8),
+                                    fontSize: 13,
+                                    color: AppTheme.textMuted,
                                     letterSpacing: 2,
                                   ),
                                 ),
@@ -355,40 +253,40 @@ class _SplashScreenState extends State<SplashScreen>
   }
 }
 
-class _GridPainter extends CustomPainter {
+class _SubtlePatternPainter extends CustomPainter {
   final Color color;
-  final double animation;
 
-  _GridPainter({required this.color, required this.animation});
+  _SubtlePatternPainter({required this.color});
 
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
       ..color = color
-      ..strokeWidth = 1;
+      ..strokeWidth = 1
+      ..style = PaintingStyle.stroke;
 
-    const spacing = 40.0;
-    final offset = (animation * spacing) % spacing;
+    const spacing = 60.0;
 
-    for (double i = -spacing + offset; i < size.width + spacing; i += spacing) {
-      canvas.drawLine(
-        Offset(i, 0),
-        Offset(i, size.height),
-        paint,
-      );
+    for (double i = 0; i < size.width; i += spacing) {
+      canvas.drawLine(Offset(i, 0), Offset(i, size.height), paint);
     }
 
-    for (double i = -spacing + offset; i < size.height + spacing; i += spacing) {
+    for (double i = 0; i < size.height; i += spacing) {
+      canvas.drawLine(Offset(0, i), Offset(size.width, i), paint);
+    }
+
+    paint.color = color.withOpacity(0.3);
+    for (double i = -size.height; i < size.width; i += spacing * 2) {
       canvas.drawLine(
-        Offset(0, i),
-        Offset(size.width, i),
+        Offset(i, 0),
+        Offset(i + size.height, size.height),
         paint,
       );
     }
   }
 
   @override
-  bool shouldRepaint(_GridPainter oldDelegate) {
-    return oldDelegate.animation != animation;
+  bool shouldRepaint(_SubtlePatternPainter oldDelegate) {
+    return oldDelegate.color != color;
   }
 }

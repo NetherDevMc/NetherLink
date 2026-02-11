@@ -75,8 +75,9 @@ class _StatusIndicatorState extends State<StatusIndicator>
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         border: Border.all(
-                          color: const Color(0xFF00D9FF)
-                              .withOpacity(0.3 * _pulseAnimation.value),
+                          color: const Color(
+                            0xFF00D9FF,
+                          ).withOpacity(0.3 * _pulseAnimation.value),
                           width: 2,
                         ),
                       ),
@@ -116,9 +117,7 @@ class _StatusIndicatorState extends State<StatusIndicator>
               fontSize: 13,
               letterSpacing: 0.5,
             ),
-            child: Text(
-              widget.broadcasting ? 'LIVE' : 'IDLE',
-            ),
+            child: Text(widget.broadcasting ? 'LIVE' : 'IDLE'),
           ),
         ],
       ),

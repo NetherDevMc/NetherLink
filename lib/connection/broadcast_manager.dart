@@ -18,6 +18,7 @@ class BroadcastManager {
   StreamSubscription<RawSocketEvent>? _subscriptionIPv6;
 
   Function()? onAutoDisconnect;
+  Function(String message)? onRelayError;
 
   BroadcastManager({required this.socketHandler, required this.logger}) {
     socketHandler.onAllClientsDisconnected = _handleAllClientsDisconnected;
@@ -64,7 +65,7 @@ class BroadcastManager {
     }
   }
 
-  Future<void> startBroadcast(
+  Future<bool> startBroadcast(
     String remoteHost,
     int remotePort,
     String username,
@@ -75,13 +76,23 @@ class BroadcastManager {
 
     try {
       logger.info('Sending config to NetherLink server...');
-      await RelayConfigSender.sendConfigSimple(
+
+      final success = await RelayConfigSender.sendConfigSimple(
         relayIp: RELAY_IP,
         relayConfigPort: RELAY_CONFIG_PORT,
         remoteServerIp: remoteHost,
         remoteServerPort: remotePort,
         bedrockUsername: username,
       );
+
+      if (!success) {
+        logger.error('Failed to connect to NetherLink relay server');
+        logger.error('The relay server might be offline or unreachable');
+        onRelayError?.call(
+          'Unable to connect to NetherLink relay server. Please check your internet connection or try again later.',
+        );
+        return false;
+      }
 
       await Future.delayed(Duration(milliseconds: 200));
 
@@ -119,9 +130,13 @@ class BroadcastManager {
       logger.info('NetherLink started broadcasting');
 
       _logLocalIPAddresses();
+
+      return true;
     } catch (e) {
       logger.error('Error starting broadcast: $e');
       stopBroadcast();
+      onRelayError?.call('Failed to start broadcast: $e');
+      return false;
     }
   }
 

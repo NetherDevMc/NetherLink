@@ -4,22 +4,18 @@ import 'package:flutter/material.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../api/server_loader.dart';
 import '../connection/ping_pong_connection.dart';
 import '../connection/broadcast_manager.dart';
 import '../util/Logger.dart';
-import '../util/server_entry.dart';
 import '../util/user_servers.dart';
 import '../util/user_servers_storage.dart';
 import '../util/bedrock_profile.dart';
 import '../util/profile_storage.dart';
 import '../constants/app_constants.dart';
+import '../theme/app_theme.dart';
 import '../widgets/common/status_indicator.dart';
 import '../widgets/connection/connection_panel.dart';
-import '../widgets/console/floating_console.dart';
 import '../widgets/dialogs/manage_servers_dialog.dart';
-import '../services/github_update_service.dart';
-import '../widgets/dialogs/update_dialog.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -33,13 +29,9 @@ class _HomeScreenState extends State<HomeScreen>
   late final SocketHandler socketHandler;
   late final BroadcastManager _broadcastManager;
   late final Logger logger;
-  late final Timer _shuffleTimer;
-  late final AnimationController _animationController;
-  late final Animation<double> _rotationAnimation;
-  late final PageController _pageController;
 
-  int _currentServerPage = 0;
   BedrockProfile? _selectedProfile;
+  bool _debugEnabled = false;
 
   final TextEditingController _ipController = TextEditingController(
     text: AppConstants.defaultServerAddress,
@@ -53,66 +45,21 @@ class _HomeScreenState extends State<HomeScreen>
   final ScrollController _desktopScrollController = ScrollController();
 
   final ValueNotifier<List<String>> _logsNotifier = ValueNotifier([]);
-  final ValueNotifier<List<ServerEntry>> _serversNotifier = ValueNotifier([]);
   final ValueNotifier<bool> _broadcastingNotifier = ValueNotifier(false);
-  final ValueNotifier<List<UserServer>> _userServersNotifier = ValueNotifier(
-    [],
-  );
+  final ValueNotifier<List<UserServer>> _userServersNotifier = ValueNotifier([]);
   final ValueNotifier<bool> _consoleVisibleNotifier = ValueNotifier(false);
 
   @override
   void initState() {
     super.initState();
-    _pageController = PageController(viewportFraction: 0.92);
     _initializeComponents();
-    _loadServers();
     _loadUserServers();
     _loadDefaultProfile();
     _startServerRotation();
-
-    if (Platform.isWindows || Platform.isMacOS) {
-      _checkForUpdates();
-    }
-  }
-
-  Future<void> _checkForUpdates() async {
-    await Future.delayed(const Duration(seconds: 3));
-
-    if (!mounted) return;
-
-    try {
-      logger.info('🔍 Checking for updates.. .');
-
-      final updateService = GitHubUpdateService();
-      final updateInfo = await updateService.checkForUpdates();
-
-      if (updateInfo != null && mounted) {
-        logger.info('📥 Update available: ${updateInfo.version}');
-
-        showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (_) => UpdateDialog(updateInfo: updateInfo),
-        );
-      } else {
-        logger.info('✅ App is up to date');
-      }
-    } catch (e) {
-      logger.error('❌ Update check failed:  $e');
-    }
   }
 
   void _initializeComponents() {
-    _animationController = AnimationController(
-      duration: AppConstants.serverRotationDuration,
-      vsync: this,
-    );
-
-    _rotationAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _animationController, curve: Curves.linear),
-    );
-
-    logger = Logger(debugEnabled: false, logCallback: _log);
+    logger = Logger(debugEnabled: _debugEnabled, logCallback: _log);
     socketHandler = SocketHandler(logger: logger);
     _broadcastManager = BroadcastManager(
       socketHandler: socketHandler,
@@ -120,6 +67,7 @@ class _HomeScreenState extends State<HomeScreen>
     );
 
     _broadcastManager.onAutoDisconnect = _handleAutoDisconnect;
+    _broadcastManager.onRelayError = _handleRelayError;
   }
 
   Future<void> _loadDefaultProfile() async {
@@ -152,7 +100,6 @@ class _HomeScreenState extends State<HomeScreen>
 
     setState(() {
       _broadcastingNotifier.value = false;
-      _consoleVisibleNotifier.value = false;
     });
 
     ScaffoldMessenger.of(context).showSnackBar(
@@ -169,7 +116,7 @@ class _HomeScreenState extends State<HomeScreen>
             ),
           ],
         ),
-        backgroundColor: const Color(0xFF3B82F6),
+        backgroundColor: AppTheme.info,
         duration: const Duration(seconds: 4),
         behavior: SnackBarBehavior.floating,
         action: SnackBarAction(
@@ -186,8 +133,7 @@ class _HomeScreenState extends State<HomeScreen>
   void _startServerRotation() {
     _shuffleTimer = Timer.periodic(AppConstants.serverRotationDuration, (_) {
       if (_serversNotifier.value.isNotEmpty && mounted) {
-        final nextPage =
-            (_currentServerPage + 1) % _serversNotifier.value.length;
+        final nextPage = (_currentServerPage + 1) % _serversNotifier.value.length;
 
         if (_pageController.hasClients) {
           _pageController.animateToPage(
@@ -253,6 +199,32 @@ class _HomeScreenState extends State<HomeScreen>
     });
   }
 
+  void _toggleDebugMode() {
+    setState(() {
+      _debugEnabled = !_debugEnabled;
+      logger.debugEnabled = _debugEnabled;
+    });
+
+    logger.info('Debug mode ${_debugEnabled ? "enabled" : "disabled"}');
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            Icon(
+              _debugEnabled ? Icons.bug_report : Icons.bug_report_outlined,
+              color: Colors.white,
+            ),
+            const SizedBox(width: 12),
+            Text('Debug logs ${_debugEnabled ? "enabled" : "disabled"}'),
+          ],
+        ),
+        backgroundColor: _debugEnabled ? AppTheme.success : AppTheme.textMuted,
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
+
   Future<void> _startBroadcast() async {
     if (_selectedProfile == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -300,7 +272,7 @@ class _HomeScreenState extends State<HomeScreen>
       logger.error('Failed to enable wakelock: $e');
     }
 
-    await _broadcastManager.startBroadcast(
+    final success = await _broadcastManager.startBroadcast(
       remoteHost,
       remotePortParsed,
       username,
@@ -308,9 +280,7 @@ class _HomeScreenState extends State<HomeScreen>
 
     _broadcastingNotifier.value = _broadcastManager.isBroadcasting;
 
-    if (_broadcastManager.isBroadcasting) {
-      _consoleVisibleNotifier.value = true;
-
+    if (_broadcastManager.isBroadcasting && success) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Row(
@@ -322,7 +292,7 @@ class _HomeScreenState extends State<HomeScreen>
               ),
             ],
           ),
-          backgroundColor: const Color(0xFF00D9FF),
+          backgroundColor: AppTheme.primaryAccent,
           duration: const Duration(seconds: 2),
         ),
       );
@@ -332,7 +302,6 @@ class _HomeScreenState extends State<HomeScreen>
   Future<void> _stopBroadcast() async {
     await _broadcastManager.stopBroadcast();
     _broadcastingNotifier.value = false;
-    _consoleVisibleNotifier.value = false;
 
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
@@ -341,15 +310,6 @@ class _HomeScreenState extends State<HomeScreen>
         duration: Duration(seconds: 2),
       ),
     );
-  }
-
-  void _onServerTap(ServerEntry server) {
-    setState(() {
-      _ipController.text = server.address;
-      _portController.text = server.port.toString();
-    });
-
-    logger.debug('Selected featured server: ${server.name}');
   }
 
   void _onUserServerSelected(UserServer server) {
@@ -364,7 +324,7 @@ class _HomeScreenState extends State<HomeScreen>
       SnackBar(
         content: Text('📋 Selected: ${server.name}'),
         duration: const Duration(seconds: 1),
-        backgroundColor: const Color(0xFF6366F1),
+        backgroundColor: AppTheme.primaryAccentDark,
       ),
     );
   }
@@ -379,19 +339,14 @@ class _HomeScreenState extends State<HomeScreen>
 
   @override
   void dispose() {
-    _shuffleTimer.cancel();
-    _animationController.dispose();
-    _pageController.dispose();
     _ipController.dispose();
     _portController.dispose();
     _scrollController.dispose();
     _mainScrollController.dispose();
     _desktopScrollController.dispose();
     _logsNotifier.dispose();
-    _serversNotifier.dispose();
     _broadcastingNotifier.dispose();
     _userServersNotifier.dispose();
-    _consoleVisibleNotifier.dispose();
     _stopBroadcast();
     super.dispose();
   }
@@ -420,80 +375,171 @@ class _HomeScreenState extends State<HomeScreen>
     return AppBar(
       backgroundColor: theme.colorScheme.surface,
       elevation: 0,
-      title: const Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(Icons.track_changes, color: Color(0xFF00D9FF), size: 28),
-          SizedBox(width: 12),
-          Text(
-            'NetherLink',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
+      toolbarHeight: 64,
+      automaticallyImplyLeading: false,
+      flexibleSpace: SafeArea(
+        child: Container(
+          decoration: BoxDecoration(
+            border: Border(
+              bottom: BorderSide(
+                color: AppTheme.borderGray.withOpacity(0.2),
+                width: 1,
+              ),
+            ),
           ),
-        ],
-      ),
-      centerTitle: true,
-      actions: [
-        ValueListenableBuilder<bool>(
-          valueListenable: _broadcastingNotifier,
-          builder: (context, broadcasting, _) {
-            return StatusIndicator(broadcasting: broadcasting);
-          },
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Row(
+              children: [
+                _buildSupportButton(),
+                const Spacer(),
+                ValueListenableBuilder<bool>(
+                  valueListenable: _broadcastingNotifier,
+                  builder: (context, broadcasting, _) {
+                    return StatusIndicator(broadcasting: broadcasting);
+                  },
+                ),
+                const SizedBox(width: 12),
+                _buildMenuButton(theme),
+              ],
+            ),
+          ),
         ),
-        const SizedBox(width: 8),
-        _buildMenuButton(theme),
+      ),
+    );
+  }
+
+  Widget _buildSupportButton() {
+    return _AnimatedSupportButton(
+      onTap: () {
+        showDialog(
+          context: context,
+          builder: (context) => const SupportDialog(),
+        );
+      },
+    );
+  }
+
+  Widget _buildMenuButton(ThemeData theme) {
+    return PopupMenuButton(
+      padding: EdgeInsets.zero,
+      icon: Container(
+        width: 40,
+        height: 40,
+        decoration: BoxDecoration(
+          color: theme.colorScheme.surface,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(
+            color: AppTheme.borderGray.withOpacity(0.4),
+            width: 1.5,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 4,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: const Center(
+          child: Icon(
+            Icons.more_vert_rounded,
+            color: AppTheme.textPrimary,
+            size: 20,
+          ),
+        ),
+      ),
+      offset: const Offset(0, 48),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      color: theme.colorScheme.surface,
+      elevation: 8,
+      itemBuilder: (context) => [
+        _buildMenuItem(Icons.open_in_browser, 'Website', () {
+          Navigator.pop(context);
+          launchUrl(Uri.parse(AppConstants.websiteUrl));
+        }),
+        _buildMenuItem(Icons.discord, 'Join Discord', () {
+          Navigator.pop(context);
+          launchUrl(Uri.parse(AppConstants.discordUrl));
+        }),
+        _buildMenuItem(Icons.info_outline, 'How to use', () {
+          Navigator.pop(context);
+          _showHelpDialog(theme);
+        }),
       ],
     );
   }
 
-  Widget _buildMobileLayout() {
-    return Stack(
-      children: [
-        SingleChildScrollView(
-          controller: _mainScrollController,
-          physics: const ClampingScrollPhysics(),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
+  PopupMenuItem _buildMenuItem(
+    IconData icon,
+    String title,
+    VoidCallback onTap,
+  ) {
+    return PopupMenuItem(
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(8),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+          child: Row(
             children: [
-              ValueListenableBuilder<List<UserServer>>(
-                valueListenable: _userServersNotifier,
-                builder: (context, userServers, _) {
-                  return ConnectionPanel(
-                    ipController: _ipController,
-                    portController: _portController,
-                    broadcastingNotifier: _broadcastingNotifier,
-                    onStartBroadcast: _startBroadcast,
-                    onStopBroadcast: _stopBroadcast,
-                    savedServers: userServers,
-                    onServerSelected: _onUserServerSelected,
-                    onManageServers: _showManageServersDialog,
-                    selectedProfile: _selectedProfile,
-                    onProfileChanged: (profile) {
-                      setState(() {
-                        _selectedProfile = profile;
-                      });
-                    },
-                  );
-                },
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: AppTheme.primaryAccent.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(icon, color: AppTheme.primaryAccent, size: 20),
               ),
-              const SizedBox(height: 16),
-              _buildCompactServerSection(),
-              const SizedBox(height: 100),
+              const SizedBox(width: 12),
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: AppTheme.textPrimary,
+                ),
+              ),
             ],
           ),
         ),
-        ValueListenableBuilder<bool>(
-          valueListenable: _consoleVisibleNotifier,
-          builder: (context, visible, _) {
-            return FloatingConsole(
-              logsNotifier: _logsNotifier,
-              scrollController: _scrollController,
-              logger: logger,
-              isVisible: visible,
-              onClose: () => _consoleVisibleNotifier.value = false,
-            );
-          },
-        ),
-      ],
+      ),
+    );
+  }
+
+  Widget _buildMobileLayout() {
+    return SingleChildScrollView(
+      controller: _mainScrollController,
+      physics: const ClampingScrollPhysics(),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ValueListenableBuilder<List<UserServer>>(
+            valueListenable: _userServersNotifier,
+            builder: (context, userServers, _) {
+              return ConnectionPanel(
+                ipController: _ipController,
+                portController: _portController,
+                broadcastingNotifier: _broadcastingNotifier,
+                onStartBroadcast: _startBroadcast,
+                onStopBroadcast: _stopBroadcast,
+                savedServers: userServers,
+                onServerSelected: _onUserServerSelected,
+                onManageServers: _showManageServersDialog,
+                selectedProfile: _selectedProfile,
+                onProfileChanged: (profile) {
+                  setState(() {
+                    _selectedProfile = profile;
+                  });
+                },
+              );
+            },
+          ),
+          const SizedBox(height: 16),
+          _buildConsoleSection(),
+          const SizedBox(height: 16),
+        ],
+      ),
     );
   }
 
@@ -506,7 +552,9 @@ class _HomeScreenState extends State<HomeScreen>
               controller: _desktopScrollController,
               physics: const ClampingScrollPhysics(),
               child: ConstrainedBox(
-                constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                constraints: BoxConstraints(
+                  minHeight: constraints.maxHeight,
+                ),
                 child: Column(
                   children: [
                     ValueListenableBuilder<List<UserServer>>(
@@ -565,8 +613,10 @@ class _HomeScreenState extends State<HomeScreen>
 
         return Center(
           child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 600),
-            child: _buildHorizontalCarousel(servers),
+            constraints:  const BoxConstraints(
+              maxWidth: 600,
+            ),
+            child:  _buildHorizontalCarousel(servers),
           ),
         );
       },
@@ -576,23 +626,28 @@ class _HomeScreenState extends State<HomeScreen>
   Widget _buildLoadingCard() {
     return Center(
       child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 600),
+        constraints: const BoxConstraints(
+          maxWidth: 600,
+        ),
         child: Container(
-          height: 180,
+          height: 400,
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: const Color(0xFF152228)),
+            border: Border.all(color: AppTheme.borderGray),
           ),
           child: const Center(
-            child: Column(
+        child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 CircularProgressIndicator(color: Color(0xFF00D9FF)),
                 SizedBox(height: 16),
                 Text(
                   'Loading advertised servers...',
-                  style: TextStyle(color: Color(0xFF00D9FF), fontSize: 14),
+                  style: TextStyle(
+                    color: Color(0xFF00D9FF),
+                    fontSize: 14,
+                  ),
                 ),
               ],
             ),
@@ -663,7 +718,10 @@ class _HomeScreenState extends State<HomeScreen>
                 ),
                 Text(
                   'Swipe to explore • Auto-rotating',
-                  style: TextStyle(fontSize: 11, color: Color(0xFF00D9FF)),
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: Color(0xFF00D9FF),
+                  ),
                 ),
               ],
             ),
@@ -680,7 +738,11 @@ class _HomeScreenState extends State<HomeScreen>
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(Icons.dns, size: 12, color: Color(0xFF00D9FF)),
+                const Icon(
+                  Icons.dns,
+                  size: 12,
+                  color: Color(0xFF00D9FF),
+                ),
                 const SizedBox(width: 6),
                 Text(
                   '$serverCount',
@@ -723,7 +785,9 @@ class _HomeScreenState extends State<HomeScreen>
       decoration: BoxDecoration(
         color: const Color(0xFF152228),
         borderRadius: BorderRadius.circular(2),
-        border: Border.all(color: const Color(0xFF00D9FF).withOpacity(0.2)),
+        border: Border.all(
+          color: const Color(0xFF00D9FF).withOpacity(0.2),
+        ),
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(2),
@@ -736,7 +800,10 @@ class _HomeScreenState extends State<HomeScreen>
               child: Container(
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
-                    colors: [Color(0xFF00D9FF), Color(0xFF00A3CC)],
+                    colors: [
+                      Color(0xFF00D9FF),
+                      Color(0xFF00A3CC),
+                    ],
                   ),
                   boxShadow: [
                     BoxShadow(
@@ -755,8 +822,7 @@ class _HomeScreenState extends State<HomeScreen>
 
   Widget _buildCarouselCard(ServerEntry server, int index) {
     final isCurrent = index == _currentServerPage;
-    final hasBackground =
-        server.background != null &&
+    final hasBackground = server.background != null &&
         (server.background!.startsWith('http://') ||
             server.background!.startsWith('https://'));
 
@@ -860,9 +926,8 @@ class _HomeScreenState extends State<HomeScreen>
                                 borderRadius: BorderRadius.circular(20),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: const Color(
-                                      0xFF00D9FF,
-                                    ).withOpacity(0.5),
+                                    color: 
+                                        const Color(0xFF00D9FF).withOpacity(0.5),
                                     blurRadius: 8,
                                   ),
                                 ],
@@ -895,14 +960,14 @@ class _HomeScreenState extends State<HomeScreen>
                       ),
                     ),
 
-                    if (!hasBackground)
+                    if (! hasBackground)
                       Center(
                         child: Icon(
                           Icons.dns_outlined,
                           size: 48,
-                          color: const Color(
-                            0xFF00D9FF,
-                          ).withOpacity(isCurrent ? 0.5 : 0.3),
+                          color: const Color(0xFF00D9FF).withOpacity(
+                            isCurrent ? 0.5 : 0.3,
+                          ),
                         ),
                       ),
                   ],
@@ -941,7 +1006,7 @@ class _HomeScreenState extends State<HomeScreen>
                       );
                     },
                     splashColor: const Color(0xFF00D9FF).withOpacity(0.1),
-                    child: Padding(
+                    child:  Padding(
                       padding: const EdgeInsets.all(14),
                       child: Row(
                         children: [
@@ -953,12 +1018,8 @@ class _HomeScreenState extends State<HomeScreen>
                                 Text(
                                   server.address,
                                   style: TextStyle(
-                                    color: const Color.fromARGB(
-                                      255,
-                                      208,
-                                      209,
-                                      209,
-                                    ).withOpacity(isCurrent ? 1.0 : 0.7),
+                                    color: const Color.fromARGB(255, 208, 209, 209)
+                                        .withOpacity(isCurrent ? 1.0 : 0.7),
                                     fontSize: 15,
                                     fontWeight: FontWeight.w600,
                                   ),
@@ -968,12 +1029,8 @@ class _HomeScreenState extends State<HomeScreen>
                                 Text(
                                   'Port: ${server.port}',
                                   style: TextStyle(
-                                    color: const Color.fromARGB(
-                                      255,
-                                      208,
-                                      209,
-                                      209,
-                                    ).withOpacity(0.5),
+                                    color: const Color.fromARGB(255, 208, 209, 209)
+                                        .withOpacity(0.5),
                                     fontSize: 12,
                                     fontFamily: 'monospace',
                                   ),
@@ -995,9 +1052,9 @@ class _HomeScreenState extends State<HomeScreen>
                             child: Icon(
                               Icons.arrow_forward,
                               size: 18,
-                              color: const Color(
-                                0xFF00D9FF,
-                              ).withOpacity(isCurrent ? 0.8 : 0.5),
+                              color: const Color(0xFF00D9FF).withOpacity(
+                                isCurrent ? 0.8 : 0.5,
+                              ),
                             ),
                           ),
                         ],
@@ -1024,12 +1081,17 @@ class _HomeScreenState extends State<HomeScreen>
                   const Color(0xFF00D9FF).withOpacity(0.15),
                   const Color(0xFF0F1C26),
                 ]
-              : [const Color(0xFF152228), const Color(0xFF0A1419)],
+              : [
+                  const Color(0xFF152228),
+                  const Color(0xFF0A1419),
+                ],
         ),
       ),
       child: CustomPaint(
         painter: _GridPatternPainter(
-          color: const Color(0xFF00D9FF).withOpacity(isCurrent ? 0.08 : 0.03),
+          color: const Color(0xFF00D9FF).withOpacity(
+            isCurrent ? 0.08 : 0.03,
+          ),
         ),
       ),
     );
@@ -1082,10 +1144,7 @@ class _HomeScreenState extends State<HomeScreen>
       itemBuilder: (context) => [
         PopupMenuItem(
           child: ListTile(
-            leading: const Icon(
-              Icons.open_in_browser,
-              color: Color(0xFF00D9FF),
-            ),
+            leading: const Icon(Icons.open_in_browser, color: Color(0xFF00D9FF)),
             title: const Text('Website'),
             onTap: () {
               Navigator.pop(context);
@@ -1130,7 +1189,7 @@ class _HomeScreenState extends State<HomeScreen>
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
             style: TextButton.styleFrom(
-              foregroundColor: const Color(0xFF00D9FF),
+              foregroundColor: AppTheme.primaryAccent,
             ),
             child: const Text('Close'),
           ),
@@ -1140,10 +1199,10 @@ class _HomeScreenState extends State<HomeScreen>
   }
 }
 
-class _GridPatternPainter extends CustomPainter {
-  final Color color;
+class _AnimatedSupportButton extends StatefulWidget {
+  final VoidCallback onTap;
 
-  _GridPatternPainter({required this.color});
+  const _AnimatedSupportButton({required this.onTap});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -1154,16 +1213,72 @@ class _GridPatternPainter extends CustomPainter {
     const spacing = 20.0;
 
     for (double i = 0; i < size.width; i += spacing) {
-      canvas.drawLine(Offset(i, 0), Offset(i, size.height), paint);
+      canvas.drawLine(
+        Offset(i, 0),
+        Offset(i, size.height),
+        paint,
+      );
     }
 
     for (double i = 0; i < size.height; i += spacing) {
-      canvas.drawLine(Offset(0, i), Offset(size.width, i), paint);
+      canvas.drawLine(
+        Offset(0, i),
+        Offset(size.width, i),
+        paint,
+      );
     }
   }
 
   @override
-  bool shouldRepaint(_GridPatternPainter oldDelegate) {
-    return oldDelegate.color != color;
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: widget.onTap,
+      child: MouseRegion(
+        cursor: SystemMouseCursors.click,
+        onEnter: (_) => setState(() => _isHovering = true),
+        onExit: (_) => setState(() => _isHovering = false),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+          decoration: BoxDecoration(
+            color: _isHovering
+                ? Colors.pink.shade50.withOpacity(0.3)
+                : Colors.transparent,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              AnimatedBuilder(
+                animation: _controller,
+                builder: (context, child) {
+                  return Transform.scale(
+                    scale: _heartbeatAnimation.value,
+                    child: Icon(
+                      Icons.favorite,
+                      color: _colorAnimation.value,
+                      size: 18,
+                    ),
+                  );
+                },
+              ),
+              const SizedBox(width: 8),
+              AnimatedDefaultTextStyle(
+                duration: const Duration(milliseconds: 200),
+                style: TextStyle(
+                  color: _isHovering
+                      ? Colors.pink.shade300
+                      : AppTheme.textSecondary.withOpacity(0.8),
+                  fontSize: 13,
+                  fontWeight: _isHovering ? FontWeight.w600 : FontWeight.w400,
+                  letterSpacing: 0.3,
+                ),
+                child: const Text('Support'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
