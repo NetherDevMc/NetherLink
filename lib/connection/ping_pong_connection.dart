@@ -10,8 +10,8 @@ class SocketHandler {
 
   static const int proxyPort = 19132;
   static const String serverName = 'NetherLink';
-  static const int protocolVersion = 924;
-  static const String gameVersion = '26.0';
+  static const int protocolVersion = 1;
+  static const String gameVersion = '1';
   static const int onlinePlayers = 1;
   static const int maxPlayers = 10;
   static final BigInt serverId = BigInt.parse('18403264178514827767');
@@ -74,29 +74,43 @@ class SocketHandler {
   void _startTimeoutChecker() {
     _timeoutCheckTimer?.cancel();
     _timeoutCheckTimer = Timer.periodic(checkInterval, (_) {
-      final now = DateTime.now();
-      final timedOut = <String>[];
-
-      for (var entry in _clientLastActivity.entries) {
-        if (now.difference(entry.value) > clientTimeout) {
-          timedOut.add(entry.key);
-        }
-      }
-
-      for (var key in timedOut) {
-        logger.info('Client timed out: $key');
-        _removeClient(key);
-      }
-
-      if (_clientSockets.isEmpty && timedOut.isNotEmpty) {
-        onAllClientsDisconnected?.call();
-      }
+      _checkClientTimeouts();
     });
+    logger.debug('Client timeout checker started');
   }
 
   void _stopTimeoutChecker() {
     _timeoutCheckTimer?.cancel();
     _timeoutCheckTimer = null;
+  }
+
+  void _checkClientTimeouts() {
+    if (_clientLastActivity.isEmpty) return;
+
+    final now = DateTime.now();
+    final disconnectedClients = <String>[];
+
+    for (var entry in _clientLastActivity.entries) {
+      final clientKey = entry.key;
+      final lastActivity = entry.value;
+      final inactiveDuration = now.difference(lastActivity);
+
+      if (inactiveDuration > clientTimeout) {
+        logger.info(
+          'Client $clientKey timed out (inactive for ${inactiveDuration.inSeconds}s)',
+        );
+        disconnectedClients.add(clientKey);
+      }
+    }
+
+    for (var clientKey in disconnectedClients) {
+      _removeClient(clientKey);
+    }
+
+    if (_clientSockets.isEmpty && disconnectedClients.isNotEmpty) {
+      logger.info('All clients disconnected');
+      onAllClientsDisconnected?.call();
+    }
   }
 
   void _removeClient(String clientKey) {
@@ -110,10 +124,6 @@ class SocketHandler {
 
   void _updateClientActivity(String clientKey) {
     _clientLastActivity[clientKey] = DateTime.now();
-  }
-
-  Uint8List createOfflinePong(Uint8List pingPayload) {
-    return _createOfflinePong(pingPayload);
   }
 
   Uint8List _createOfflinePong(Uint8List pingPayload) {

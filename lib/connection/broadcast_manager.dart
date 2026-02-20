@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:wakelock_plus/wakelock_plus.dart';
 import '../util/Logger.dart';
 import 'ping_pong_connection.dart';
@@ -17,8 +16,6 @@ class BroadcastManager {
 
   StreamSubscription<RawSocketEvent>? _subscriptionIPv4;
   StreamSubscription<RawSocketEvent>? _subscriptionIPv6;
-
-  Timer? _lanAdvertiseTimer;
 
   Function()? onAutoDisconnect;
   Function(String message)? onRelayError;
@@ -53,31 +50,6 @@ class BroadcastManager {
     return ipAddresses;
   }
 
-  Future<List<InternetAddress>> _getBroadcastAddresses() async {
-    final List<InternetAddress> broadcastAddresses = [];
-    
-    try {
-      for (var interface in await NetworkInterface.list()) {
-        for (var addr in interface.addresses) {
-          if (addr.type == InternetAddressType.IPv4 && 
-              !addr.isLoopback && 
-              !addr.isLinkLocal) {
-            final ipParts = addr.address.split('.').map(int.parse).toList();
-            
-            final subnetBroadcast = '${ipParts[0]}.${ipParts[1]}.${ipParts[2]}.255';
-            broadcastAddresses.add(InternetAddress(subnetBroadcast));
-            
-            logger.debug('Added broadcast address: $subnetBroadcast for ${addr.address}');
-          }
-        }
-      }
-    } catch (e) {
-      logger.error('Error calculating broadcast addresses: $e');
-    }
-    
-    return broadcastAddresses;
-  }
-
   void _logLocalIPAddresses() async {
     final addresses = await _getLocalIPAddresses();
     if (addresses.isNotEmpty) {
@@ -91,107 +63,6 @@ class BroadcastManager {
     } else {
       logger.info('⚠️ Could not determine local IP addresses');
     }
-  }
-
-  void _startLanAdvertiser() {
-    _lanAdvertiseTimer?.cancel();
-    
-    _lanAdvertiseTimer = Timer.periodic(
-      const Duration(seconds: 1),
-      (timer) async {
-        if (!socketHandler.isBroadcasting) {
-          timer.cancel();
-          return;
-        }
-
-        try {
-          final pingPayload = Uint8List(8);
-          ByteData.view(pingPayload.buffer).setInt64(
-            0,
-            DateTime.now().millisecondsSinceEpoch,
-            Endian.big,
-          );
-
-          final pongPacket = socketHandler.createOfflinePong(pingPayload);
-
-          int sentCount = 0;
-
-          if (_socketIPv4 != null) {
-            try {
-              _socketIPv4!.send(
-                pongPacket,
-                InternetAddress('255.255.255.255'),
-                SocketHandler.proxyPort,
-              );
-              sentCount++;
-              logger.debug('📡 IPv4 global broadcast sent (255.255.255.255)');
-            } catch (e) {
-              logger.debug('Failed to send global broadcast: $e');
-            }
-          }
-
-          if (_socketIPv4 != null) {
-            final subnetBroadcasts = await _getBroadcastAddresses();
-            for (var broadcastAddr in subnetBroadcasts) {
-              try {
-                _socketIPv4!.send(
-                  pongPacket,
-                  broadcastAddr,
-                  SocketHandler.proxyPort,
-                );
-                sentCount++;
-                logger.debug('📡 IPv4 subnet broadcast sent (${broadcastAddr.address})');
-              } catch (e) {
-                logger.debug('Failed to send subnet broadcast to ${broadcastAddr.address}: $e');
-              }
-            }
-          }
-
-          if (_socketIPv6 != null) {
-            try {
-              _socketIPv6!.send(
-                pongPacket,
-                InternetAddress('ff02::1'),
-                SocketHandler.proxyPort,
-              );
-              sentCount++;
-              logger.debug('📡 IPv6 link-local multicast sent (ff02::1)');
-            } catch (e) {
-              logger.debug('Failed to send IPv6 link-local multicast: $e');
-            }
-
-            try {
-              _socketIPv6!.send(
-                pongPacket,
-                InternetAddress('ff05::1'),
-                SocketHandler.proxyPort,
-              );
-              sentCount++;
-              logger.debug('📡 IPv6 site-local multicast sent (ff05::1)');
-            } catch (e) {
-              logger.debug('Failed to send IPv6 site-local multicast: $e');
-            }
-          }
-
-          if (sentCount > 0) {
-            logger.debug('📡 Total broadcasts sent: $sentCount');
-          } else {
-            logger.warning('⚠️ No broadcasts could be sent');
-          }
-
-        } catch (e) {
-          logger.error('Error in LAN advertiser: $e');
-        }
-      },
-    );
-
-    logger.info('📡 LAN advertiser started (IPv4 + IPv6, multi-target, every 1s)');
-  }
-
-  void _stopLanAdvertiser() {
-    _lanAdvertiseTimer?.cancel();
-    _lanAdvertiseTimer = null;
-    logger.debug('📡 LAN advertiser stopped');
   }
 
   Future<bool> startBroadcast(
@@ -247,30 +118,6 @@ class BroadcastManager {
       _socketIPv4!.broadcastEnabled = true;
       _socketIPv6!.broadcastEnabled = true;
 
-      if (_socketIPv6 != null) {
-        try {
-          _socketIPv6!.setRawOption(RawSocketOption(
-            41,
-            18,
-            Uint8List.fromList([255]),
-          ));
-          logger.debug('IPv6 multicast hops set to 255');
-        } catch (e) {
-          logger.debug('Could not set IPv6 multicast hops: $e');
-        }
-
-        try {
-          _socketIPv6!.setRawOption(RawSocketOption(
-            41,
-            19,
-            Uint8List.fromList([1]),
-          ));
-          logger.debug('IPv6 multicast loopback enabled');
-        } catch (e) {
-          logger.debug('Could not set IPv6 multicast loopback: $e');
-        }
-      }
-
       socketHandler.setBroadcasting(true);
 
       _subscriptionIPv4 = _socketIPv4!.listen(
@@ -281,8 +128,6 @@ class BroadcastManager {
       );
 
       logger.info('NetherLink started broadcasting');
-
-      _startLanAdvertiser();
 
       _logLocalIPAddresses();
 
@@ -296,8 +141,6 @@ class BroadcastManager {
   }
 
   Future<void> stopBroadcast() async {
-    _stopLanAdvertiser();
-
     await _subscriptionIPv4?.cancel();
     await _subscriptionIPv6?.cancel();
 
