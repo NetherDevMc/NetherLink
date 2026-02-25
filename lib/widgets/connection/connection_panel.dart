@@ -4,7 +4,10 @@ import '../../theme/app_theme.dart';
 import '../../util/user_servers.dart';
 import '../../util/bedrock_profile.dart';
 import '../../util/profile_storage.dart';
+import '../../util/featured_servers.dart';
+import '../../services/featured_servers_service.dart';
 import '../dialogs/profile_management_dialog.dart';
+import 'featured_servers_banner.dart';
 
 class ConnectionPanel extends StatefulWidget {
   const ConnectionPanel({
@@ -38,290 +41,259 @@ class ConnectionPanel extends StatefulWidget {
 
 class _ConnectionPanelState extends State<ConnectionPanel> {
   UserServer? _selectedServer;
-  List<BedrockProfile> _profiles = [];
+  Future<List<FeaturedServer>>? _featuredServersFuture;
 
   @override
   void initState() {
     super.initState();
-    _loadProfiles();
-  }
-
-  Future<void> _loadProfiles() async {
-    final profiles = await ProfileStorage.loadProfiles();
-    setState(() {
-      _profiles = profiles;
-    });
-
-    if (widget.selectedProfile == null && profiles.isNotEmpty) {
-      final defaultProfile = profiles.firstWhere(
-        (p) => p.isDefault,
-        orElse: () => profiles.first,
-      );
-      widget.onProfileChanged(defaultProfile);
-    }
-  }
-
-  Future<void> _showProfileManagement() async {
-    await showDialog(
-      context: context,
-      builder: (context) => const ProfileManagementDialog(),
-    );
-    _loadProfiles();
+    _featuredServersFuture = FeaturedServersService.fetchFeaturedServers();
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Container(
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surface,
-        borderRadius: BorderRadius.circular(AppConstants.borderRadius),
-        border: Border.all(color: AppTheme.borderGray),
-      ),
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: AppTheme.primaryAccent.withOpacity(0.15),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: const Icon(
-                  Icons.settings_input_antenna,
-                  color: AppTheme.primaryAccent,
-                  size: 20,
-                ),
-              ),
-              const SizedBox(width: 12),
-              const Text(
-                'Connection Setup',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: AppTheme.textPrimary,
-                ),
-              ),
-            ],
+    return Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 800),
+        child: Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: theme.colorScheme.surface,
+            borderRadius: BorderRadius.circular(AppConstants.borderRadius),
+            border: Border.all(color: AppTheme.borderGray),
           ),
-
-          const SizedBox(height: 20),
-
-          ValueListenableBuilder<bool>(
-            valueListenable: widget.broadcastingNotifier,
-            builder: (context, broadcasting, _) {
-              return _buildProfileSection(theme, broadcasting);
-            },
-          ),
-
-          const SizedBox(height: 20),
-
-          Row(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const Expanded(child: Divider(color: AppTheme.borderGray)),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                child: Text(
-                  'SERVER',
-                  style: TextStyle(
-                    color: AppTheme.textMuted,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 11,
-                    letterSpacing: 1.2,
+              Row(
+                children: [
+                  const Expanded(child: Divider(color: AppTheme.borderGray)),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    child: Text(
+                      'BEDROCK PROFILE',
+                      style: TextStyle(
+                        color: AppTheme.textMuted,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 11,
+                        letterSpacing: 1.2,
+                      ),
+                    ),
                   ),
-                ),
+                  const Expanded(child: Divider(color: AppTheme.borderGray)),
+                ],
               ),
-              const Expanded(child: Divider(color: AppTheme.borderGray)),
-            ],
-          ),
-
-          const SizedBox(height: 20),
-
-          ValueListenableBuilder<bool>(
-            valueListenable: widget.broadcastingNotifier,
-            builder: (context, broadcasting, _) {
-              return _buildSavedServersDropdown(context, theme, broadcasting);
-            },
-          ),
-
-          const SizedBox(height: 16),
-
-          LayoutBuilder(
-            builder: (context, constraints) {
-              final isNarrow =
-                  constraints.maxWidth < AppConstants.narrowBreakpoint;
-              return ValueListenableBuilder<bool>(
+              const SizedBox(height: 20),
+              _buildProfileSelector(theme),
+              const SizedBox(height: 24),
+              Row(
+                children: [
+                  const Expanded(child: Divider(color: AppTheme.borderGray)),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    child: Text(
+                      'SERVER',
+                      style: TextStyle(
+                        color: AppTheme.textMuted,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 11,
+                        letterSpacing: 1.2,
+                      ),
+                    ),
+                  ),
+                  const Expanded(child: Divider(color: AppTheme.borderGray)),
+                ],
+              ),
+              const SizedBox(height: 20),
+              ValueListenableBuilder<bool>(
                 valueListenable: widget.broadcastingNotifier,
                 builder: (context, broadcasting, _) {
-                  return _buildInputFields(
-                    context,
-                    theme,
-                    broadcasting,
-                    isNarrow,
+                  return _buildSavedServersDropdown(context, theme, broadcasting);
+                },
+              ),
+              const SizedBox(height: 16),
+              LayoutBuilder(
+                builder: (context, constraints) {
+                  final isNarrow =
+                      constraints.maxWidth < AppConstants.narrowBreakpoint;
+                  return ValueListenableBuilder<bool>(
+                    valueListenable: widget.broadcastingNotifier,
+                    builder: (context, broadcasting, _) {
+                      return _buildInputFields(
+                        context,
+                        theme,
+                        broadcasting,
+                        isNarrow,
+                      );
+                    },
                   );
                 },
-              );
-            },
+              ),
+              const SizedBox(height: 16),
+              ValueListenableBuilder<bool>(
+                valueListenable: widget.broadcastingNotifier,
+                builder: (context, broadcasting, _) {
+                  return _buildActionButton(broadcasting);
+                },
+              ),
+              
+              FutureBuilder<List<FeaturedServer>>(
+                future: _featuredServersFuture,
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return const SizedBox.shrink();
+                  }
+                  return FeaturedServersBanner(
+                    servers: snapshot.data!,
+                    onServerTap: (server) {
+                      widget.ipController.text = server.address;
+                      widget.portController.text = server.port.toString();
+                      
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Row(
+                            children: [
+                              const Icon(Icons.check_circle, color: Colors.white, size: 18),
+                              const SizedBox(width: 8),
+                              Text('Selected: ${server.name}'),
+                            ],
+                          ),
+                          duration: const Duration(seconds: 2),
+                          backgroundColor: AppTheme.primaryAccent,
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
+            ],
           ),
-
-          const SizedBox(height: 24),
-
-          _buildActionButtons(theme),
-        ],
+        ),
       ),
     );
   }
 
-  Widget _buildProfileSection(ThemeData theme, bool broadcasting) {
-    if (_profiles.isEmpty) {
-      return Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: AppTheme.primaryAccent.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: AppTheme.primaryAccent.withOpacity(0.3),
-            width: 2,
-          ),
-        ),
-        child: Column(
+  Widget _buildProfileSelector(ThemeData theme) {
+    return FutureBuilder<List<BedrockProfile>>(
+      future: ProfileStorage.loadProfiles(),
+      builder: (context, snapshot) {
+        final profiles = snapshot.data ?? [];
+
+        return Row(
           children: [
-            Row(
-              children: [
-                const Icon(
-                  Icons.person_add,
-                  color: AppTheme.primaryAccent,
-                  size: 24,
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'No Bedrock Profile',
-                        style: TextStyle(
+            Expanded(
+              child: profiles.isEmpty
+                  ? Container(
+                      padding: const EdgeInsets.all(14),
+                      decoration: BoxDecoration(
+                        color: AppTheme.surfaceLight.withOpacity(0.3),
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: AppTheme.borderGray),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.info_outline,
+                            size: 18,
+                            color: AppTheme.textMuted,
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              'No profiles yet',
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: AppTheme.textMuted,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  : DropdownButtonFormField<BedrockProfile>(
+                      value: widget.selectedProfile,
+                      decoration: InputDecoration(
+                        labelText: 'Bedrock Profile',
+                        labelStyle: const TextStyle(
+                          color: AppTheme.primaryAccent,
                           fontWeight: FontWeight.w600,
-                          fontSize: 15,
-                          color: AppTheme.textPrimary,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'Add your Minecraft Bedrock username first',
-                        style: TextStyle(
                           fontSize: 13,
-                          color: AppTheme.textSecondary,
+                        ),
+                        prefixIcon: const Icon(
+                          Icons.person,
+                          color: AppTheme.primaryAccent,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide(
+                            color: AppTheme.primaryAccent.withOpacity(0.3),
+                          ),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide(
+                            color: AppTheme.primaryAccent.withOpacity(0.3),
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: const BorderSide(
+                            color: AppTheme.primaryAccent,
+                            width: 2,
+                          ),
+                        ),
+                        filled: true,
+                        fillColor: AppTheme.primaryAccent.withOpacity(0.05),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 12,
                         ),
                       ),
-                    ],
-                  ),
-                ),
-              ],
+                      hint: const Text('Select a profile'),
+                      isExpanded: true,
+                      menuMaxHeight: 300,
+                      items: _buildProfileMenuItems(profiles),
+                      onChanged: (profile) {
+                        widget.onProfileChanged(profile);
+                      },
+                    ),
             ),
-            const SizedBox(height: 12),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton.icon(
-                onPressed: broadcasting ? null : _showProfileManagement,
-                icon: const Icon(Icons.add, size: 18),
-                label: const Text('Create Profile'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppTheme.primaryAccent,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                ),
+            const SizedBox(width: 8),
+            Container(
+              decoration: BoxDecoration(
+                color: AppTheme.primaryAccent.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                    color: AppTheme.primaryAccent.withOpacity(0.3)),
+              ),
+              child: IconButton(
+                onPressed: () async {
+                  await showDialog(
+                    context: context,
+                    builder: (context) => const ProfileManagementDialog(),
+                  );
+                  setState(() {});
+                },
+                icon: const Icon(Icons.edit, size: 20),
+                color: AppTheme.primaryAccent,
+                tooltip: 'Manage Profiles',
+                padding: const EdgeInsets.all(12),
               ),
             ),
           ],
-        ),
-      );
-    }
-
-    return Row(
-      children: [
-        Expanded(
-          child: DropdownButtonFormField<BedrockProfile>(
-            value: widget.selectedProfile,
-            decoration: InputDecoration(
-              labelText: 'Bedrock Profile',
-              labelStyle: const TextStyle(
-                color: AppTheme.primaryAccent,
-                fontWeight: FontWeight.w600,
-                fontSize: 13,
-              ),
-              prefixIcon: const Icon(
-                Icons.person,
-                color: AppTheme.primaryAccent,
-              ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide(
-                  color: AppTheme.primaryAccent.withOpacity(0.3),
-                ),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide(
-                  color: AppTheme.primaryAccent.withOpacity(0.3),
-                ),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: const BorderSide(
-                  color: AppTheme.primaryAccent,
-                  width: 2,
-                ),
-              ),
-              filled: true,
-              fillColor: AppTheme.primaryAccent.withOpacity(0.05),
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 12,
-                vertical: 12,
-              ),
-            ),
-            hint: const Text('Select a profile'),
-            isExpanded: true,
-            menuMaxHeight: 300,
-            items: _buildProfileMenuItems(theme),
-            onChanged: broadcasting
-                ? null
-                : (profile) {
-                    widget.onProfileChanged(profile);
-                  },
-          ),
-        ),
-        const SizedBox(width: 8),
-        Container(
-          decoration: BoxDecoration(
-            color: AppTheme.primaryAccent.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: AppTheme.primaryAccent.withOpacity(0.3)),
-          ),
-          child: IconButton(
-            onPressed: broadcasting ? null : _showProfileManagement,
-            icon: const Icon(Icons.edit, size: 20),
-            color: AppTheme.primaryAccent,
-            tooltip: 'Manage Profiles',
-            padding: const EdgeInsets.all(12),
-          ),
-        ),
-      ],
+        );
+      },
     );
   }
 
   List<DropdownMenuItem<BedrockProfile>> _buildProfileMenuItems(
-    ThemeData theme,
-  ) {
+      List<BedrockProfile> profiles) {
     final List<DropdownMenuItem<BedrockProfile>> items = [];
 
-    for (int i = 0; i < _profiles.length; i++) {
-      final profile = _profiles[i];
-
+    for (int i = 0; i < profiles.length; i++) {
+      final profile = profiles[i];
       items.add(
         DropdownMenuItem(
           value: profile,
@@ -544,16 +516,26 @@ class _ConnectionPanelState extends State<ConnectionPanel> {
         children: [
           TextField(
             controller: widget.ipController,
+            enabled: !broadcasting,
+            style: const TextStyle(color: AppTheme.textPrimary),
             decoration: InputDecoration(
               labelText: 'Server Address',
-              labelStyle: const TextStyle(color: AppTheme.primaryAccent),
-              prefixIcon: const Icon(Icons.dns, color: AppTheme.primaryAccent),
               hintText: 'play.example.com',
+              hintStyle: TextStyle(color: AppTheme.textMuted),
+              prefixIcon: const Icon(
+                Icons.dns,
+                color: AppTheme.primaryAccent,
+              ),
+              labelStyle: const TextStyle(color: AppTheme.primaryAccent),
+              filled: true,
+              fillColor: AppTheme.surfaceLight,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide.none,
+              ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide(
-                  color: AppTheme.primaryAccent.withOpacity(0.3),
-                ),
+                borderSide: BorderSide(color: AppTheme.borderGray),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
@@ -562,25 +544,36 @@ class _ConnectionPanelState extends State<ConnectionPanel> {
                   width: 2,
                 ),
               ),
+              disabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(color: AppTheme.borderGray),
+              ),
             ),
-            enabled: !broadcasting,
-            style: TextStyle(color: theme.colorScheme.onSurface),
           ),
           const SizedBox(height: 12),
           TextField(
             controller: widget.portController,
+            enabled: !broadcasting,
+            keyboardType: TextInputType.number,
+            style: const TextStyle(color: AppTheme.textPrimary),
             decoration: InputDecoration(
               labelText: 'Port',
-              labelStyle: const TextStyle(color: AppTheme.primaryAccent),
+              hintText: '19132',
+              hintStyle: TextStyle(color: AppTheme.textMuted),
               prefixIcon: const Icon(
-                Icons.numbers,
+                Icons.settings_ethernet,
                 color: AppTheme.primaryAccent,
+              ),
+              labelStyle: const TextStyle(color: AppTheme.primaryAccent),
+              filled: true,
+              fillColor: AppTheme.surfaceLight,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide.none,
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide(
-                  color: AppTheme.primaryAccent.withOpacity(0.3),
-                ),
+                borderSide: BorderSide(color: AppTheme.borderGray),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
@@ -589,205 +582,132 @@ class _ConnectionPanelState extends State<ConnectionPanel> {
                   width: 2,
                 ),
               ),
-            ),
-            enabled: !broadcasting,
-            keyboardType: TextInputType.number,
-            style: TextStyle(color: theme.colorScheme.onSurface),
-          ),
-        ],
-      );
-    } else {
-      return Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            flex: 2,
-            child: TextField(
-              controller: widget.ipController,
-              decoration: InputDecoration(
-                labelText: 'Server Address',
-                labelStyle: const TextStyle(color: AppTheme.primaryAccent),
-                prefixIcon: const Icon(
-                  Icons.dns,
-                  color: AppTheme.primaryAccent,
-                ),
-                hintText: 'play.example.com',
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(
-                    color: AppTheme.primaryAccent.withOpacity(0.3),
-                  ),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: const BorderSide(
-                    color: AppTheme.primaryAccent,
-                    width: 2,
-                  ),
-                ),
+              disabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(color: AppTheme.borderGray),
               ),
-              enabled: !broadcasting,
-              style: TextStyle(color: theme.colorScheme.onSurface),
-            ),
-          ),
-          const SizedBox(width: 12),
-          SizedBox(
-            width: 120,
-            child: TextField(
-              controller: widget.portController,
-              decoration: InputDecoration(
-                labelText: 'Port',
-                labelStyle: const TextStyle(color: AppTheme.primaryAccent),
-                prefixIcon: const Icon(
-                  Icons.numbers,
-                  color: AppTheme.primaryAccent,
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(
-                    color: AppTheme.primaryAccent.withOpacity(0.3),
-                  ),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: const BorderSide(
-                    color: AppTheme.primaryAccent,
-                    width: 2,
-                  ),
-                ),
-              ),
-              enabled: !broadcasting,
-              keyboardType: TextInputType.number,
-              style: TextStyle(color: theme.colorScheme.onSurface),
             ),
           ),
         ],
       );
     }
-  }
 
-  Widget _buildActionButtons(ThemeData theme) {
-    return ValueListenableBuilder<bool>(
-      valueListenable: widget.broadcastingNotifier,
-      builder: (context, broadcasting, _) {
-        final canStart = widget.selectedProfile != null;
-
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            if (!canStart && !broadcasting)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: AppTheme.warning.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(
-                      color: AppTheme.warning.withOpacity(0.3),
-                    ),
-                  ),
-                  child: Row(
-                    children: [
-                      const Icon(
-                        Icons.warning_amber_rounded,
-                        color: AppTheme.warning,
-                        size: 20,
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Text(
-                          'Select a Bedrock profile to continue',
-                          style: TextStyle(
-                            color: AppTheme.textSecondary,
-                            fontSize: 13,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+    return Row(
+      children: [
+        Expanded(
+          flex: 3,
+          child: TextField(
+            controller: widget.ipController,
+            enabled: !broadcasting,
+            style: const TextStyle(color: AppTheme.textPrimary),
+            decoration: InputDecoration(
+              labelText: 'Server Address',
+              hintText: 'play.example.com',
+              hintStyle: TextStyle(color: AppTheme.textMuted),
+              prefixIcon: const Icon(
+                Icons.dns,
+                color: AppTheme.primaryAccent,
+              ),
+              labelStyle: const TextStyle(color: AppTheme.primaryAccent),
+              filled: true,
+              fillColor: AppTheme.surfaceLight,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide.none,
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(color: AppTheme.borderGray),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: const BorderSide(
+                  color: AppTheme.primaryAccent,
+                  width: 2,
                 ),
               ),
-            LayoutBuilder(
-              builder: (context, constraints) {
-                if (constraints.maxWidth < 400) {
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      ElevatedButton.icon(
-                        onPressed: (broadcasting || !canStart)
-                            ? null
-                            : widget.onStartBroadcast,
-                        icon: const Icon(Icons.play_arrow),
-                        label: const Text('Start Broadcasting'),
-                        style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          backgroundColor: AppTheme.primaryAccent,
-                          foregroundColor: Colors.white,
-                          disabledBackgroundColor: AppTheme.primaryAccent
-                              .withOpacity(0.3),
-                          disabledForegroundColor: Colors.white.withOpacity(
-                            0.5,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      OutlinedButton.icon(
-                        onPressed: broadcasting ? widget.onStopBroadcast : null,
-                        icon: const Icon(Icons.stop),
-                        label: const Text('Stop'),
-                        style: OutlinedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          side: const BorderSide(color: AppTheme.error),
-                          foregroundColor: AppTheme.error,
-                        ),
-                      ),
-                    ],
-                  );
-                }
+              disabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(color: AppTheme.borderGray),
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          flex: 1,
+          child: TextField(
+            controller: widget.portController,
+            enabled: !broadcasting,
+            keyboardType: TextInputType.number,
+            style: const TextStyle(color: AppTheme.textPrimary),
+            decoration: InputDecoration(
+              labelText: 'Port',
+              hintText: '19132',
+              hintStyle: TextStyle(color: AppTheme.textMuted),
+              labelStyle: const TextStyle(color: AppTheme.primaryAccent),
+              filled: true,
+              fillColor: AppTheme.surfaceLight,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide.none,
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(color: AppTheme.borderGray),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: const BorderSide(
+                  color: AppTheme.primaryAccent,
+                  width: 2,
+                ),
+              ),
+              disabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(color: AppTheme.borderGray),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
 
-                return Row(
-                  children: [
-                    Expanded(
-                      child: ElevatedButton.icon(
-                        onPressed: (broadcasting || !canStart)
-                            ? null
-                            : widget.onStartBroadcast,
-                        icon: const Icon(Icons.play_arrow, size: 20),
-                        label: const Text('Start Broadcasting'),
-                        style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          backgroundColor: AppTheme.primaryAccent,
-                          foregroundColor: Colors.white,
-                          disabledBackgroundColor: AppTheme.primaryAccent
-                              .withOpacity(0.3),
-                          disabledForegroundColor: Colors.white.withOpacity(
-                            0.5,
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    OutlinedButton.icon(
-                      onPressed: broadcasting ? widget.onStopBroadcast : null,
-                      icon: const Icon(Icons.stop, size: 18),
-                      label: const Text('Stop'),
-                      style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 24,
-                          vertical: 16,
-                        ),
-                        side: const BorderSide(color: AppTheme.error),
-                        foregroundColor: AppTheme.error,
-                      ),
-                    ),
-                  ],
-                );
-              },
+  Widget _buildActionButton(bool broadcasting) {
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton(
+        onPressed: broadcasting ? widget.onStopBroadcast : widget.onStartBroadcast,
+        style: ElevatedButton.styleFrom(
+          backgroundColor:
+              broadcasting ? AppTheme.error : AppTheme.primaryAccent,
+          foregroundColor: Colors.white,
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          elevation: 2,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              broadcasting ? Icons.stop_circle : Icons.play_circle_filled,
+              size: 20,
+            ),
+            const SizedBox(width: 12),
+            Text(
+              broadcasting ? 'STOP BROADCASTING' : 'START BROADCASTING',
+              style: const TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 0.5,
+              ),
             ),
           ],
-        );
-      },
+        ),
+      ),
     );
   }
 }

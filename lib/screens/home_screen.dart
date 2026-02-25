@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -35,6 +36,7 @@ class _HomeScreenState extends State<HomeScreen>
 
   BedrockProfile? _selectedProfile;
   bool _debugEnabled = false;
+  bool _consoleExpanded = false;
 
   final TextEditingController _ipController = TextEditingController(
     text: AppConstants.defaultServerAddress,
@@ -224,6 +226,39 @@ class _HomeScreenState extends State<HomeScreen>
         );
       }
     });
+  }
+
+  Future<void> _copyLogsToClipboard() async {
+    final logs = _logsNotifier.value;
+    
+    if (logs.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('No logs to copy'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+      return;
+    }
+
+    final logsText = logs.join('\n');
+    await Clipboard.setData(ClipboardData(text: logsText));
+
+    if (!mounted) return;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            const Icon(Icons.check_circle, color: Colors.white, size: 18),
+            const SizedBox(width: 8),
+            Text('Copied ${logs.length} log entries to clipboard'),
+          ],
+        ),
+        backgroundColor: AppTheme.success,
+        duration: const Duration(seconds: 2),
+      ),
+    );
   }
 
   void _toggleDebugMode() {
@@ -616,152 +651,189 @@ class _HomeScreenState extends State<HomeScreen>
     return Center(
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 800),
-        child: Container(
-          height: 400,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+          height: _consoleExpanded ? 400 : 56,
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(color: AppTheme.borderGray),
           ),
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 12,
+              InkWell(
+                onTap: () {
+                  setState(() {
+                    _consoleExpanded = !_consoleExpanded;
+                  });
+                },
+                borderRadius: BorderRadius.vertical(
+                  top: const Radius.circular(12),
+                  bottom: Radius.circular(_consoleExpanded ? 0 : 12),
                 ),
-                decoration: BoxDecoration(
-                  color: AppTheme.surfaceDark,
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(12),
-                    topRight: Radius.circular(12),
+                child: Container(
+                  height: 54,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
                   ),
-                  border: Border(
-                    bottom: BorderSide(
-                      color: AppTheme.primaryAccent.withOpacity(0.3),
+                  decoration: BoxDecoration(
+                    color: AppTheme.surfaceDark,
+                    borderRadius: BorderRadius.vertical(
+                      top: const Radius.circular(12),
+                      bottom: Radius.circular(_consoleExpanded ? 0 : 12),
                     ),
+                    border: _consoleExpanded
+                        ? Border(
+                            bottom: BorderSide(
+                              color: AppTheme.primaryAccent.withOpacity(0.3),
+                            ),
+                          )
+                        : null,
                   ),
-                ),
-                child: Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: AppTheme.primaryAccent.withOpacity(0.15),
-                        borderRadius: BorderRadius.circular(8),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                          color: AppTheme.primaryAccent.withOpacity(0.15),
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: const Icon(
+                          Icons.terminal,
+                          color: AppTheme.primaryAccent,
+                          size: 16,
+                        ),
                       ),
-                      child: const Icon(
-                        Icons.terminal,
+                      const SizedBox(width: 10),
+                      const Expanded(
+                        child: Text(
+                          'Console Output',
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.bold,
+                            color: AppTheme.textPrimary,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      if (_consoleExpanded) ...[
+                        IconButton(
+                          icon: Icon(
+                            _debugEnabled
+                                ? Icons.bug_report
+                                : Icons.bug_report_outlined,
+                            size: 16,
+                          ),
+                          color: _debugEnabled
+                              ? AppTheme.success
+                              : AppTheme.textMuted,
+                          onPressed: _toggleDebugMode,
+                          tooltip: 'Toggle debug',
+                          padding: const EdgeInsets.all(6),
+                          constraints: const BoxConstraints(
+                            minWidth: 32,
+                            minHeight: 32,
+                          ),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.copy, size: 16),
+                          color: AppTheme.primaryAccent,
+                          onPressed: _copyLogsToClipboard,
+                          tooltip: 'Copy logs',
+                          padding: const EdgeInsets.all(6),
+                          constraints: const BoxConstraints(
+                            minWidth: 32,
+                            minHeight: 32,
+                          ),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.delete_outline, size: 16),
+                          color: AppTheme.primaryAccent,
+                          onPressed: () {
+                            _logsNotifier.value = [];
+                            logger.info('Console cleared');
+                          },
+                          tooltip: 'Clear logs',
+                          padding: const EdgeInsets.all(6),
+                          constraints: const BoxConstraints(
+                            minWidth: 32,
+                            minHeight: 32,
+                          ),
+                        ),
+                      ],
+                      Icon(
+                        _consoleExpanded
+                            ? Icons.expand_less
+                            : Icons.expand_more,
                         color: AppTheme.primaryAccent,
                         size: 20,
                       ),
-                    ),
-                    const SizedBox(width: 12),
-                    const Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Console Output',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: AppTheme.textPrimary,
-                            ),
-                          ),
-                          Text(
-                            'Real-time logs',
-                            style: TextStyle(
-                              fontSize: 11,
-                              color: AppTheme.primaryAccent,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    IconButton(
-                      icon: Icon(
-                        _debugEnabled
-                            ? Icons.bug_report
-                            : Icons.bug_report_outlined,
-                        size: 18,
-                      ),
-                      color: _debugEnabled
-                          ? AppTheme.success
-                          : AppTheme.textMuted,
-                      onPressed: _toggleDebugMode,
-                      tooltip: _debugEnabled
-                          ? 'Disable debug logs'
-                          : 'Enable debug logs',
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.delete_outline, size: 18),
-                      color: AppTheme.primaryAccent,
-                      onPressed: () {
-                        _logsNotifier.value = [];
-                        logger.info('Console cleared');
-                      },
-                      tooltip: 'Clear logs',
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-              Expanded(
-                child: ValueListenableBuilder<List<String>>(
-                  valueListenable: _logsNotifier,
-                  builder: (context, logs, _) {
-                    if (logs.isEmpty) {
-                      return Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.info_outline,
-                              size: 48,
-                              color: AppTheme.primaryAccent.withOpacity(0.3),
-                            ),
-                            const SizedBox(height: 16),
-                            Text(
-                              'No logs yet',
-                              style: TextStyle(
-                                color: AppTheme.primaryAccent.withOpacity(0.5),
-                                fontSize: 14,
+              if (_consoleExpanded)
+                Expanded(
+                  child: ValueListenableBuilder<List<String>>(
+                    valueListenable: _logsNotifier,
+                    builder: (context, logs, _) {
+                      if (logs.isEmpty) {
+                        return Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.info_outline,
+                                size: 48,
+                                color: AppTheme.primaryAccent.withOpacity(0.3),
                               ),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              'Start broadcasting to see output',
-                              style: TextStyle(
-                                color: AppTheme.textMuted.withOpacity(0.5),
-                                fontSize: 12,
+                              const SizedBox(height: 16),
+                              Text(
+                                'No logs yet',
+                                style: TextStyle(
+                                  color:
+                                      AppTheme.primaryAccent.withOpacity(0.5),
+                                  fontSize: 14,
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
-                      );
-                    }
-
-                    return ListView.builder(
-                      controller: _scrollController,
-                      padding: const EdgeInsets.all(12),
-                      itemCount: logs.length,
-                      itemBuilder: (context, index) {
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 2),
-                          child: Text(
-                            logs[index],
-                            style: TextStyle(
-                              fontFamily: 'monospace',
-                              fontSize: 12,
-                              color: _getLogColor(logs[index]),
-                            ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Start broadcasting to see output',
+                                style: TextStyle(
+                                  color: AppTheme.textMuted.withOpacity(0.5),
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ],
                           ),
                         );
-                      },
-                    );
-                  },
+                      }
+
+                      return ListView.builder(
+                        controller: _scrollController,
+                        padding: const EdgeInsets.all(12),
+                        itemCount: logs.length,
+                        itemBuilder: (context, index) {
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 2),
+                            child: Text(
+                              logs[index],
+                              style: TextStyle(
+                                fontFamily: 'monospace',
+                                fontSize: 12,
+                                color: _getLogColor(logs[index]),
+                              ),
+                            ),
+                          );
+                        },
+                      );
+                    },
+                  ),
                 ),
-              ),
             ],
           ),
         ),
