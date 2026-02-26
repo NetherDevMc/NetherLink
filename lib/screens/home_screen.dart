@@ -433,6 +433,7 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 
+  // --- Verbeterde AppBar: sponsor + discord compact samen en geen broadcast indicator
   PreferredSizeWidget _buildAppBar(ThemeData theme) {
     return AppBar(
       backgroundColor: theme.colorScheme.surface,
@@ -453,14 +454,8 @@ class _HomeScreenState extends State<HomeScreen>
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Row(
               children: [
-                _buildSupportButton(),
+                _buildSponsorAndDiscordRow(),
                 const Spacer(),
-                ValueListenableBuilder<bool>(
-                  valueListenable: _broadcastingNotifier,
-                  builder: (context, broadcasting, _) {
-                    return StatusIndicator(broadcasting: broadcasting);
-                  },
-                ),
                 const SizedBox(width: 12),
                 _buildMenuButton(theme),
               ],
@@ -471,14 +466,41 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 
-  Widget _buildSupportButton() {
-    return _AnimatedSupportButton(
-      onTap: () {
-        showDialog(
-          context: context,
-          builder: (context) => const SupportDialog(),
-        );
-      },
+  Widget _buildSponsorAndDiscordRow() {
+    return Container(
+      decoration: BoxDecoration(
+        color: AppTheme.surfaceDark.withOpacity(0.30),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _buildSupportButton(),
+          const SizedBox(width: 5),
+          _buildDiscordIcon(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDiscordIcon() {
+    return Tooltip(
+      message: 'Discord',
+      child: InkWell(
+        borderRadius: BorderRadius.circular(7),
+        onTap: () {
+          launchUrl(Uri.parse(AppConstants.discordUrl));
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(7),
+          child: Icon(
+            Icons.discord,
+            color: Colors.indigo,
+            size: 22,
+          ),
+        ),
+      ),
     );
   }
 
@@ -519,10 +541,6 @@ class _HomeScreenState extends State<HomeScreen>
         _buildMenuItem(Icons.open_in_browser, 'Website', () {
           Navigator.pop(context);
           launchUrl(Uri.parse(AppConstants.websiteUrl));
-        }),
-        _buildMenuItem(Icons.discord, 'Join Discord', () {
-          Navigator.pop(context);
-          launchUrl(Uri.parse(AppConstants.discordUrl));
         }),
         _buildMenuItem(Icons.info_outline, 'How to use', () {
           Navigator.pop(context);
@@ -566,6 +584,17 @@ class _HomeScreenState extends State<HomeScreen>
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildSupportButton() {
+    return _AnimatedSupportButton(
+      onTap: () {
+        showDialog(
+          context: context,
+          builder: (context) => const SupportDialog(),
+        );
+      },
     );
   }
 
