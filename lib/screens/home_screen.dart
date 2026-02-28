@@ -14,7 +14,6 @@ import '../util/bedrock_profile.dart';
 import '../util/profile_storage.dart';
 import '../constants/app_constants.dart';
 import '../theme/app_theme.dart';
-import '../widgets/common/status_indicator.dart';
 import '../widgets/connection/connection_panel.dart';
 import '../widgets/dialogs/manage_servers_dialog.dart';
 import '../widgets/dialogs/support_dialog.dart';
