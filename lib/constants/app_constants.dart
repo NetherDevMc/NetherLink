@@ -4,6 +4,17 @@ class AppConstants {
 
   static const String defaultServerAddress = 'play.myserver.com';
 
+  static const relayServers = [
+    {
+      'name': 'EU Server',
+      'ip': '161.97.182.113',
+    },
+    {
+      'name': 'US Server',
+      'ip': '217.77.15.138',
+    },
+  ];
+
   static const Duration serverRotationDuration = Duration(seconds: 5);
   static const Duration animationDuration = Duration(milliseconds: 300);
   static const Duration progressUpdateInterval = Duration(milliseconds: 50);
@@ -17,25 +28,28 @@ class AppConstants {
 
   static const String appCreator = 'NetherDev';
 
-  static const String helpText =
-      '''
+static const String helpText =
+    '''
 Created by $appCreator.
 
 How to use:
 1. Create a Bedrock Profile with your Minecraft username
 2. Add your external Minecraft server details (or select a saved server)
 3. Enter the server address and port (default: 19132)
-4. Click "Start Broadcasting" to begin
-5. On your PlayStation or Bedrock device, go to "Play" > "Friends"
-6. You should see a LAN game under your profile name
-7. Click it to join your external server via NetherLink!
+4. Select a Relay Server (EU or US) closest to your location
+5. Click "Start Broadcasting" to begin
+6. On your PlayStation or Bedrock device, go to "Play" > "Friends"
+7. You should see a LAN server called NetherLink
+8. Click it to join your external server via NetherLink!
 
 Features:
 - Manage multiple Bedrock profiles for different players
 - Save frequently used servers for quick access
 - Set a default profile to use automatically
+- Choose between EU and US relay servers for the best connection
 - View real-time connection logs in the console
 - Enable Debug Mode to see detailed network logs
 
-Note: Your PC and console must be on the same local network.''';
+Note: Your PC and console must be on the same local network.
+Tip: Choose the relay server closest to you for the best performance.''';
 }

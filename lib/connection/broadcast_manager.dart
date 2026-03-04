@@ -65,20 +65,33 @@ class BroadcastManager {
     }
   }
 
+  static const relayServers = [
+    {
+      'name': 'Europa (EU)',
+      'ip': '161.97.182.113',
+    },
+    {
+      'name': 'Amerika (US)',
+      'ip': '147.185.221.53',
+    },
+  ];
+
   Future<bool> startBroadcast(
-    String remoteHost,
-    int remotePort,
-    String username,
-  ) async {
-    const String RELAY_IP = '161.97.182.113';
+      String remoteHost,
+      int remotePort,
+      String username, {
+        String? relayIp, // optioneel: kom uit dropdown
+      }) async {
+    // Standaard op EU als relayIp niet gegeven is
+    final usedRelayIp = relayIp ?? relayServers[0]['ip']!;
     const int RELAY_CLIENT_PORT = 19132;
     const int RELAY_CONFIG_PORT = 19133;
 
     try {
-      logger.info('Sending config to NetherLink server...');
+      logger.info('Sending config to NetherLink server at $usedRelayIp...');
 
       final success = await RelayConfigSender.sendConfigSimple(
-        relayIp: RELAY_IP,
+        relayIp: usedRelayIp,
         relayConfigPort: RELAY_CONFIG_PORT,
         remoteServerIp: remoteHost,
         remoteServerPort: remotePort,
@@ -94,9 +107,9 @@ class BroadcastManager {
         return false;
       }
 
-      await Future.delayed(Duration(milliseconds: 200));
+      await Future.delayed(const Duration(milliseconds: 200));
 
-      final relayAddress = InternetAddress(RELAY_IP);
+      final relayAddress = InternetAddress(usedRelayIp);
 
       logger.info('Connecting to NetherLink servers');
       logger.info(
@@ -121,10 +134,10 @@ class BroadcastManager {
       socketHandler.setBroadcasting(true);
 
       _subscriptionIPv4 = _socketIPv4!.listen(
-        (event) => socketHandler.handleSocketEvent(_socketIPv4!, event),
+            (event) => socketHandler.handleSocketEvent(_socketIPv4!, event),
       );
       _subscriptionIPv6 = _socketIPv6!.listen(
-        (event) => socketHandler.handleSocketEvent(_socketIPv6!, event),
+            (event) => socketHandler.handleSocketEvent(_socketIPv6!, event),
       );
 
       logger.info('NetherLink started broadcasting');

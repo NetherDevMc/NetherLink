@@ -8,6 +8,7 @@ import '../../util/featured_servers.dart';
 import '../../services/featured_servers_service.dart';
 import '../dialogs/profile_management_dialog.dart';
 import 'featured_servers_banner.dart';
+import '../components/relay_selector.dart';
 
 class ConnectionPanel extends StatefulWidget {
   const ConnectionPanel({
@@ -22,6 +23,8 @@ class ConnectionPanel extends StatefulWidget {
     required this.onManageServers,
     required this.selectedProfile,
     required this.onProfileChanged,
+    required this.selectedRelayIp,
+    required this.onRelayChanged,
   });
 
   final TextEditingController ipController;
@@ -34,6 +37,8 @@ class ConnectionPanel extends StatefulWidget {
   final VoidCallback onManageServers;
   final BedrockProfile? selectedProfile;
   final Function(BedrockProfile?) onProfileChanged;
+  final String? selectedRelayIp;
+  final void Function(String?) onRelayChanged;
 
   @override
   State<ConnectionPanel> createState() => _ConnectionPanelState();
@@ -67,50 +72,21 @@ class _ConnectionPanelState extends State<ConnectionPanel> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Row(
-                children: [
-                  const Expanded(child: Divider(color: AppTheme.borderGray)),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                    child: Text(
-                      'BEDROCK PROFILE',
-                      style: TextStyle(
-                        color: AppTheme.textMuted,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 11,
-                        letterSpacing: 1.2,
-                      ),
-                    ),
-                  ),
-                  const Expanded(child: Divider(color: AppTheme.borderGray)),
-                ],
-              ),
+              _buildSectionDivider('BEDROCK USER'),
               const SizedBox(height: 20),
               _buildProfileSelector(theme),
               const SizedBox(height: 24),
-              Row(
-                children: [
-                  const Expanded(child: Divider(color: AppTheme.borderGray)),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                    child: Text(
-                      'SERVER',
-                      style: TextStyle(
-                        color: AppTheme.textMuted,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 11,
-                        letterSpacing: 1.2,
-                      ),
-                    ),
-                  ),
-                  const Expanded(child: Divider(color: AppTheme.borderGray)),
-                ],
-              ),
+
+              _buildSectionDivider('SERVER'),
               const SizedBox(height: 20),
               ValueListenableBuilder<bool>(
                 valueListenable: widget.broadcastingNotifier,
                 builder: (context, broadcasting, _) {
-                  return _buildSavedServersDropdown(context, theme, broadcasting);
+                  return _buildSavedServersDropdown(
+                    context,
+                    theme,
+                    broadcasting,
+                  );
                 },
               ),
               const SizedBox(height: 16),
@@ -131,14 +107,21 @@ class _ConnectionPanelState extends State<ConnectionPanel> {
                   );
                 },
               ),
+              const SizedBox(height: 24),
+
+              RelaySelector(
+                selectedIp: widget.selectedRelayIp,
+                onChanged: widget.onRelayChanged,
+              ),
               const SizedBox(height: 16),
+
               ValueListenableBuilder<bool>(
                 valueListenable: widget.broadcastingNotifier,
                 builder: (context, broadcasting, _) {
                   return _buildActionButton(broadcasting);
                 },
               ),
-              
+
               FutureBuilder<List<FeaturedServer>>(
                 future: _featuredServersFuture,
                 builder: (context, snapshot) {
@@ -150,12 +133,15 @@ class _ConnectionPanelState extends State<ConnectionPanel> {
                     onServerTap: (server) {
                       widget.ipController.text = server.address;
                       widget.portController.text = server.port.toString();
-                      
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Row(
                             children: [
-                              const Icon(Icons.check_circle, color: Colors.white, size: 18),
+                              const Icon(
+                                Icons.check_circle,
+                                color: Colors.white,
+                                size: 18,
+                              ),
                               const SizedBox(width: 8),
                               Text('Selected: ${server.name}'),
                             ],
@@ -172,6 +158,27 @@ class _ConnectionPanelState extends State<ConnectionPanel> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildSectionDivider(String label) {
+    return Row(
+      children: [
+        const Expanded(child: Divider(color: AppTheme.borderGray)),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          child: Text(
+            label,
+            style: const TextStyle(
+              color: AppTheme.textMuted,
+              fontWeight: FontWeight.w600,
+              fontSize: 11,
+              letterSpacing: 1.2,
+            ),
+          ),
+        ),
+        const Expanded(child: Divider(color: AppTheme.borderGray)),
+      ],
     );
   }
 
@@ -215,7 +222,7 @@ class _ConnectionPanelState extends State<ConnectionPanel> {
                   : DropdownButtonFormField<BedrockProfile>(
                       value: widget.selectedProfile,
                       decoration: InputDecoration(
-                        labelText: 'Bedrock Profile',
+                        labelText: 'Bedrock User',
                         labelStyle: const TextStyle(
                           color: AppTheme.primaryAccent,
                           fontWeight: FontWeight.w600,
@@ -266,7 +273,8 @@ class _ConnectionPanelState extends State<ConnectionPanel> {
                 color: AppTheme.primaryAccent.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(
-                    color: AppTheme.primaryAccent.withOpacity(0.3)),
+                  color: AppTheme.primaryAccent.withOpacity(0.3),
+                ),
               ),
               child: IconButton(
                 onPressed: () async {
@@ -289,11 +297,11 @@ class _ConnectionPanelState extends State<ConnectionPanel> {
   }
 
   List<DropdownMenuItem<BedrockProfile>> _buildProfileMenuItems(
-      List<BedrockProfile> profiles) {
+    List<BedrockProfile> profiles,
+  ) {
     final List<DropdownMenuItem<BedrockProfile>> items = [];
 
-    for (int i = 0; i < profiles.length; i++) {
-      final profile = profiles[i];
+    for (final profile in profiles) {
       items.add(
         DropdownMenuItem(
           value: profile,
@@ -315,7 +323,7 @@ class _ConnectionPanelState extends State<ConnectionPanel> {
                 ),
               Expanded(
                 child: Text(
-                  profile.label,
+                  profile.username,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     fontWeight: FontWeight.w500,
@@ -414,29 +422,19 @@ class _ConnectionPanelState extends State<ConnectionPanel> {
                   onChanged: broadcasting
                       ? null
                       : (server) {
-                          setState(() {
-                            _selectedServer = server;
-                          });
-                          if (server != null) {
-                            widget.onServerSelected(server);
-                          }
+                          setState(() => _selectedServer = server);
+                          if (server != null) widget.onServerSelected(server);
                         },
                   selectedItemBuilder: (BuildContext context) {
                     return widget.savedServers.map<Widget>((UserServer server) {
-                      return Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              server.name,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w600,
-                                fontSize: 14,
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 1,
-                            ),
-                          ),
-                        ],
+                      return Text(
+                        server.name,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 14,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
                       );
                     }).toList();
                   },
@@ -464,9 +462,7 @@ class _ConnectionPanelState extends State<ConnectionPanel> {
   List<DropdownMenuItem<UserServer>> _buildServerMenuItems(ThemeData theme) {
     final List<DropdownMenuItem<UserServer>> items = [];
 
-    for (int i = 0; i < widget.savedServers.length; i++) {
-      final server = widget.savedServers[i];
-
+    for (final server in widget.savedServers) {
       items.add(
         DropdownMenuItem(
           value: server,
@@ -511,165 +507,81 @@ class _ConnectionPanelState extends State<ConnectionPanel> {
     bool broadcasting,
     bool isNarrow,
   ) {
+    final ipField = TextField(
+      controller: widget.ipController,
+      enabled: !broadcasting,
+      style: const TextStyle(color: AppTheme.textPrimary),
+      decoration: InputDecoration(
+        labelText: 'Server Address',
+        hintText: 'play.example.com',
+        hintStyle: TextStyle(color: AppTheme.textMuted),
+        prefixIcon: const Icon(Icons.dns, color: AppTheme.primaryAccent),
+        labelStyle: const TextStyle(color: AppTheme.primaryAccent),
+        filled: true,
+        fillColor: AppTheme.surfaceLight,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide.none,
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide(color: AppTheme.borderGray),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: const BorderSide(color: AppTheme.primaryAccent, width: 2),
+        ),
+        disabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide(color: AppTheme.borderGray),
+        ),
+      ),
+    );
+
+    final portField = TextField(
+      controller: widget.portController,
+      enabled: !broadcasting,
+      keyboardType: TextInputType.number,
+      style: const TextStyle(color: AppTheme.textPrimary),
+      decoration: InputDecoration(
+        labelText: 'Port',
+        hintText: '19132',
+        hintStyle: TextStyle(color: AppTheme.textMuted),
+        prefixIcon: const Icon(
+          Icons.settings_ethernet,
+          color: AppTheme.primaryAccent,
+        ),
+        labelStyle: const TextStyle(color: AppTheme.primaryAccent),
+        filled: true,
+        fillColor: AppTheme.surfaceLight,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide.none,
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide(color: AppTheme.borderGray),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: const BorderSide(color: AppTheme.primaryAccent, width: 2),
+        ),
+        disabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide(color: AppTheme.borderGray),
+        ),
+      ),
+    );
+
     if (isNarrow) {
-      return Column(
-        children: [
-          TextField(
-            controller: widget.ipController,
-            enabled: !broadcasting,
-            style: const TextStyle(color: AppTheme.textPrimary),
-            decoration: InputDecoration(
-              labelText: 'Server Address',
-              hintText: 'play.example.com',
-              hintStyle: TextStyle(color: AppTheme.textMuted),
-              prefixIcon: const Icon(
-                Icons.dns,
-                color: AppTheme.primaryAccent,
-              ),
-              labelStyle: const TextStyle(color: AppTheme.primaryAccent),
-              filled: true,
-              fillColor: AppTheme.surfaceLight,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide.none,
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide(color: AppTheme.borderGray),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: const BorderSide(
-                  color: AppTheme.primaryAccent,
-                  width: 2,
-                ),
-              ),
-              disabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide(color: AppTheme.borderGray),
-              ),
-            ),
-          ),
-          const SizedBox(height: 12),
-          TextField(
-            controller: widget.portController,
-            enabled: !broadcasting,
-            keyboardType: TextInputType.number,
-            style: const TextStyle(color: AppTheme.textPrimary),
-            decoration: InputDecoration(
-              labelText: 'Port',
-              hintText: '19132',
-              hintStyle: TextStyle(color: AppTheme.textMuted),
-              prefixIcon: const Icon(
-                Icons.settings_ethernet,
-                color: AppTheme.primaryAccent,
-              ),
-              labelStyle: const TextStyle(color: AppTheme.primaryAccent),
-              filled: true,
-              fillColor: AppTheme.surfaceLight,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide.none,
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide(color: AppTheme.borderGray),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: const BorderSide(
-                  color: AppTheme.primaryAccent,
-                  width: 2,
-                ),
-              ),
-              disabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide(color: AppTheme.borderGray),
-              ),
-            ),
-          ),
-        ],
-      );
+      return Column(children: [ipField, const SizedBox(height: 12), portField]);
     }
 
     return Row(
       children: [
-        Expanded(
-          flex: 3,
-          child: TextField(
-            controller: widget.ipController,
-            enabled: !broadcasting,
-            style: const TextStyle(color: AppTheme.textPrimary),
-            decoration: InputDecoration(
-              labelText: 'Server Address',
-              hintText: 'play.example.com',
-              hintStyle: TextStyle(color: AppTheme.textMuted),
-              prefixIcon: const Icon(
-                Icons.dns,
-                color: AppTheme.primaryAccent,
-              ),
-              labelStyle: const TextStyle(color: AppTheme.primaryAccent),
-              filled: true,
-              fillColor: AppTheme.surfaceLight,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide.none,
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide(color: AppTheme.borderGray),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: const BorderSide(
-                  color: AppTheme.primaryAccent,
-                  width: 2,
-                ),
-              ),
-              disabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide(color: AppTheme.borderGray),
-              ),
-            ),
-          ),
-        ),
+        Expanded(flex: 3, child: ipField),
         const SizedBox(width: 12),
-        Expanded(
-          flex: 1,
-          child: TextField(
-            controller: widget.portController,
-            enabled: !broadcasting,
-            keyboardType: TextInputType.number,
-            style: const TextStyle(color: AppTheme.textPrimary),
-            decoration: InputDecoration(
-              labelText: 'Port',
-              hintText: '19132',
-              hintStyle: TextStyle(color: AppTheme.textMuted),
-              labelStyle: const TextStyle(color: AppTheme.primaryAccent),
-              filled: true,
-              fillColor: AppTheme.surfaceLight,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide.none,
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide(color: AppTheme.borderGray),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: const BorderSide(
-                  color: AppTheme.primaryAccent,
-                  width: 2,
-                ),
-              ),
-              disabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide(color: AppTheme.borderGray),
-              ),
-            ),
-          ),
-        ),
+        Expanded(flex: 1, child: portField),
       ],
     );
   }
@@ -678,10 +590,13 @@ class _ConnectionPanelState extends State<ConnectionPanel> {
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
-        onPressed: broadcasting ? widget.onStopBroadcast : widget.onStartBroadcast,
+        onPressed: broadcasting
+            ? widget.onStopBroadcast
+            : widget.onStartBroadcast,
         style: ElevatedButton.styleFrom(
-          backgroundColor:
-              broadcasting ? AppTheme.error : AppTheme.primaryAccent,
+          backgroundColor: broadcasting
+              ? AppTheme.error
+              : AppTheme.primaryAccent,
           foregroundColor: Colors.white,
           padding: const EdgeInsets.symmetric(vertical: 16),
           shape: RoundedRectangleBorder(

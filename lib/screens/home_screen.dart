@@ -12,6 +12,7 @@ import '../util/user_servers.dart';
 import '../util/user_servers_storage.dart';
 import '../util/bedrock_profile.dart';
 import '../util/profile_storage.dart';
+import '../util/relay_preference_storage.dart';
 import '../constants/app_constants.dart';
 import '../theme/app_theme.dart';
 import '../widgets/connection/connection_panel.dart';
@@ -36,6 +37,7 @@ class _HomeScreenState extends State<HomeScreen>
   BedrockProfile? _selectedProfile;
   bool _debugEnabled = false;
   bool _consoleExpanded = false;
+  bool _consoleDialogOpen = false;
 
   final TextEditingController _ipController = TextEditingController(
     text: AppConstants.defaultServerAddress,
@@ -50,17 +52,30 @@ class _HomeScreenState extends State<HomeScreen>
 
   final ValueNotifier<List<String>> _logsNotifier = ValueNotifier([]);
   final ValueNotifier<bool> _broadcastingNotifier = ValueNotifier(false);
-  final ValueNotifier<List<UserServer>> _userServersNotifier = ValueNotifier([]);
+  final ValueNotifier<List<UserServer>> _userServersNotifier = ValueNotifier(
+    [],
+  );
+
+  String? _selectedRelayIp = AppConstants.relayServers[0]['ip'];
 
   @override
   void initState() {
     super.initState();
     _initializeComponents();
     _loadUserServers();
+    _loadRelayServerPreference();
     _loadDefaultProfile();
 
     if (Platform.isWindows || Platform.isMacOS) {
       _checkForUpdates();
+    }
+  }
+
+  Future<void> _loadRelayServerPreference() async {
+    final savedIp = await RelayPreferenceStorage.loadSelectedRelayIp();
+    if (savedIp != null &&
+        AppConstants.relayServers.any((e) => e['ip'] == savedIp)) {
+      setState(() => _selectedRelayIp = savedIp);
     }
   }
 
@@ -78,18 +93,13 @@ class _HomeScreenState extends State<HomeScreen>
 
   Future<void> _checkForUpdates() async {
     await Future.delayed(const Duration(seconds: 3));
-
     if (!mounted) return;
-
     try {
       logger.info('🔍 Checking for updates...');
-
       final updateService = GitHubUpdateService();
       final updateInfo = await updateService.checkForUpdates();
-
       if (updateInfo != null && mounted) {
         logger.info('📥 Update available: ${updateInfo.version}');
-
         showDialog(
           context: context,
           barrierDismissible: false,
@@ -106,14 +116,12 @@ class _HomeScreenState extends State<HomeScreen>
   Future<void> _loadDefaultProfile() async {
     try {
       final profile = await ProfileStorage.getDefaultProfile();
-
       if (mounted) {
         setState(() {
           _selectedProfile = profile;
         });
-
         if (profile != null) {
-          logger.info('Loaded default profile: ${profile.label}');
+          logger.info('Loaded default profile: ${profile.username}');
         } else {
           logger.info('No default profile found - please create one');
         }
@@ -130,11 +138,9 @@ class _HomeScreenState extends State<HomeScreen>
 
   void _handleAutoDisconnect() {
     if (!mounted) return;
-
     setState(() {
       _broadcastingNotifier.value = false;
     });
-
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Row(
@@ -159,13 +165,11 @@ class _HomeScreenState extends State<HomeScreen>
         ),
       ),
     );
-
     logger.info('Auto-disconnect: All clients inactive');
   }
 
   void _handleRelayError(String message) {
     if (!mounted) return;
-
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Row(
@@ -192,11 +196,9 @@ class _HomeScreenState extends State<HomeScreen>
   Future<void> _loadUserServers() async {
     try {
       final servers = await UserServersStorage.loadServers();
-
       if (servers.isNotEmpty) {
         logger.debug('Loaded ${servers.length} saved server(s)');
       }
-
       _userServersNotifier.value = servers;
     } catch (e) {
       logger.error('Failed to load user servers: $e');
@@ -206,16 +208,13 @@ class _HomeScreenState extends State<HomeScreen>
   void _log(String message) {
     final currentLogs = List<String>.from(_logsNotifier.value);
     currentLogs.add(message);
-
     if (currentLogs.length > AppConstants.maxLogEntries) {
       currentLogs.removeRange(
         0,
         currentLogs.length - AppConstants.maxLogEntries,
       );
     }
-
     _logsNotifier.value = currentLogs;
-
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_scrollController.hasClients && mounted) {
         _scrollController.animateTo(
@@ -229,7 +228,6 @@ class _HomeScreenState extends State<HomeScreen>
 
   Future<void> _copyLogsToClipboard() async {
     final logs = _logsNotifier.value;
-    
     if (logs.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -239,12 +237,9 @@ class _HomeScreenState extends State<HomeScreen>
       );
       return;
     }
-
     final logsText = logs.join('\n');
     await Clipboard.setData(ClipboardData(text: logsText));
-
     if (!mounted) return;
-
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Row(
@@ -265,9 +260,7 @@ class _HomeScreenState extends State<HomeScreen>
       _debugEnabled = !_debugEnabled;
       logger.debugEnabled = _debugEnabled;
     });
-
     logger.info('Debug mode ${_debugEnabled ? "enabled" : "disabled"}');
-
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Row(
@@ -290,20 +283,17 @@ class _HomeScreenState extends State<HomeScreen>
     if (_selectedProfile == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('⚠️ Please select a Bedrock profile first'),
+          content: Text('⚠️ Please select a Bedrock user first'),
           backgroundColor: Colors.orange,
           duration: Duration(seconds: 3),
         ),
       );
       return;
     }
-
     logger.info('Starting NetherLink');
-
     final remoteHost = _ipController.text.trim();
     final remotePortParsed = int.tryParse(_portController.text);
     final username = _selectedProfile!.username;
-
     if (remoteHost.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -313,7 +303,6 @@ class _HomeScreenState extends State<HomeScreen>
       );
       return;
     }
-
     if (remotePortParsed == null ||
         remotePortParsed < 1 ||
         remotePortParsed > 65535) {
@@ -326,21 +315,18 @@ class _HomeScreenState extends State<HomeScreen>
       );
       return;
     }
-
     try {
       await WakelockPlus.enable();
     } catch (e) {
       logger.error('Failed to enable wakelock: $e');
     }
-
     final success = await _broadcastManager.startBroadcast(
       remoteHost,
       remotePortParsed,
       username,
+      relayIp: _selectedRelayIp,
     );
-
     _broadcastingNotifier.value = _broadcastManager.isBroadcasting;
-
     if (_broadcastManager.isBroadcasting && success) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -349,7 +335,7 @@ class _HomeScreenState extends State<HomeScreen>
               const Icon(Icons.check_circle, color: Colors.white),
               const SizedBox(width: 12),
               Expanded(
-                child: Text('Broadcasting as ${_selectedProfile!.label}'),
+                child: Text('Broadcasting as ${_selectedProfile!.username}'),
               ),
             ],
           ),
@@ -363,7 +349,6 @@ class _HomeScreenState extends State<HomeScreen>
   Future<void> _stopBroadcast() async {
     await _broadcastManager.stopBroadcast();
     _broadcastingNotifier.value = false;
-
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('Broadcast stopped'),
@@ -378,9 +363,7 @@ class _HomeScreenState extends State<HomeScreen>
       _ipController.text = server.address;
       _portController.text = server.port.toString();
     });
-
     logger.info('Selected saved server: ${server.name}');
-
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('📋 Selected: ${server.name}'),
@@ -396,6 +379,180 @@ class _HomeScreenState extends State<HomeScreen>
       builder: (context) => const ManageServersDialog(),
     );
     _loadUserServers();
+  }
+
+  Future<void> _showConsoleDialog() async {
+    setState(() => _consoleDialogOpen = true);
+    await showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return Dialog.fullscreen(
+          child: SafeArea(
+            child: Column(
+              children: [
+                Container(
+                  height: 54,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppTheme.surfaceDark,
+                    border: Border(
+                      bottom: BorderSide(
+                        color: AppTheme.primaryAccent.withOpacity(0.3),
+                      ),
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                          color: AppTheme.primaryAccent.withOpacity(0.15),
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: const Icon(
+                          Icons.terminal,
+                          color: AppTheme.primaryAccent,
+                          size: 16,
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      const Expanded(
+                        child: Text(
+                          'Console Output',
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.bold,
+                            color: AppTheme.textPrimary,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      IconButton(
+                        icon: Icon(
+                          _debugEnabled
+                              ? Icons.bug_report
+                              : Icons.bug_report_outlined,
+                          size: 16,
+                        ),
+                        color: _debugEnabled
+                            ? AppTheme.success
+                            : AppTheme.textMuted,
+                        onPressed: _toggleDebugMode,
+                        tooltip: 'Toggle debug',
+                        padding: const EdgeInsets.all(6),
+                        constraints: const BoxConstraints(
+                          minWidth: 32,
+                          minHeight: 32,
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.copy, size: 16),
+                        color: AppTheme.primaryAccent,
+                        onPressed: _copyLogsToClipboard,
+                        tooltip: 'Copy logs',
+                        padding: const EdgeInsets.all(6),
+                        constraints: const BoxConstraints(
+                          minWidth: 32,
+                          minHeight: 32,
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.delete_outline, size: 16),
+                        color: AppTheme.primaryAccent,
+                        onPressed: () {
+                          _logsNotifier.value = [];
+                          logger.info('Console cleared');
+                        },
+                        tooltip: 'Clear logs',
+                        padding: const EdgeInsets.all(6),
+                        constraints: const BoxConstraints(
+                          minWidth: 32,
+                          minHeight: 32,
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.close, size: 20),
+                        color: AppTheme.textPrimary,
+                        onPressed: () => Navigator.of(context).pop(),
+                        tooltip: 'Close console',
+                        padding: const EdgeInsets.all(6),
+                        constraints: const BoxConstraints(
+                          minWidth: 32,
+                          minHeight: 32,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: ValueListenableBuilder<List<String>>(
+                    valueListenable: _logsNotifier,
+                    builder: (context, logs, _) {
+                      if (logs.isEmpty) {
+                        return Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.info_outline,
+                                size: 48,
+                                color: AppTheme.primaryAccent.withOpacity(0.3),
+                              ),
+                              const SizedBox(height: 16),
+                              Text(
+                                'No logs yet',
+                                style: TextStyle(
+                                  color: AppTheme.primaryAccent.withOpacity(
+                                    0.5,
+                                  ),
+                                  fontSize: 14,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Start broadcasting to see output',
+                                style: TextStyle(
+                                  color: AppTheme.textMuted.withOpacity(0.5),
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }
+                      return ListView.builder(
+                        controller: _scrollController,
+                        padding: const EdgeInsets.all(12),
+                        itemCount: logs.length,
+                        itemBuilder: (context, index) {
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 2),
+                            child: Text(
+                              logs[index],
+                              style: TextStyle(
+                                fontFamily: 'monospace',
+                                fontSize: 12,
+                                color: _getLogColor(logs[index]),
+                              ),
+                            ),
+                          );
+                        },
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+    setState(() => _consoleDialogOpen = false);
   }
 
   @override
@@ -432,7 +589,118 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 
-  // --- Verbeterde AppBar: sponsor + discord compact samen en geen broadcast indicator
+  Widget _buildMobileLayout() {
+    return SingleChildScrollView(
+      controller: _mainScrollController,
+      physics: const ClampingScrollPhysics(),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ValueListenableBuilder<List<UserServer>>(
+            valueListenable: _userServersNotifier,
+            builder: (context, userServers, _) {
+              return ConnectionPanel(
+                ipController: _ipController,
+                portController: _portController,
+                broadcastingNotifier: _broadcastingNotifier,
+                onStartBroadcast: _startBroadcast,
+                onStopBroadcast: _stopBroadcast,
+                savedServers: userServers,
+                onServerSelected: _onUserServerSelected,
+                onManageServers: _showManageServersDialog,
+                selectedProfile: _selectedProfile,
+                onProfileChanged: (profile) {
+                  setState(() => _selectedProfile = profile);
+                },
+                selectedRelayIp: _selectedRelayIp,
+                onRelayChanged: (ip) {
+                  setState(() => _selectedRelayIp = ip);
+                  RelayPreferenceStorage.saveSelectedRelayIp(ip);
+                },
+              );
+            },
+          ),
+          const SizedBox(height: 16),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDesktopLayout() {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return SingleChildScrollView(
+          controller: _desktopScrollController,
+          physics: const ClampingScrollPhysics(),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(minHeight: constraints.maxHeight),
+            child: Column(
+              children: [
+                ValueListenableBuilder<List<UserServer>>(
+                  valueListenable: _userServersNotifier,
+                  builder: (context, userServers, _) {
+                    return ConnectionPanel(
+                      ipController: _ipController,
+                      portController: _portController,
+                      broadcastingNotifier: _broadcastingNotifier,
+                      onStartBroadcast: _startBroadcast,
+                      onStopBroadcast: _stopBroadcast,
+                      savedServers: userServers,
+                      onServerSelected: _onUserServerSelected,
+                      onManageServers: _showManageServersDialog,
+                      selectedProfile: _selectedProfile,
+                      onProfileChanged: (profile) {
+                        setState(() => _selectedProfile = profile);
+                      },
+                      selectedRelayIp: _selectedRelayIp,
+                      onRelayChanged: (ip) {
+                        setState(() => _selectedRelayIp = ip);
+                        RelayPreferenceStorage.saveSelectedRelayIp(ip);
+                      },
+                    );
+                  },
+                ),
+                const SizedBox(height: 16),
+                _buildConsoleSection(),
+                const SizedBox(height: 16),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Color _getLogColor(String log) {
+    if (log.contains('[ERROR]')) return AppTheme.error;
+    if (log.contains('[WARN]')) return AppTheme.warning;
+    if (log.contains('[INFO]')) return AppTheme.info;
+    if (log.contains('[DEBUG]')) return AppTheme.success;
+    return AppTheme.textSecondary;
+  }
+
+  void _showHelpDialog(ThemeData theme) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        backgroundColor: theme.colorScheme.surface,
+        title: const Text('How to use NetherLink'),
+        content: const SingleChildScrollView(
+          child: Text(AppConstants.helpText),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            style: TextButton.styleFrom(
+              foregroundColor: AppTheme.primaryAccent,
+            ),
+            child: const Text('Close'),
+          ),
+        ],
+      ),
+    );
+  }
+
   PreferredSizeWidget _buildAppBar(ThemeData theme) {
     return AppBar(
       backgroundColor: theme.colorScheme.surface,
@@ -455,6 +723,17 @@ class _HomeScreenState extends State<HomeScreen>
               children: [
                 _buildSponsorAndDiscordRow(),
                 const Spacer(),
+                if (MediaQuery.of(context).size.width <
+                    AppConstants.mobileBreakpoint)
+                  IconButton(
+                    padding: const EdgeInsets.all(10),
+                    icon: const Icon(
+                      Icons.terminal,
+                      color: AppTheme.primaryAccent,
+                    ),
+                    tooltip: 'Open Console',
+                    onPressed: _consoleDialogOpen ? null : _showConsoleDialog,
+                  ),
                 const SizedBox(width: 12),
                 _buildMenuButton(theme),
               ],
@@ -493,10 +772,20 @@ class _HomeScreenState extends State<HomeScreen>
         },
         child: Padding(
           padding: const EdgeInsets.all(7),
-          child: Icon(
-            Icons.discord,
-            color: Colors.indigo,
-            size: 22,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.discord, color: Colors.indigo, size: 22),
+              const SizedBox(width: 6),
+              Text(
+                'Join Us',
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w400,
+                  color: AppTheme.textSecondary.withOpacity(0.8),
+                ),
+              ),
+            ],
           ),
         ),
       ),
@@ -597,84 +886,6 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 
-  Widget _buildMobileLayout() {
-    return SingleChildScrollView(
-      controller: _mainScrollController,
-      physics: const ClampingScrollPhysics(),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          ValueListenableBuilder<List<UserServer>>(
-            valueListenable: _userServersNotifier,
-            builder: (context, userServers, _) {
-              return ConnectionPanel(
-                ipController: _ipController,
-                portController: _portController,
-                broadcastingNotifier: _broadcastingNotifier,
-                onStartBroadcast: _startBroadcast,
-                onStopBroadcast: _stopBroadcast,
-                savedServers: userServers,
-                onServerSelected: _onUserServerSelected,
-                onManageServers: _showManageServersDialog,
-                selectedProfile: _selectedProfile,
-                onProfileChanged: (profile) {
-                  setState(() {
-                    _selectedProfile = profile;
-                  });
-                },
-              );
-            },
-          ),
-          const SizedBox(height: 16),
-          _buildConsoleSection(),
-          const SizedBox(height: 16),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildDesktopLayout() {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        return SingleChildScrollView(
-          controller: _desktopScrollController,
-          physics: const ClampingScrollPhysics(),
-          child: ConstrainedBox(
-            constraints: BoxConstraints(minHeight: constraints.maxHeight),
-            child: Column(
-              children: [
-                ValueListenableBuilder<List<UserServer>>(
-                  valueListenable: _userServersNotifier,
-                  builder: (context, userServers, _) {
-                    return ConnectionPanel(
-                      ipController: _ipController,
-                      portController: _portController,
-                      broadcastingNotifier: _broadcastingNotifier,
-                      onStartBroadcast: _startBroadcast,
-                      onStopBroadcast: _stopBroadcast,
-                      savedServers: userServers,
-                      onServerSelected: _onUserServerSelected,
-                      onManageServers: _showManageServersDialog,
-                      selectedProfile: _selectedProfile,
-                      onProfileChanged: (profile) {
-                        setState(() {
-                          _selectedProfile = profile;
-                        });
-                      },
-                    );
-                  },
-                ),
-                const SizedBox(height: 16),
-                _buildConsoleSection(),
-                const SizedBox(height: 16),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
   Widget _buildConsoleSection() {
     return Center(
       child: ConstrainedBox(
@@ -693,9 +904,7 @@ class _HomeScreenState extends State<HomeScreen>
             children: [
               InkWell(
                 onTap: () {
-                  setState(() {
-                    _consoleExpanded = !_consoleExpanded;
-                  });
+                  setState(() => _consoleExpanded = !_consoleExpanded);
                 },
                 borderRadius: BorderRadius.vertical(
                   top: const Radius.circular(12),
@@ -823,8 +1032,9 @@ class _HomeScreenState extends State<HomeScreen>
                               Text(
                                 'No logs yet',
                                 style: TextStyle(
-                                  color:
-                                      AppTheme.primaryAccent.withOpacity(0.5),
+                                  color: AppTheme.primaryAccent.withOpacity(
+                                    0.5,
+                                  ),
                                   fontSize: 14,
                                 ),
                               ),
@@ -840,7 +1050,6 @@ class _HomeScreenState extends State<HomeScreen>
                           ),
                         );
                       }
-
                       return ListView.builder(
                         controller: _scrollController,
                         padding: const EdgeInsets.all(12),
@@ -865,41 +1074,6 @@ class _HomeScreenState extends State<HomeScreen>
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  Color _getLogColor(String log) {
-    if (log.contains('[ERROR]')) {
-      return AppTheme.error;
-    } else if (log.contains('[WARN]')) {
-      return AppTheme.warning;
-    } else if (log.contains('[INFO]')) {
-      return AppTheme.info;
-    } else if (log.contains('[DEBUG]')) {
-      return AppTheme.success;
-    }
-    return AppTheme.textSecondary;
-  }
-
-  void _showHelpDialog(ThemeData theme) {
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        backgroundColor: theme.colorScheme.surface,
-        title: const Text('How to use NetherLink'),
-        content: const SingleChildScrollView(
-          child: Text(AppConstants.helpText),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            style: TextButton.styleFrom(
-              foregroundColor: AppTheme.primaryAccent,
-            ),
-            child: const Text('Close'),
-          ),
-        ],
       ),
     );
   }
@@ -931,19 +1105,20 @@ class _AnimatedSupportButtonState extends State<_AnimatedSupportButton>
 
     _heartbeatAnimation = TweenSequence<double>([
       TweenSequenceItem(
-        tween: Tween<double>(begin: 1.0, end: 1.2)
-            .chain(CurveTween(curve: Curves.easeOut)),
+        tween: Tween<double>(
+          begin: 1.0,
+          end: 1.2,
+        ).chain(CurveTween(curve: Curves.easeOut)),
         weight: 30,
       ),
       TweenSequenceItem(
-        tween: Tween<double>(begin: 1.2, end: 1.0)
-            .chain(CurveTween(curve: Curves.easeIn)),
+        tween: Tween<double>(
+          begin: 1.2,
+          end: 1.0,
+        ).chain(CurveTween(curve: Curves.easeIn)),
         weight: 30,
       ),
-      TweenSequenceItem(
-        tween: Tween<double>(begin: 1.0, end: 1.0),
-        weight: 40,
-      ),
+      TweenSequenceItem(tween: Tween<double>(begin: 1.0, end: 1.0), weight: 40),
     ]).animate(_controller);
 
     _colorAnimation = ColorTween(

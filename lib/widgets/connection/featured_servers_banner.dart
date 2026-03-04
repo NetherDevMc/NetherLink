@@ -25,15 +25,13 @@ class _FeaturedServersBannerState extends State<FeaturedServersBanner> {
   @override
   void initState() {
     super.initState();
-    
+
     _shuffledServers = List.from(widget.servers)..shuffle(Random());
-    
+
     final randomStart = Random().nextInt(_shuffledServers.length);
-    _pageController = PageController(
-      initialPage: randomStart,
-    );
+    _pageController = PageController(initialPage: randomStart);
     _currentPage = randomStart;
-    
+
     Future.delayed(const Duration(seconds: 4), _autoScroll);
   }
 
@@ -41,7 +39,7 @@ class _FeaturedServersBannerState extends State<FeaturedServersBanner> {
     if (!mounted || _shuffledServers.isEmpty) return;
 
     final nextPage = (_currentPage + 1) % _shuffledServers.length;
-    
+
     _pageController.animateToPage(
       nextPage,
       duration: const Duration(milliseconds: 400),
@@ -109,11 +107,7 @@ class _FeaturedServersBannerState extends State<FeaturedServersBanner> {
               const Spacer(),
               Row(
                 children: [
-                  Icon(
-                    Icons.swipe,
-                    size: 14,
-                    color: AppTheme.textMuted,
-                  ),
+                  Icon(Icons.swipe, size: 14, color: AppTheme.textMuted),
                   const SizedBox(width: 4),
                   Text(
                     'Swipe',
