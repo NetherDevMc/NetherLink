@@ -39,6 +39,8 @@ class _HomeScreenState extends State<HomeScreen>
   bool _consoleExpanded = false;
   bool _consoleDialogOpen = false;
 
+  bool _nintendoDnsMode = false;
+
   final TextEditingController _ipController = TextEditingController(
     text: AppConstants.defaultServerAddress,
   );
@@ -279,6 +281,60 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 
+  Map<String, String?> _getRelayMeta(String? ip) {
+    for (final srv in AppConstants.relayServers) {
+      if (srv['ip'] == ip) {
+        return {'name': srv['name'], 'ip': srv['ip']};
+      }
+    }
+    return {'name': 'Relay', 'ip': ip};
+  }
+
+  Future<void> _showNintendoDnsModal() async {
+    final meta = _getRelayMeta(_selectedRelayIp);
+
+    await showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppTheme.surfaceDark,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Text(
+          'Nintendo Switch (DNS mode)',
+          style: TextStyle(color: AppTheme.textPrimary),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Selected relay:',
+              style: TextStyle(color: AppTheme.textMuted),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              '${meta['name']} — ${meta['ip']}',
+              style: const TextStyle(
+                color: AppTheme.textPrimary,
+                fontFamily: 'monospace',
+              ),
+            ),
+            const SizedBox(height: 14),
+            Text(
+              'Config was sent to the relay.\n\nNow continue with your Nintendo DNS steps on the Switch (set your DNS server, then join via the server entry you use for NetherLink).',
+              style: TextStyle(color: AppTheme.textSecondary),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text('OK', style: TextStyle(color: AppTheme.textMuted)),
+          ),
+        ],
+      ),
+    );
+  }
+
   Future<void> _startBroadcast() async {
     if (_selectedProfile == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -290,10 +346,11 @@ class _HomeScreenState extends State<HomeScreen>
       );
       return;
     }
-    logger.info('Starting NetherLink');
+
     final remoteHost = _ipController.text.trim();
     final remotePortParsed = int.tryParse(_portController.text);
     final username = _selectedProfile!.username;
+
     if (remoteHost.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -303,6 +360,7 @@ class _HomeScreenState extends State<HomeScreen>
       );
       return;
     }
+
     if (remotePortParsed == null ||
         remotePortParsed < 1 ||
         remotePortParsed > 65535) {
@@ -315,18 +373,47 @@ class _HomeScreenState extends State<HomeScreen>
       );
       return;
     }
+
+    if (_nintendoDnsMode) {
+      logger.info('Nintendo DNS mode: sending config only...');
+      final ok = await _broadcastManager.sendRelayConfigOnly(
+        remoteHost,
+        remotePortParsed,
+        username,
+        relayIp: _selectedRelayIp,
+      );
+
+      if (ok) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('✅ DNS config sent to relay'),
+            backgroundColor: AppTheme.primaryAccent,
+            duration: const Duration(seconds: 2),
+          ),
+        );
+        await _showNintendoDnsModal();
+      }
+
+      return;
+    }
+
+    logger.info('Starting NetherLink');
+
     try {
       await WakelockPlus.enable();
     } catch (e) {
       logger.error('Failed to enable wakelock: $e');
     }
+
     final success = await _broadcastManager.startBroadcast(
       remoteHost,
       remotePortParsed,
       username,
       relayIp: _selectedRelayIp,
     );
+
     _broadcastingNotifier.value = _broadcastManager.isBroadcasting;
+
     if (_broadcastManager.isBroadcasting && success) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -617,6 +704,11 @@ class _HomeScreenState extends State<HomeScreen>
                   setState(() => _selectedRelayIp = ip);
                   RelayPreferenceStorage.saveSelectedRelayIp(ip);
                 },
+
+                nintendoDnsMode: _nintendoDnsMode,
+                onNintendoDnsModeChanged: (value) {
+                  setState(() => _nintendoDnsMode = value);
+                },
               );
             },
           ),
@@ -656,6 +748,11 @@ class _HomeScreenState extends State<HomeScreen>
                       onRelayChanged: (ip) {
                         setState(() => _selectedRelayIp = ip);
                         RelayPreferenceStorage.saveSelectedRelayIp(ip);
+                      },
+
+                      nintendoDnsMode: _nintendoDnsMode,
+                      onNintendoDnsModeChanged: (value) {
+                        setState(() => _nintendoDnsMode = value);
                       },
                     );
                   },

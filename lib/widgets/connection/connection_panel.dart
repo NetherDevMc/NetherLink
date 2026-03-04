@@ -25,6 +25,8 @@ class ConnectionPanel extends StatefulWidget {
     required this.onProfileChanged,
     required this.selectedRelayIp,
     required this.onRelayChanged,
+    required this.nintendoDnsMode,
+    required this.onNintendoDnsModeChanged,
   });
 
   final TextEditingController ipController;
@@ -39,6 +41,8 @@ class ConnectionPanel extends StatefulWidget {
   final Function(BedrockProfile?) onProfileChanged;
   final String? selectedRelayIp;
   final void Function(String?) onRelayChanged;
+  final bool nintendoDnsMode;
+  final ValueChanged<bool> onNintendoDnsModeChanged;
 
   @override
   State<ConnectionPanel> createState() => _ConnectionPanelState();
@@ -47,6 +51,8 @@ class ConnectionPanel extends StatefulWidget {
 class _ConnectionPanelState extends State<ConnectionPanel> {
   UserServer? _selectedServer;
   Future<List<FeaturedServer>>? _featuredServersFuture;
+
+  bool _advancedExpanded = false;
 
   @override
   void initState() {
@@ -79,6 +85,7 @@ class _ConnectionPanelState extends State<ConnectionPanel> {
 
               _buildSectionDivider('SERVER'),
               const SizedBox(height: 20),
+
               ValueListenableBuilder<bool>(
                 valueListenable: widget.broadcastingNotifier,
                 builder: (context, broadcasting, _) {
@@ -90,6 +97,7 @@ class _ConnectionPanelState extends State<ConnectionPanel> {
                 },
               ),
               const SizedBox(height: 16),
+
               LayoutBuilder(
                 builder: (context, constraints) {
                   final isNarrow =
@@ -107,18 +115,23 @@ class _ConnectionPanelState extends State<ConnectionPanel> {
                   );
                 },
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 12),
 
-              RelaySelector(
-                selectedIp: widget.selectedRelayIp,
-                onChanged: widget.onRelayChanged,
+              ValueListenableBuilder<bool>(
+                valueListenable: widget.broadcastingNotifier,
+                builder: (context, broadcasting, _) {
+                  return _buildAdvancedSection(theme, broadcasting);
+                },
               ),
               const SizedBox(height: 16),
 
               ValueListenableBuilder<bool>(
                 valueListenable: widget.broadcastingNotifier,
                 builder: (context, broadcasting, _) {
-                  return _buildActionButton(broadcasting);
+                  return _buildActionButton(
+                    broadcasting: broadcasting,
+                    nintendoDnsMode: widget.nintendoDnsMode,
+                  );
                 },
               ),
 
@@ -158,6 +171,116 @@ class _ConnectionPanelState extends State<ConnectionPanel> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildAdvancedSection(ThemeData theme, bool broadcasting) {
+    final advancedEnabled = !broadcasting;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        InkWell(
+          borderRadius: BorderRadius.circular(10),
+          onTap: advancedEnabled
+              ? () => setState(() => _advancedExpanded = !_advancedExpanded)
+              : null,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+            decoration: BoxDecoration(
+              color: AppTheme.surfaceLight.withOpacity(0.25),
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: AppTheme.borderGray),
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.tune,
+                  size: 18,
+                  color: advancedEnabled
+                      ? AppTheme.textMuted
+                      : AppTheme.textMuted.withOpacity(0.5),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    'Advanced',
+                    style: TextStyle(
+                      color: advancedEnabled
+                          ? AppTheme.textPrimary
+                          : AppTheme.textPrimary.withOpacity(0.6),
+                      fontWeight: FontWeight.w700,
+                      fontSize: 14,
+                    ),
+                  ),
+                ),
+                AnimatedRotation(
+                  duration: const Duration(milliseconds: 200),
+                  turns: _advancedExpanded ? 0.5 : 0.0,
+                  child: Icon(
+                    Icons.expand_more,
+                    color: advancedEnabled
+                        ? AppTheme.primaryAccent
+                        : AppTheme.primaryAccent.withOpacity(0.4),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+
+        AnimatedCrossFade(
+          duration: const Duration(milliseconds: 220),
+          crossFadeState: _advancedExpanded
+              ? CrossFadeState.showSecond
+              : CrossFadeState.showFirst,
+          firstChild: const SizedBox.shrink(),
+          secondChild: Padding(
+            padding: const EdgeInsets.only(top: 12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    color: AppTheme.surfaceLight.withOpacity(0.3),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: AppTheme.borderGray),
+                  ),
+                  child: SwitchListTile(
+                    title: const Text(
+                      'Nintendo Switch (DNS mode)',
+                      style: TextStyle(
+                        color: AppTheme.textPrimary,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    subtitle: Text(
+                      'Sends config to relay only (no LAN broadcast)',
+                      style: TextStyle(color: AppTheme.textMuted, fontSize: 13),
+                    ),
+                    value: widget.nintendoDnsMode,
+                    onChanged: broadcasting
+                        ? null
+                        : (value) => widget.onNintendoDnsModeChanged(value),
+                    activeColor: AppTheme.primaryAccent,
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 6,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+
+                RelaySelector(
+                  selectedIp: widget.selectedRelayIp,
+                  onChanged: widget.onRelayChanged,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -262,9 +385,7 @@ class _ConnectionPanelState extends State<ConnectionPanel> {
                       isExpanded: true,
                       menuMaxHeight: 300,
                       items: _buildProfileMenuItems(profiles),
-                      onChanged: (profile) {
-                        widget.onProfileChanged(profile);
-                      },
+                      onChanged: (profile) => widget.onProfileChanged(profile),
                     ),
             ),
             const SizedBox(width: 8),
@@ -507,86 +628,200 @@ class _ConnectionPanelState extends State<ConnectionPanel> {
     bool broadcasting,
     bool isNarrow,
   ) {
-    final ipField = TextField(
-      controller: widget.ipController,
-      enabled: !broadcasting,
-      style: const TextStyle(color: AppTheme.textPrimary),
-      decoration: InputDecoration(
-        labelText: 'Server Address',
-        hintText: 'play.example.com',
-        hintStyle: TextStyle(color: AppTheme.textMuted),
-        prefixIcon: const Icon(Icons.dns, color: AppTheme.primaryAccent),
-        labelStyle: const TextStyle(color: AppTheme.primaryAccent),
-        filled: true,
-        fillColor: AppTheme.surfaceLight,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide.none,
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(color: AppTheme.borderGray),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: AppTheme.primaryAccent, width: 2),
-        ),
-        disabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(color: AppTheme.borderGray),
-        ),
-      ),
-    );
-
-    final portField = TextField(
-      controller: widget.portController,
-      enabled: !broadcasting,
-      keyboardType: TextInputType.number,
-      style: const TextStyle(color: AppTheme.textPrimary),
-      decoration: InputDecoration(
-        labelText: 'Port',
-        hintText: '19132',
-        hintStyle: TextStyle(color: AppTheme.textMuted),
-        prefixIcon: const Icon(
-          Icons.settings_ethernet,
-          color: AppTheme.primaryAccent,
-        ),
-        labelStyle: const TextStyle(color: AppTheme.primaryAccent),
-        filled: true,
-        fillColor: AppTheme.surfaceLight,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide.none,
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(color: AppTheme.borderGray),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: AppTheme.primaryAccent, width: 2),
-        ),
-        disabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(color: AppTheme.borderGray),
-        ),
-      ),
-    );
-
     if (isNarrow) {
-      return Column(children: [ipField, const SizedBox(height: 12), portField]);
+      return Column(
+        children: [
+          TextField(
+            controller: widget.ipController,
+            enabled: !broadcasting,
+            style: const TextStyle(color: AppTheme.textPrimary),
+            decoration: InputDecoration(
+              labelText: 'Server Address',
+              hintText: 'play.example.com',
+              hintStyle: TextStyle(color: AppTheme.textMuted),
+              prefixIcon: const Icon(Icons.dns, color: AppTheme.primaryAccent),
+              labelStyle: const TextStyle(color: AppTheme.primaryAccent),
+              filled: true,
+              fillColor: AppTheme.surfaceLight,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide.none,
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(color: AppTheme.borderGray),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: const BorderSide(
+                  color: AppTheme.primaryAccent,
+                  width: 2,
+                ),
+              ),
+              disabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(color: AppTheme.borderGray),
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+          TextField(
+            controller: widget.portController,
+            enabled: !broadcasting,
+            keyboardType: TextInputType.number,
+            style: const TextStyle(color: AppTheme.textPrimary),
+            decoration: InputDecoration(
+              labelText: 'Port',
+              hintText: '19132',
+              hintStyle: TextStyle(color: AppTheme.textMuted),
+              prefixIcon: const Icon(
+                Icons.settings_ethernet,
+                color: AppTheme.primaryAccent,
+              ),
+              labelStyle: const TextStyle(color: AppTheme.primaryAccent),
+              filled: true,
+              fillColor: AppTheme.surfaceLight,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide.none,
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(color: AppTheme.borderGray),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: const BorderSide(
+                  color: AppTheme.primaryAccent,
+                  width: 2,
+                ),
+              ),
+              disabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(color: AppTheme.borderGray),
+              ),
+            ),
+          ),
+        ],
+      );
     }
 
     return Row(
       children: [
-        Expanded(flex: 3, child: ipField),
+        Expanded(
+          flex: 3,
+          child: TextField(
+            controller: widget.ipController,
+            enabled: !broadcasting,
+            style: const TextStyle(color: AppTheme.textPrimary),
+            decoration: InputDecoration(
+              labelText: 'Server Address',
+              hintText: 'play.example.com',
+              hintStyle: TextStyle(color: AppTheme.textMuted),
+              prefixIcon: const Icon(Icons.dns, color: AppTheme.primaryAccent),
+              labelStyle: const TextStyle(color: AppTheme.primaryAccent),
+              filled: true,
+              fillColor: AppTheme.surfaceLight,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide.none,
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(color: AppTheme.borderGray),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: const BorderSide(
+                  color: AppTheme.primaryAccent,
+                  width: 2,
+                ),
+              ),
+              disabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(color: AppTheme.borderGray),
+              ),
+            ),
+          ),
+        ),
         const SizedBox(width: 12),
-        Expanded(flex: 1, child: portField),
+        Expanded(
+          flex: 1,
+          child: TextField(
+            controller: widget.portController,
+            enabled: !broadcasting,
+            keyboardType: TextInputType.number,
+            style: const TextStyle(color: AppTheme.textPrimary),
+            decoration: InputDecoration(
+              labelText: 'Port',
+              hintText: '19132',
+              hintStyle: TextStyle(color: AppTheme.textMuted),
+              labelStyle: const TextStyle(color: AppTheme.primaryAccent),
+              filled: true,
+              fillColor: AppTheme.surfaceLight,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide.none,
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(color: AppTheme.borderGray),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: const BorderSide(
+                  color: AppTheme.primaryAccent,
+                  width: 2,
+                ),
+              ),
+              disabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(color: AppTheme.borderGray),
+              ),
+            ),
+          ),
+        ),
       ],
     );
   }
 
-  Widget _buildActionButton(bool broadcasting) {
+  Widget _buildActionButton({
+    required bool broadcasting,
+    required bool nintendoDnsMode,
+  }) {
+    if (nintendoDnsMode) {
+      return SizedBox(
+        width: double.infinity,
+        child: ElevatedButton(
+          onPressed: widget.onStartBroadcast,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppTheme.primaryAccent,
+            foregroundColor: Colors.white,
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            elevation: 2,
+          ),
+          child: const Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.dns, size: 20),
+              SizedBox(width: 12),
+              Text(
+                'START DNS (NINTENDO)',
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 0.5,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(

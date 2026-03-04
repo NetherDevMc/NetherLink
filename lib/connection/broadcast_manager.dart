@@ -76,13 +76,50 @@ class BroadcastManager {
     },
   ];
 
+  Future<bool> sendRelayConfigOnly(
+    String remoteHost,
+    int remotePort,
+    String username, {
+    String? relayIp,
+  }) async {
+    final usedRelayIp = relayIp ?? relayServers[0]['ip']!;
+    const int RELAY_CONFIG_PORT = 19133;
+
+    try {
+      logger.info('Sending config (DNS mode) to NetherLink server at $usedRelayIp...');
+
+      final success = await RelayConfigSender.sendConfigSimple(
+        relayIp: usedRelayIp,
+        relayConfigPort: RELAY_CONFIG_PORT,
+        remoteServerIp: remoteHost,
+        remoteServerPort: remotePort,
+        bedrockUsername: username,
+      );
+
+      if (!success) {
+        logger.error('Failed to connect to NetherLink relay server');
+        logger.error('The relay server might be offline or unreachable');
+        onRelayError?.call(
+          'Unable to connect to NetherLink relay server. Please check your internet connection or try again later.',
+        );
+        return false;
+      }
+
+      logger.info('✅ Config sent successfully (DNS mode).');
+      return true;
+    } catch (e) {
+      logger.error('Error sending config (DNS mode): $e');
+      onRelayError?.call('Failed to send config: $e');
+      return false;
+    }
+  }
+
   Future<bool> startBroadcast(
-      String remoteHost,
-      int remotePort,
-      String username, {
-        String? relayIp, // optioneel: kom uit dropdown
-      }) async {
-    // Standaard op EU als relayIp niet gegeven is
+    String remoteHost,
+    int remotePort,
+    String username, {
+    String? relayIp,
+  }) async {
     final usedRelayIp = relayIp ?? relayServers[0]['ip']!;
     const int RELAY_CLIENT_PORT = 19132;
     const int RELAY_CONFIG_PORT = 19133;
@@ -134,10 +171,10 @@ class BroadcastManager {
       socketHandler.setBroadcasting(true);
 
       _subscriptionIPv4 = _socketIPv4!.listen(
-            (event) => socketHandler.handleSocketEvent(_socketIPv4!, event),
+        (event) => socketHandler.handleSocketEvent(_socketIPv4!, event),
       );
       _subscriptionIPv6 = _socketIPv6!.listen(
-            (event) => socketHandler.handleSocketEvent(_socketIPv6!, event),
+        (event) => socketHandler.handleSocketEvent(_socketIPv6!, event),
       );
 
       logger.info('NetherLink started broadcasting');
