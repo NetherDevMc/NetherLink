@@ -14,7 +14,6 @@ class RelayConfigSender {
     required int relayConfigPort,
     required String remoteServerIp,
     required int remoteServerPort,
-    required String bedrockUsername,
   }) async {
     RawDatagramSocket? socket;
     bool receivedAck = false;
@@ -26,11 +25,9 @@ class RelayConfigSender {
       final packet = _encodePacket(
         remoteServerIp: remoteServerIp,
         remoteServerPort: remoteServerPort,
-        bedrockUsername: bedrockUsername,
       );
 
       final address = InternetAddress(relayIp);
-
       final completer = Completer<bool>();
       late StreamSubscription subscription;
 
@@ -55,8 +52,9 @@ class RelayConfigSender {
       });
 
       socket.send(packet, address, relayConfigPort);
-      print('📤 Config sent to $relayIp:$relayConfigPort');
-      print(' -> $remoteServerIp:$remoteServerPort (user: $bedrockUsername)');
+      print(
+        '📤 Config sent to $relayIp:$relayConfigPort -> $remoteServerIp:$remoteServerPort',
+      );
 
       try {
         await completer.future.timeout(
@@ -88,10 +86,8 @@ class RelayConfigSender {
   static Uint8List _encodePacket({
     required String remoteServerIp,
     required int remoteServerPort,
-    required String bedrockUsername,
   }) {
     final ipBytes = utf8.encode(remoteServerIp);
-    final usernameBytes = utf8.encode(bedrockUsername);
 
     final buffer = BytesBuilder();
     buffer.add(MAGIC);
@@ -105,11 +101,6 @@ class RelayConfigSender {
     // Port
     buffer.addByte(remoteServerPort >> 8);
     buffer.addByte(remoteServerPort & 0xFF);
-
-    // Username
-    buffer.addByte(usernameBytes.length >> 8);
-    buffer.addByte(usernameBytes.length & 0xFF);
-    buffer.add(usernameBytes);
 
     return buffer.toBytes();
   }

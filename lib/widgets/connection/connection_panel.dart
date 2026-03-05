@@ -1,12 +1,10 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../../constants/app_constants.dart';
 import '../../theme/app_theme.dart';
 import '../../util/user_servers.dart';
-import '../../util/bedrock_profile.dart';
-import '../../util/profile_storage.dart';
 import '../../util/featured_servers.dart';
 import '../../services/featured_servers_service.dart';
-import '../dialogs/profile_management_dialog.dart';
 import 'featured_servers_banner.dart';
 import '../components/relay_selector.dart';
 
@@ -21,8 +19,6 @@ class ConnectionPanel extends StatefulWidget {
     required this.savedServers,
     required this.onServerSelected,
     required this.onManageServers,
-    required this.selectedProfile,
-    required this.onProfileChanged,
     required this.selectedRelayIp,
     required this.onRelayChanged,
     required this.nintendoDnsMode,
@@ -37,8 +33,6 @@ class ConnectionPanel extends StatefulWidget {
   final List<UserServer> savedServers;
   final Function(UserServer) onServerSelected;
   final VoidCallback onManageServers;
-  final BedrockProfile? selectedProfile;
-  final Function(BedrockProfile?) onProfileChanged;
   final String? selectedRelayIp;
   final void Function(String?) onRelayChanged;
   final bool nintendoDnsMode;
@@ -48,124 +42,587 @@ class ConnectionPanel extends StatefulWidget {
   State<ConnectionPanel> createState() => _ConnectionPanelState();
 }
 
-class _ConnectionPanelState extends State<ConnectionPanel> {
+class _ConnectionPanelState extends State<ConnectionPanel>
+    with SingleTickerProviderStateMixin {
   UserServer? _selectedServer;
   Future<List<FeaturedServer>>? _featuredServersFuture;
-
-  bool _advancedExpanded = false;
+  late AnimationController _glowController;
+  late Animation<double> _glowAnimation;
 
   @override
   void initState() {
     super.initState();
     _featuredServersFuture = FeaturedServersService.fetchFeaturedServers();
+    _glowController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 3),
+    )..repeat(reverse: true);
+    _glowAnimation = CurvedAnimation(
+      parent: _glowController,
+      curve: Curves.easeInOut,
+    );
+  }
+
+  @override
+  void dispose() {
+    _glowController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Center(
       child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 800),
-        child: Container(
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: theme.colorScheme.surface,
-            borderRadius: BorderRadius.circular(AppConstants.borderRadius),
-            border: Border.all(color: AppTheme.borderGray),
+        constraints: const BoxConstraints(maxWidth: 720),
+        child: ValueListenableBuilder<bool>(
+          valueListenable: widget.broadcastingNotifier,
+          builder: (context, broadcasting, _) {
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                _buildGlassCard(broadcasting),
+                FutureBuilder<List<FeaturedServer>>(
+                  future: _featuredServersFuture,
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                      return const SizedBox.shrink();
+                    }
+                    return Padding(
+                      padding: const EdgeInsets.only(top: 12),
+                      child: FeaturedServersBanner(
+                        servers: snapshot.data!,
+                        onServerTap: (server) {
+                          widget.ipController.text = server.address;
+                          widget.portController.text = server.port.toString();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Selected: ${server.name}'),
+                              duration: const Duration(seconds: 2),
+                              backgroundColor: AppTheme.primaryAccent,
+                            ),
+                          );
+                        },
+                      ),
+                    );
+                  },
+                ),
+              ],
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildGlassCard(bool broadcasting) {
+    return AnimatedBuilder(
+      animation: _glowAnimation,
+      builder: (context, child) {
+        return Stack(
+          clipBehavior: Clip.none,
+          children: [
+            Positioned(
+              top: -30,
+              left: -20,
+              child: _glowBlob(
+                color: AppTheme.primaryAccent,
+                size: 180,
+                opacity: 0.10 + (_glowAnimation.value * 0.05),
+              ),
+            ),
+            Positioned(
+              bottom: -20,
+              right: -10,
+              child: _glowBlob(
+                color: Colors.purpleAccent,
+                size: 140,
+                opacity: 0.06 + (_glowAnimation.value * 0.03),
+              ),
+            ),
+            child!,
+          ],
+        );
+      },
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(24),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(24),
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  Colors.white.withOpacity(0.07),
+                  Colors.white.withOpacity(0.03),
+                ],
+              ),
+              border: Border.all(
+                color: Colors.white.withOpacity(0.12),
+                width: 1.5,
+              ),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      _buildServerPickerRow(broadcasting),
+                      const SizedBox(height: 10),
+                      _buildAddressFields(broadcasting),
+                    ],
+                  ),
+                ),
+
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  child: Container(
+                    height: 1,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          Colors.transparent,
+                          Colors.white.withOpacity(0.08),
+                          Colors.white.withOpacity(0.08),
+                          Colors.transparent,
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      _buildRelaySection(broadcasting),
+                      const SizedBox(height: 14),
+                      _buildActionButton(broadcasting: broadcasting),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              _buildSectionDivider('BEDROCK USER'),
-              const SizedBox(height: 20),
-              _buildProfileSelector(theme),
-              const SizedBox(height: 24),
+        ),
+      ),
+    );
+  }
 
-              _buildSectionDivider('SERVER'),
-              const SizedBox(height: 20),
+  Widget _glowBlob({
+    required Color color,
+    required double size,
+    required double opacity,
+  }) {
+    return IgnorePointer(
+      child: Container(
+        width: size,
+        height: size,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          boxShadow: [
+            BoxShadow(
+              color: color.withOpacity(opacity),
+              blurRadius: size,
+              spreadRadius: size * 0.3,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
-              ValueListenableBuilder<bool>(
-                valueListenable: widget.broadcastingNotifier,
-                builder: (context, broadcasting, _) {
-                  return _buildSavedServersDropdown(
-                    context,
-                    theme,
-                    broadcasting,
-                  );
-                },
-              ),
-              const SizedBox(height: 16),
-
-              LayoutBuilder(
-                builder: (context, constraints) {
-                  final isNarrow =
-                      constraints.maxWidth < AppConstants.narrowBreakpoint;
-                  return ValueListenableBuilder<bool>(
-                    valueListenable: widget.broadcastingNotifier,
-                    builder: (context, broadcasting, _) {
-                      return _buildInputFields(
-                        context,
-                        theme,
-                        broadcasting,
-                        isNarrow,
-                      );
-                    },
-                  );
-                },
-              ),
-              const SizedBox(height: 12),
-
-              ValueListenableBuilder<bool>(
-                valueListenable: widget.broadcastingNotifier,
-                builder: (context, broadcasting, _) {
-                  return _buildAdvancedSection(theme, broadcasting);
-                },
-              ),
-              const SizedBox(height: 16),
-
-              ValueListenableBuilder<bool>(
-                valueListenable: widget.broadcastingNotifier,
-                builder: (context, broadcasting, _) {
-                  return _buildActionButton(
-                    broadcasting: broadcasting,
-                    nintendoDnsMode: widget.nintendoDnsMode,
-                  );
-                },
-              ),
-
-              FutureBuilder<List<FeaturedServer>>(
-                future: _featuredServersFuture,
-                builder: (context, snapshot) {
-                  if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return const SizedBox.shrink();
-                  }
-                  return FeaturedServersBanner(
-                    servers: snapshot.data!,
-                    onServerTap: (server) {
-                      widget.ipController.text = server.address;
-                      widget.portController.text = server.port.toString();
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Row(
-                            children: [
-                              const Icon(
-                                Icons.check_circle,
-                                color: Colors.white,
-                                size: 18,
-                              ),
-                              const SizedBox(width: 8),
-                              Text('Selected: ${server.name}'),
-                            ],
-                          ),
-                          duration: const Duration(seconds: 2),
-                          backgroundColor: AppTheme.primaryAccent,
+  Widget _buildServerPickerRow(bool broadcasting) {
+    return Row(
+      children: [
+        Expanded(
+          child: _glassField(
+            height: 48,
+            child: widget.savedServers.isEmpty
+                ? Row(
+                    children: [
+                      Icon(
+                        Icons.bookmark_border_rounded,
+                        size: 15,
+                        color: Colors.white.withOpacity(0.3),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        'No saved servers',
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Colors.white.withOpacity(0.35),
                         ),
-                      );
-                    },
-                  );
-                },
+                      ),
+                    ],
+                  )
+                : DropdownButtonHideUnderline(
+                    child: DropdownButton<UserServer>(
+                      value: _selectedServer,
+                      isExpanded: true,
+                      hint: Row(
+                        children: [
+                          Icon(
+                            Icons.bookmark_border_rounded,
+                            size: 15,
+                            color: Colors.white.withOpacity(0.4),
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            'Saved servers',
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: Colors.white.withOpacity(0.4),
+                            ),
+                          ),
+                        ],
+                      ),
+                      icon: Icon(
+                        Icons.keyboard_arrow_down_rounded,
+                        color: Colors.white.withOpacity(0.4),
+                        size: 18,
+                      ),
+                      dropdownColor: const Color(0xFF1E1E2E),
+                      menuMaxHeight: 280,
+                      items: widget.savedServers.map((s) {
+                        return DropdownMenuItem(
+                          value: s,
+                          child: Text(
+                            s.name,
+                            style: const TextStyle(
+                              fontSize: 14,
+                              color: Colors.white,
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                      selectedItemBuilder: (_) => widget.savedServers.map((s) {
+                        return Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            s.name,
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        );
+                      }).toList(),
+                      onChanged: broadcasting
+                          ? null
+                          : (s) {
+                              setState(() => _selectedServer = s);
+                              if (s != null) widget.onServerSelected(s);
+                            },
+                    ),
+                  ),
+          ),
+        ),
+        const SizedBox(width: 8),
+        _glassIconButton(
+          icon: Icons.tune_rounded,
+          tooltip: 'Manage servers',
+          onPressed: broadcasting ? null : widget.onManageServers,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildAddressFields(bool broadcasting) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final narrow = constraints.maxWidth < AppConstants.narrowBreakpoint;
+
+        final ip = _glassTextField(
+          controller: widget.ipController,
+          enabled: !broadcasting,
+          hint: 'Server address',
+          icon: Icons.language_rounded,
+        );
+        final port = _glassTextField(
+          controller: widget.portController,
+          enabled: !broadcasting,
+          hint: 'Port',
+          icon: Icons.tag_rounded,
+          keyboardType: TextInputType.number,
+        );
+
+        if (narrow) {
+          return Column(children: [ip, const SizedBox(height: 8), port]);
+        }
+        return Row(
+          children: [
+            Expanded(flex: 3, child: ip),
+            const SizedBox(width: 8),
+            Expanded(flex: 1, child: port),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _glassTextField({
+    required TextEditingController controller,
+    required bool enabled,
+    required String hint,
+    required IconData icon,
+    TextInputType? keyboardType,
+  }) {
+    return TextField(
+      controller: controller,
+      enabled: enabled,
+      keyboardType: keyboardType,
+      style: TextStyle(
+        fontSize: 14,
+        fontWeight: FontWeight.w500,
+        color: enabled ? Colors.white : Colors.white.withOpacity(0.3),
+      ),
+      decoration: InputDecoration(
+        hintText: hint,
+        hintStyle: TextStyle(
+          fontSize: 13,
+          color: Colors.white.withOpacity(0.3),
+        ),
+        prefixIcon: Padding(
+          padding: const EdgeInsets.only(left: 14, right: 10),
+          child: Icon(
+            icon,
+            size: 16,
+            color: enabled
+                ? Colors.white.withOpacity(0.5)
+                : Colors.white.withOpacity(0.2),
+          ),
+        ),
+        prefixIconConstraints: const BoxConstraints(minWidth: 0, minHeight: 0),
+        isDense: true,
+        filled: true,
+        fillColor: enabled
+            ? Colors.white.withOpacity(0.06)
+            : Colors.white.withOpacity(0.02),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 14,
+          vertical: 14,
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: BorderSide.none,
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: BorderSide(color: Colors.white.withOpacity(0.1)),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: BorderSide(
+            color: AppTheme.primaryAccent.withOpacity(0.6),
+            width: 1.5,
+          ),
+        ),
+        disabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: BorderSide(color: Colors.white.withOpacity(0.04)),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRelaySection(bool broadcasting) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        ClipRRect(
+          borderRadius: BorderRadius.circular(12),
+          child: RelaySelector(
+            selectedIp: widget.selectedRelayIp,
+            onChanged: (ip) {
+              if (!broadcasting) widget.onRelayChanged(ip);
+            },
+          ),
+        ),
+
+        const SizedBox(height: 10),
+
+        GestureDetector(
+          onTap: broadcasting
+              ? null
+              : () => widget.onNintendoDnsModeChanged(!widget.nintendoDnsMode),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              color: widget.nintendoDnsMode && !broadcasting
+                  ? AppTheme.primaryAccent.withOpacity(0.12)
+                  : Colors.white.withOpacity(0.04),
+              border: Border.all(
+                color: widget.nintendoDnsMode && !broadcasting
+                    ? AppTheme.primaryAccent.withOpacity(0.4)
+                    : Colors.white.withOpacity(0.08),
+              ),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: widget.nintendoDnsMode && !broadcasting
+                        ? AppTheme.primaryAccent.withOpacity(0.2)
+                        : Colors.white.withOpacity(0.06),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(
+                    Icons.sports_esports_rounded,
+                    size: 15,
+                    color: broadcasting
+                        ? Colors.white.withOpacity(0.2)
+                        : widget.nintendoDnsMode
+                        ? AppTheme.primaryAccent
+                        : Colors.white.withOpacity(0.4),
+                  ),
+                ),
+                const SizedBox(width: 10),
+
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Nintendo Switch',
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: broadcasting
+                              ? Colors.white.withOpacity(0.2)
+                              : widget.nintendoDnsMode
+                              ? AppTheme.primaryAccent
+                              : Colors.white.withOpacity(0.7),
+                        ),
+                      ),
+                      Text(
+                        'DNS mode — no LAN broadcast',
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: broadcasting
+                              ? Colors.white.withOpacity(0.1)
+                              : Colors.white.withOpacity(0.3),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                _miniToggle(
+                  value: widget.nintendoDnsMode,
+                  enabled: !broadcasting,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _miniToggle({required bool value, required bool enabled}) {
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 200),
+      width: 34,
+      height: 18,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(9),
+        color: value && enabled
+            ? AppTheme.primaryAccent
+            : Colors.white.withOpacity(0.12),
+      ),
+      child: AnimatedAlign(
+        duration: const Duration(milliseconds: 200),
+        alignment: value ? Alignment.centerRight : Alignment.centerLeft,
+        child: Container(
+          width: 14,
+          height: 14,
+          margin: const EdgeInsets.symmetric(horizontal: 2),
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: enabled ? Colors.white : Colors.white.withOpacity(0.3),
+            boxShadow: value && enabled
+                ? [
+                    BoxShadow(
+                      color: AppTheme.primaryAccent.withOpacity(0.4),
+                      blurRadius: 4,
+                    ),
+                  ]
+                : null,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildActionButton({required bool broadcasting}) {
+    final isNintendo = widget.nintendoDnsMode && !broadcasting;
+
+    if (broadcasting) {
+      return _glassButton(
+        onTap: widget.onStopBroadcast,
+        color: AppTheme.error,
+        icon: Icons.stop_rounded,
+        label: 'Stop Broadcasting',
+      );
+    }
+
+    if (isNintendo) {
+      return _glassButton(
+        onTap: widget.onStartBroadcast,
+        color: Colors.purpleAccent,
+        icon: Icons.wifi_tethering_rounded,
+        label: 'Send DNS Config',
+      );
+    }
+
+    return Container(
+      height: 52,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(14),
+        gradient: LinearGradient(
+          colors: [
+            AppTheme.primaryAccent,
+            AppTheme.primaryAccent.withBlue(255),
+          ],
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: AppTheme.primaryAccent.withOpacity(0.45),
+            blurRadius: 16,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(14),
+          onTap: widget.onStartBroadcast,
+          child: const Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.play_arrow_rounded, color: Colors.white, size: 22),
+              SizedBox(width: 8),
+              Text(
+                'Start Broadcasting',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.3,
+                ),
               ),
             ],
           ),
@@ -174,688 +631,104 @@ class _ConnectionPanelState extends State<ConnectionPanel> {
     );
   }
 
-  Widget _buildAdvancedSection(ThemeData theme, bool broadcasting) {
-    final advancedEnabled = !broadcasting;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        InkWell(
-          borderRadius: BorderRadius.circular(10),
-          onTap: advancedEnabled
-              ? () => setState(() => _advancedExpanded = !_advancedExpanded)
-              : null,
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-            decoration: BoxDecoration(
-              color: AppTheme.surfaceLight.withOpacity(0.25),
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: AppTheme.borderGray),
-            ),
-            child: Row(
-              children: [
-                Icon(
-                  Icons.tune,
-                  size: 18,
-                  color: advancedEnabled
-                      ? AppTheme.textMuted
-                      : AppTheme.textMuted.withOpacity(0.5),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Text(
-                    'Advanced',
-                    style: TextStyle(
-                      color: advancedEnabled
-                          ? AppTheme.textPrimary
-                          : AppTheme.textPrimary.withOpacity(0.6),
-                      fontWeight: FontWeight.w700,
-                      fontSize: 14,
-                    ),
-                  ),
-                ),
-                AnimatedRotation(
-                  duration: const Duration(milliseconds: 200),
-                  turns: _advancedExpanded ? 0.5 : 0.0,
-                  child: Icon(
-                    Icons.expand_more,
-                    color: advancedEnabled
-                        ? AppTheme.primaryAccent
-                        : AppTheme.primaryAccent.withOpacity(0.4),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-
-        AnimatedCrossFade(
-          duration: const Duration(milliseconds: 220),
-          crossFadeState: _advancedExpanded
-              ? CrossFadeState.showSecond
-              : CrossFadeState.showFirst,
-          firstChild: const SizedBox.shrink(),
-          secondChild: Padding(
-            padding: const EdgeInsets.only(top: 12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Container(
-                  decoration: BoxDecoration(
-                    color: AppTheme.surfaceLight.withOpacity(0.3),
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: AppTheme.borderGray),
-                  ),
-                  child: SwitchListTile(
-                    title: const Text(
-                      'Nintendo Switch (DNS mode)',
-                      style: TextStyle(
-                        color: AppTheme.textPrimary,
-                        fontSize: 15,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    subtitle: Text(
-                      'Sends config to relay only (no LAN broadcast)',
-                      style: TextStyle(color: AppTheme.textMuted, fontSize: 13),
-                    ),
-                    value: widget.nintendoDnsMode,
-                    onChanged: broadcasting
-                        ? null
-                        : (value) => widget.onNintendoDnsModeChanged(value),
-                    activeColor: AppTheme.primaryAccent,
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 6,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-
-                RelaySelector(
-                  selectedIp: widget.selectedRelayIp,
-                  onChanged: widget.onRelayChanged,
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildSectionDivider(String label) {
-    return Row(
-      children: [
-        const Expanded(child: Divider(color: AppTheme.borderGray)),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12),
-          child: Text(
-            label,
-            style: const TextStyle(
-              color: AppTheme.textMuted,
-              fontWeight: FontWeight.w600,
-              fontSize: 11,
-              letterSpacing: 1.2,
-            ),
-          ),
-        ),
-        const Expanded(child: Divider(color: AppTheme.borderGray)),
-      ],
-    );
-  }
-
-  Widget _buildProfileSelector(ThemeData theme) {
-    return FutureBuilder<List<BedrockProfile>>(
-      future: ProfileStorage.loadProfiles(),
-      builder: (context, snapshot) {
-        final profiles = snapshot.data ?? [];
-
-        return Row(
-          children: [
-            Expanded(
-              child: profiles.isEmpty
-                  ? Container(
-                      padding: const EdgeInsets.all(14),
-                      decoration: BoxDecoration(
-                        color: AppTheme.surfaceLight.withOpacity(0.3),
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: AppTheme.borderGray),
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.info_outline,
-                            size: 18,
-                            color: AppTheme.textMuted,
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Text(
-                              'No profiles yet',
-                              style: TextStyle(
-                                fontSize: 13,
-                                color: AppTheme.textMuted,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    )
-                  : DropdownButtonFormField<BedrockProfile>(
-                      value: widget.selectedProfile,
-                      decoration: InputDecoration(
-                        labelText: 'Bedrock User',
-                        labelStyle: const TextStyle(
-                          color: AppTheme.primaryAccent,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 13,
-                        ),
-                        prefixIcon: const Icon(
-                          Icons.person,
-                          color: AppTheme.primaryAccent,
-                        ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide(
-                            color: AppTheme.primaryAccent.withOpacity(0.3),
-                          ),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide(
-                            color: AppTheme.primaryAccent.withOpacity(0.3),
-                          ),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: const BorderSide(
-                            color: AppTheme.primaryAccent,
-                            width: 2,
-                          ),
-                        ),
-                        filled: true,
-                        fillColor: AppTheme.primaryAccent.withOpacity(0.05),
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 12,
-                        ),
-                      ),
-                      hint: const Text('Select a profile'),
-                      isExpanded: true,
-                      menuMaxHeight: 300,
-                      items: _buildProfileMenuItems(profiles),
-                      onChanged: (profile) => widget.onProfileChanged(profile),
-                    ),
-            ),
-            const SizedBox(width: 8),
-            Container(
-              decoration: BoxDecoration(
-                color: AppTheme.primaryAccent.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(
-                  color: AppTheme.primaryAccent.withOpacity(0.3),
-                ),
-              ),
-              child: IconButton(
-                onPressed: () async {
-                  await showDialog(
-                    context: context,
-                    builder: (context) => const ProfileManagementDialog(),
-                  );
-                  setState(() {});
-                },
-                icon: const Icon(Icons.edit, size: 20),
-                color: AppTheme.primaryAccent,
-                tooltip: 'Manage Profiles',
-                padding: const EdgeInsets.all(12),
-              ),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  List<DropdownMenuItem<BedrockProfile>> _buildProfileMenuItems(
-    List<BedrockProfile> profiles,
-  ) {
-    final List<DropdownMenuItem<BedrockProfile>> items = [];
-
-    for (final profile in profiles) {
-      items.add(
-        DropdownMenuItem(
-          value: profile,
-          child: Row(
-            children: [
-              if (profile.isDefault)
-                Container(
-                  margin: const EdgeInsets.only(right: 8),
-                  padding: const EdgeInsets.all(4),
-                  decoration: BoxDecoration(
-                    color: AppTheme.primaryAccent.withOpacity(0.15),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: const Icon(
-                    Icons.star,
-                    size: 14,
-                    color: AppTheme.primaryAccent,
-                  ),
-                ),
-              Expanded(
-                child: Text(
-                  profile.username,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w500,
-                    fontSize: 14,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
-
-    return items;
-  }
-
-  Widget _buildSavedServersDropdown(
-    BuildContext context,
-    ThemeData theme,
-    bool broadcasting,
-  ) {
-    return Row(
-      children: [
-        Expanded(
-          child: widget.savedServers.isEmpty
-              ? Container(
-                  padding: const EdgeInsets.all(14),
-                  decoration: BoxDecoration(
-                    color: AppTheme.surfaceLight.withOpacity(0.3),
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: AppTheme.borderGray),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.info_outline,
-                        size: 18,
-                        color: AppTheme.textMuted,
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Text(
-                          'No saved servers yet',
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: AppTheme.textMuted,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                )
-              : DropdownButtonFormField<UserServer>(
-                  value: _selectedServer,
-                  decoration: InputDecoration(
-                    labelText: 'Saved Servers',
-                    labelStyle: const TextStyle(
-                      color: AppTheme.primaryAccent,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 13,
-                    ),
-                    prefixIcon: const Icon(
-                      Icons.storage,
-                      color: AppTheme.primaryAccent,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(
-                        color: AppTheme.primaryAccent.withOpacity(0.3),
-                      ),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(
-                        color: AppTheme.primaryAccent.withOpacity(0.3),
-                      ),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: const BorderSide(
-                        color: AppTheme.primaryAccent,
-                        width: 2,
-                      ),
-                    ),
-                    filled: true,
-                    fillColor: AppTheme.primaryAccent.withOpacity(0.05),
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 12,
-                    ),
-                  ),
-                  hint: const Text('Select a server or enter manually'),
-                  isExpanded: true,
-                  menuMaxHeight: 300,
-                  items: _buildServerMenuItems(theme),
-                  onChanged: broadcasting
-                      ? null
-                      : (server) {
-                          setState(() => _selectedServer = server);
-                          if (server != null) widget.onServerSelected(server);
-                        },
-                  selectedItemBuilder: (BuildContext context) {
-                    return widget.savedServers.map<Widget>((UserServer server) {
-                      return Text(
-                        server.name,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 14,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 1,
-                      );
-                    }).toList();
-                  },
-                ),
-        ),
-        const SizedBox(width: 8),
-        Container(
-          decoration: BoxDecoration(
-            color: AppTheme.primaryAccent.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: AppTheme.primaryAccent.withOpacity(0.3)),
-          ),
-          child: IconButton(
-            onPressed: broadcasting ? null : widget.onManageServers,
-            icon: const Icon(Icons.edit, size: 20),
-            color: AppTheme.primaryAccent,
-            tooltip: 'Manage Servers',
-            padding: const EdgeInsets.all(12),
-          ),
-        ),
-      ],
-    );
-  }
-
-  List<DropdownMenuItem<UserServer>> _buildServerMenuItems(ThemeData theme) {
-    final List<DropdownMenuItem<UserServer>> items = [];
-
-    for (final server in widget.savedServers) {
-      items.add(
-        DropdownMenuItem(
-          value: server,
-          child: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(
-                  color: AppTheme.primaryAccent.withOpacity(0.15),
-                  borderRadius: BorderRadius.circular(6),
-                ),
-                child: const Icon(
-                  Icons.dns,
-                  color: AppTheme.primaryAccent,
-                  size: 14,
-                ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Text(
-                  server.name,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 14,
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 1,
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
-
-    return items;
-  }
-
-  Widget _buildInputFields(
-    BuildContext context,
-    ThemeData theme,
-    bool broadcasting,
-    bool isNarrow,
-  ) {
-    if (isNarrow) {
-      return Column(
-        children: [
-          TextField(
-            controller: widget.ipController,
-            enabled: !broadcasting,
-            style: const TextStyle(color: AppTheme.textPrimary),
-            decoration: InputDecoration(
-              labelText: 'Server Address',
-              hintText: 'play.example.com',
-              hintStyle: TextStyle(color: AppTheme.textMuted),
-              prefixIcon: const Icon(Icons.dns, color: AppTheme.primaryAccent),
-              labelStyle: const TextStyle(color: AppTheme.primaryAccent),
-              filled: true,
-              fillColor: AppTheme.surfaceLight,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide.none,
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide(color: AppTheme.borderGray),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: const BorderSide(
-                  color: AppTheme.primaryAccent,
-                  width: 2,
-                ),
-              ),
-              disabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide(color: AppTheme.borderGray),
-              ),
-            ),
-          ),
-          const SizedBox(height: 12),
-          TextField(
-            controller: widget.portController,
-            enabled: !broadcasting,
-            keyboardType: TextInputType.number,
-            style: const TextStyle(color: AppTheme.textPrimary),
-            decoration: InputDecoration(
-              labelText: 'Port',
-              hintText: '19132',
-              hintStyle: TextStyle(color: AppTheme.textMuted),
-              prefixIcon: const Icon(
-                Icons.settings_ethernet,
-                color: AppTheme.primaryAccent,
-              ),
-              labelStyle: const TextStyle(color: AppTheme.primaryAccent),
-              filled: true,
-              fillColor: AppTheme.surfaceLight,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide.none,
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide(color: AppTheme.borderGray),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: const BorderSide(
-                  color: AppTheme.primaryAccent,
-                  width: 2,
-                ),
-              ),
-              disabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide(color: AppTheme.borderGray),
-              ),
-            ),
+  Widget _glassButton({
+    required VoidCallback onTap,
+    required Color color,
+    required IconData icon,
+    required String label,
+  }) {
+    return Container(
+      height: 52,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(14),
+        color: color.withOpacity(0.15),
+        border: Border.all(color: color.withOpacity(0.4)),
+        boxShadow: [
+          BoxShadow(
+            color: color.withOpacity(0.2),
+            blurRadius: 12,
+            offset: const Offset(0, 3),
           ),
         ],
-      );
-    }
-
-    return Row(
-      children: [
-        Expanded(
-          flex: 3,
-          child: TextField(
-            controller: widget.ipController,
-            enabled: !broadcasting,
-            style: const TextStyle(color: AppTheme.textPrimary),
-            decoration: InputDecoration(
-              labelText: 'Server Address',
-              hintText: 'play.example.com',
-              hintStyle: TextStyle(color: AppTheme.textMuted),
-              prefixIcon: const Icon(Icons.dns, color: AppTheme.primaryAccent),
-              labelStyle: const TextStyle(color: AppTheme.primaryAccent),
-              filled: true,
-              fillColor: AppTheme.surfaceLight,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide.none,
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide(color: AppTheme.borderGray),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: const BorderSide(
-                  color: AppTheme.primaryAccent,
-                  width: 2,
-                ),
-              ),
-              disabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide(color: AppTheme.borderGray),
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          flex: 1,
-          child: TextField(
-            controller: widget.portController,
-            enabled: !broadcasting,
-            keyboardType: TextInputType.number,
-            style: const TextStyle(color: AppTheme.textPrimary),
-            decoration: InputDecoration(
-              labelText: 'Port',
-              hintText: '19132',
-              hintStyle: TextStyle(color: AppTheme.textMuted),
-              labelStyle: const TextStyle(color: AppTheme.primaryAccent),
-              filled: true,
-              fillColor: AppTheme.surfaceLight,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide.none,
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide(color: AppTheme.borderGray),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: const BorderSide(
-                  color: AppTheme.primaryAccent,
-                  width: 2,
-                ),
-              ),
-              disabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide(color: AppTheme.borderGray),
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildActionButton({
-    required bool broadcasting,
-    required bool nintendoDnsMode,
-  }) {
-    if (nintendoDnsMode) {
-      return SizedBox(
-        width: double.infinity,
-        child: ElevatedButton(
-          onPressed: widget.onStartBroadcast,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppTheme.primaryAccent,
-            foregroundColor: Colors.white,
-            padding: const EdgeInsets.symmetric(vertical: 16),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-            elevation: 2,
-          ),
-          child: const Row(
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(14),
+          onTap: onTap,
+          child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.dns, size: 20),
-              SizedBox(width: 12),
+              Icon(icon, color: color, size: 20),
+              const SizedBox(width: 8),
               Text(
-                'START DNS (NINTENDO)',
+                label,
                 style: TextStyle(
+                  color: color,
                   fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 0.5,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.2,
                 ),
               ),
             ],
           ),
         ),
-      );
-    }
+      ),
+    );
+  }
 
-    return SizedBox(
-      width: double.infinity,
-      child: ElevatedButton(
-        onPressed: broadcasting
-            ? widget.onStopBroadcast
-            : widget.onStartBroadcast,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: broadcasting
-              ? AppTheme.error
-              : AppTheme.primaryAccent,
-          foregroundColor: Colors.white,
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
+  Widget _glassField({required double height, required Widget child}) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(12),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+        child: Container(
+          height: height,
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.06),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.white.withOpacity(0.1)),
           ),
-          elevation: 2,
+          child: child,
         ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              broadcasting ? Icons.stop_circle : Icons.play_circle_filled,
-              size: 20,
-            ),
-            const SizedBox(width: 12),
-            Text(
-              broadcasting ? 'STOP BROADCASTING' : 'START BROADCASTING',
-              style: const TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 0.5,
+      ),
+    );
+  }
+
+  Widget _glassIconButton({
+    required IconData icon,
+    required String tooltip,
+    VoidCallback? onPressed,
+  }) {
+    final enabled = onPressed != null;
+    return Tooltip(
+      message: tooltip,
+      child: GestureDetector(
+        onTap: onPressed,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(12),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+            child: Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(enabled ? 0.07 : 0.03),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: Colors.white.withOpacity(enabled ? 0.12 : 0.05),
+                ),
+              ),
+              child: Icon(
+                icon,
+                size: 18,
+                color: enabled
+                    ? Colors.white.withOpacity(0.7)
+                    : Colors.white.withOpacity(0.2),
               ),
             ),
-          ],
+          ),
         ),
       ),
     );

@@ -1,21 +1,20 @@
 import 'dart:io';
-import 'dart:async';
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../connection/ping_pong_connection.dart';
-import '../connection/broadcast_manager.dart';
+import '../network/ping_pong_connection.dart';
+import '../network/broadcast_manager.dart';
 import '../util/Logger.dart';
 import '../util/user_servers.dart';
 import '../util/user_servers_storage.dart';
-import '../util/bedrock_profile.dart';
-import '../util/profile_storage.dart';
 import '../util/relay_preference_storage.dart';
 import '../constants/app_constants.dart';
 import '../theme/app_theme.dart';
 import '../widgets/connection/connection_panel.dart';
+import '../widgets/console/console_widget.dart';
 import '../widgets/dialogs/manage_servers_dialog.dart';
 import '../widgets/dialogs/support_dialog.dart';
 import '../services/github_update_service.dart';
@@ -28,17 +27,16 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen>
-    with SingleTickerProviderStateMixin {
+class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   late final SocketHandler socketHandler;
   late final BroadcastManager _broadcastManager;
   late final Logger logger;
 
-  BedrockProfile? _selectedProfile;
-  bool _debugEnabled = false;
-  bool _consoleExpanded = false;
-  bool _consoleDialogOpen = false;
+  late AnimationController _bgController;
+  late Animation<double> _bgAnimation;
 
+  bool _debugEnabled = false;
+  bool _consoleDialogOpen = false;
   bool _nintendoDnsMode = false;
 
   final TextEditingController _ipController = TextEditingController(
@@ -63,14 +61,37 @@ class _HomeScreenState extends State<HomeScreen>
   @override
   void initState() {
     super.initState();
+    _bgController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 6),
+    )..repeat(reverse: true);
+    _bgAnimation = CurvedAnimation(
+      parent: _bgController,
+      curve: Curves.easeInOut,
+    );
+
     _initializeComponents();
     _loadUserServers();
     _loadRelayServerPreference();
-    _loadDefaultProfile();
 
     if (Platform.isWindows || Platform.isMacOS) {
       _checkForUpdates();
     }
+  }
+
+  @override
+  void dispose() {
+    _bgController.dispose();
+    _ipController.dispose();
+    _portController.dispose();
+    _scrollController.dispose();
+    _mainScrollController.dispose();
+    _desktopScrollController.dispose();
+    _logsNotifier.dispose();
+    _broadcastingNotifier.dispose();
+    _userServersNotifier.dispose();
+    _stopBroadcast();
+    super.dispose();
   }
 
   Future<void> _loadRelayServerPreference() async {
@@ -88,7 +109,6 @@ class _HomeScreenState extends State<HomeScreen>
       socketHandler: socketHandler,
       logger: logger,
     );
-
     _broadcastManager.onAutoDisconnect = _handleAutoDisconnect;
     _broadcastManager.onRelayError = _handleRelayError;
   }
@@ -115,43 +135,18 @@ class _HomeScreenState extends State<HomeScreen>
     }
   }
 
-  Future<void> _loadDefaultProfile() async {
-    try {
-      final profile = await ProfileStorage.getDefaultProfile();
-      if (mounted) {
-        setState(() {
-          _selectedProfile = profile;
-        });
-        if (profile != null) {
-          logger.info('Loaded default profile: ${profile.username}');
-        } else {
-          logger.info('No default profile found - please create one');
-        }
-      }
-    } catch (e) {
-      logger.error('Failed to load default profile: $e');
-      if (mounted) {
-        setState(() {
-          _selectedProfile = null;
-        });
-      }
-    }
-  }
-
   void _handleAutoDisconnect() {
     if (!mounted) return;
-    setState(() {
-      _broadcastingNotifier.value = false;
-    });
+    setState(() => _broadcastingNotifier.value = false);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Row(
-          children: const [
+        content: const Row(
+          children: [
             Icon(Icons.info_outline, color: Colors.white),
             SizedBox(width: 12),
             Expanded(
               child: Text(
-                'Client disconnected - Broadcast stopped',
+                'Client disconnected — Broadcast stopped',
                 style: TextStyle(fontSize: 15),
               ),
             ),
@@ -198,9 +193,8 @@ class _HomeScreenState extends State<HomeScreen>
   Future<void> _loadUserServers() async {
     try {
       final servers = await UserServersStorage.loadServers();
-      if (servers.isNotEmpty) {
+      if (servers.isNotEmpty)
         logger.debug('Loaded ${servers.length} saved server(s)');
-      }
       _userServersNotifier.value = servers;
     } catch (e) {
       logger.error('Failed to load user servers: $e');
@@ -239,8 +233,7 @@ class _HomeScreenState extends State<HomeScreen>
       );
       return;
     }
-    final logsText = logs.join('\n');
-    await Clipboard.setData(ClipboardData(text: logsText));
+    await Clipboard.setData(ClipboardData(text: logs.join('\n')));
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -281,75 +274,82 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 
+  void _clearLogs() {
+    _logsNotifier.value = [];
+    logger.info('Console cleared');
+  }
+
   Map<String, String?> _getRelayMeta(String? ip) {
     for (final srv in AppConstants.relayServers) {
-      if (srv['ip'] == ip) {
-        return {'name': srv['name'], 'ip': srv['ip']};
-      }
+      if (srv['ip'] == ip) return {'name': srv['name'], 'ip': srv['ip']};
     }
     return {'name': 'Relay', 'ip': ip};
   }
 
   Future<void> _showNintendoDnsModal() async {
     final meta = _getRelayMeta(_selectedRelayIp);
-
     await showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: AppTheme.surfaceDark,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text(
-          'Nintendo Switch (DNS mode)',
-          style: TextStyle(color: AppTheme.textPrimary),
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Selected relay:',
-              style: TextStyle(color: AppTheme.textMuted),
-            ),
-            const SizedBox(height: 6),
-            Text(
-              '${meta['name']} — ${meta['ip']}',
-              style: const TextStyle(
-                color: AppTheme.textPrimary,
-                fontFamily: 'monospace',
+      builder: (context) => BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        child: AlertDialog(
+          backgroundColor: Colors.black.withOpacity(0.6),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+            side: BorderSide(color: Colors.white.withOpacity(0.1)),
+          ),
+          title: const Text(
+            'Nintendo Switch — DNS mode',
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Selected relay:',
+                style: TextStyle(
+                  color: Colors.white.withOpacity(0.5),
+                  fontSize: 12,
+                ),
               ),
-            ),
-            const SizedBox(height: 14),
-            Text(
-              'Config was sent to the relay.\n\nNow continue with your Nintendo DNS steps on the Switch (set your DNS server, then join via the server entry you use for NetherLink).',
-              style: TextStyle(color: AppTheme.textSecondary),
+              const SizedBox(height: 4),
+              Text(
+                '${meta['name']} — ${meta['ip']}',
+                style: TextStyle(
+                  color: AppTheme.primaryAccent,
+                  fontFamily: 'monospace',
+                  fontSize: 13,
+                ),
+              ),
+              const SizedBox(height: 14),
+              Text(
+                'Config was sent to the relay.\n\nNow set your Nintendo DNS and connect via the NetherLink server entry.',
+                style: TextStyle(
+                  color: Colors.white.withOpacity(0.6),
+                  fontSize: 13,
+                  height: 1.5,
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text(
+                'Got it',
+                style: TextStyle(color: AppTheme.primaryAccent),
+              ),
             ),
           ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: Text('OK', style: TextStyle(color: AppTheme.textMuted)),
-          ),
-        ],
       ),
     );
   }
 
   Future<void> _startBroadcast() async {
-    if (_selectedProfile == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('⚠️ Please select a Bedrock user first'),
-          backgroundColor: Colors.orange,
-          duration: Duration(seconds: 3),
-        ),
-      );
-      return;
-    }
-
     final remoteHost = _ipController.text.trim();
     final remotePortParsed = int.tryParse(_portController.text);
-    final username = _selectedProfile!.username;
 
     if (remoteHost.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -360,11 +360,9 @@ class _HomeScreenState extends State<HomeScreen>
       );
       return;
     }
-
     if (remotePortParsed == null ||
         remotePortParsed < 1 ||
         remotePortParsed > 65535) {
-      logger.error('Invalid remote port');
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('⚠️ Invalid port number (1-65535)'),
@@ -379,10 +377,8 @@ class _HomeScreenState extends State<HomeScreen>
       final ok = await _broadcastManager.sendRelayConfigOnly(
         remoteHost,
         remotePortParsed,
-        username,
         relayIp: _selectedRelayIp,
       );
-
       if (ok) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -393,12 +389,10 @@ class _HomeScreenState extends State<HomeScreen>
         );
         await _showNintendoDnsModal();
       }
-
       return;
     }
 
     logger.info('Starting NetherLink');
-
     try {
       await WakelockPlus.enable();
     } catch (e) {
@@ -408,22 +402,18 @@ class _HomeScreenState extends State<HomeScreen>
     final success = await _broadcastManager.startBroadcast(
       remoteHost,
       remotePortParsed,
-      username,
       relayIp: _selectedRelayIp,
     );
-
     _broadcastingNotifier.value = _broadcastManager.isBroadcasting;
 
     if (_broadcastManager.isBroadcasting && success) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Row(
+          content: const Row(
             children: [
-              const Icon(Icons.check_circle, color: Colors.white),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text('Broadcasting as ${_selectedProfile!.username}'),
-              ),
+              Icon(Icons.check_circle, color: Colors.white),
+              SizedBox(width: 12),
+              Text('Broadcasting started'),
             ],
           ),
           backgroundColor: AppTheme.primaryAccent,
@@ -473,206 +463,409 @@ class _HomeScreenState extends State<HomeScreen>
     await showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) {
-        return Dialog.fullscreen(
-          child: SafeArea(
-            child: Column(
-              children: [
-                Container(
-                  height: 54,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 12,
-                  ),
-                  decoration: BoxDecoration(
-                    color: AppTheme.surfaceDark,
-                    border: Border(
-                      bottom: BorderSide(
-                        color: AppTheme.primaryAccent.withOpacity(0.3),
-                      ),
-                    ),
-                  ),
-                  child: Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(6),
-                        decoration: BoxDecoration(
-                          color: AppTheme.primaryAccent.withOpacity(0.15),
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        child: const Icon(
-                          Icons.terminal,
-                          color: AppTheme.primaryAccent,
-                          size: 16,
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      const Expanded(
-                        child: Text(
-                          'Console Output',
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.bold,
-                            color: AppTheme.textPrimary,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      IconButton(
-                        icon: Icon(
-                          _debugEnabled
-                              ? Icons.bug_report
-                              : Icons.bug_report_outlined,
-                          size: 16,
-                        ),
-                        color: _debugEnabled
-                            ? AppTheme.success
-                            : AppTheme.textMuted,
-                        onPressed: _toggleDebugMode,
-                        tooltip: 'Toggle debug',
-                        padding: const EdgeInsets.all(6),
-                        constraints: const BoxConstraints(
-                          minWidth: 32,
-                          minHeight: 32,
-                        ),
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.copy, size: 16),
-                        color: AppTheme.primaryAccent,
-                        onPressed: _copyLogsToClipboard,
-                        tooltip: 'Copy logs',
-                        padding: const EdgeInsets.all(6),
-                        constraints: const BoxConstraints(
-                          minWidth: 32,
-                          minHeight: 32,
-                        ),
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.delete_outline, size: 16),
-                        color: AppTheme.primaryAccent,
-                        onPressed: () {
-                          _logsNotifier.value = [];
-                          logger.info('Console cleared');
-                        },
-                        tooltip: 'Clear logs',
-                        padding: const EdgeInsets.all(6),
-                        constraints: const BoxConstraints(
-                          minWidth: 32,
-                          minHeight: 32,
-                        ),
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.close, size: 20),
-                        color: AppTheme.textPrimary,
-                        onPressed: () => Navigator.of(context).pop(),
-                        tooltip: 'Close console',
-                        padding: const EdgeInsets.all(6),
-                        constraints: const BoxConstraints(
-                          minWidth: 32,
-                          minHeight: 32,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: ValueListenableBuilder<List<String>>(
-                    valueListenable: _logsNotifier,
-                    builder: (context, logs, _) {
-                      if (logs.isEmpty) {
-                        return Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.info_outline,
-                                size: 48,
-                                color: AppTheme.primaryAccent.withOpacity(0.3),
-                              ),
-                              const SizedBox(height: 16),
-                              Text(
-                                'No logs yet',
-                                style: TextStyle(
-                                  color: AppTheme.primaryAccent.withOpacity(
-                                    0.5,
-                                  ),
-                                  fontSize: 14,
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                'Start broadcasting to see output',
-                                style: TextStyle(
-                                  color: AppTheme.textMuted.withOpacity(0.5),
-                                  fontSize: 12,
-                                ),
-                              ),
-                            ],
-                          ),
-                        );
-                      }
-                      return ListView.builder(
-                        controller: _scrollController,
-                        padding: const EdgeInsets.all(12),
-                        itemCount: logs.length,
-                        itemBuilder: (context, index) {
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 2),
-                            child: Text(
-                              logs[index],
-                              style: TextStyle(
-                                fontFamily: 'monospace',
-                                fontSize: 12,
-                                color: _getLogColor(logs[index]),
-                              ),
-                            ),
-                          );
-                        },
-                      );
-                    },
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
+      builder: (context) => ConsoleDialog(
+        logsNotifier: _logsNotifier,
+        scrollController: _scrollController,
+        debugEnabled: _debugEnabled,
+        onToggleDebug: _toggleDebugMode,
+        onClearLogs: _clearLogs,
+        onCopyLogs: _copyLogsToClipboard,
+      ),
     );
     setState(() => _consoleDialogOpen = false);
   }
 
-  @override
-  void dispose() {
-    _ipController.dispose();
-    _portController.dispose();
-    _scrollController.dispose();
-    _mainScrollController.dispose();
-    _desktopScrollController.dispose();
-    _logsNotifier.dispose();
-    _broadcastingNotifier.dispose();
-    _userServersNotifier.dispose();
-    _stopBroadcast();
-    super.dispose();
+  void _showHelpDialog(ThemeData theme) {
+    showDialog(
+      context: context,
+      builder: (_) => BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        child: AlertDialog(
+          backgroundColor: Colors.black.withOpacity(0.6),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+            side: BorderSide(color: Colors.white.withOpacity(0.1)),
+          ),
+          title: const Text(
+            'How to use NetherLink',
+            style: TextStyle(color: Colors.white),
+          ),
+          content: SingleChildScrollView(
+            child: Text(
+              AppConstants.helpText,
+              style: TextStyle(
+                color: Colors.white.withOpacity(0.7),
+                height: 1.5,
+              ),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text(
+                'Close',
+                style: TextStyle(color: AppTheme.primaryAccent),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Scaffold(
-      backgroundColor: theme.colorScheme.background,
-      appBar: _buildAppBar(theme),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            final isMobile =
-                constraints.maxWidth < AppConstants.mobileBreakpoint;
-            return isMobile ? _buildMobileLayout() : _buildDesktopLayout();
-          },
+      backgroundColor: Colors.transparent,
+      body: AnimatedBuilder(
+        animation: _bgAnimation,
+        builder: (context, child) {
+          return Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  Color.lerp(
+                    const Color(0xFF0A0A1A),
+                    const Color(0xFF0D0D20),
+                    _bgAnimation.value,
+                  )!,
+                  Color.lerp(
+                    const Color(0xFF0D0A1F),
+                    const Color(0xFF12091A),
+                    _bgAnimation.value,
+                  )!,
+                  Color.lerp(
+                    const Color(0xFF080D1A),
+                    const Color(0xFF0A1020),
+                    _bgAnimation.value,
+                  )!,
+                ],
+              ),
+            ),
+            child: Stack(
+              children: [
+                _ambientBlob(
+                  top: -100,
+                  left: -80,
+                  size: 350,
+                  color: AppTheme.primaryAccent,
+                  opacity: 0.06 + (_bgAnimation.value * 0.03),
+                ),
+                _ambientBlob(
+                  bottom: 50,
+                  right: -60,
+                  size: 280,
+                  color: Colors.purpleAccent,
+                  opacity: 0.04 + (_bgAnimation.value * 0.02),
+                ),
+                _ambientBlob(
+                  top: 200,
+                  right: 40,
+                  size: 200,
+                  color: Colors.blueAccent,
+                  opacity: 0.03 + (_bgAnimation.value * 0.015),
+                ),
+                child!,
+              ],
+            ),
+          );
+        },
+        child: Column(
+          children: [
+            _buildAppBar(),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    final isMobile =
+                        constraints.maxWidth < AppConstants.mobileBreakpoint;
+                    return isMobile
+                        ? _buildMobileLayout()
+                        : _buildDesktopLayout();
+                  },
+                ),
+              ),
+            ),
+          ],
         ),
       ),
+    );
+  }
+
+  Widget _ambientBlob({
+    double? top,
+    double? bottom,
+    double? left,
+    double? right,
+    required double size,
+    required Color color,
+    required double opacity,
+  }) {
+    return Positioned(
+      top: top,
+      bottom: bottom,
+      left: left,
+      right: right,
+      child: IgnorePointer(
+        child: Container(
+          width: size,
+          height: size,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            boxShadow: [
+              BoxShadow(
+                color: color.withOpacity(opacity),
+                blurRadius: size,
+                spreadRadius: size * 0.4,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAppBar() {
+    return ClipRect(
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+        child: Container(
+          color: Colors.white.withOpacity(0.05),
+          child: SafeArea(
+            bottom: false,
+            child: Container(
+              height: 60,
+              decoration: BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(color: Colors.white.withOpacity(0.08)),
+                ),
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Row(
+                children: [
+                  _buildGlassPill(),
+                  const Spacer(),
+                  if (MediaQuery.of(context).size.width <
+                      AppConstants.mobileBreakpoint) ...[
+                    _glassAppBarButton(
+                      icon: Icons.terminal_rounded,
+                      tooltip: 'Console',
+                      onTap: _consoleDialogOpen ? null : _showConsoleDialog,
+                    ),
+                    const SizedBox(width: 8),
+                  ],
+                  _buildGlassMenuButton(),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildGlassPill() {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(12),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.06),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.white.withOpacity(0.08)),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildSupportButton(),
+              Container(
+                width: 1,
+                height: 20,
+                margin: const EdgeInsets.symmetric(horizontal: 4),
+                color: Colors.white.withOpacity(0.08),
+              ),
+              _buildDiscordButton(),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSupportButton() => _AnimatedSupportButton(
+    onTap: () =>
+        showDialog(context: context, builder: (_) => const SupportDialog()),
+  );
+
+  Widget _buildDiscordButton() {
+    return Tooltip(
+      message: 'Discord',
+      child: InkWell(
+        borderRadius: BorderRadius.circular(8),
+        onTap: () => launchUrl(Uri.parse(AppConstants.discordUrl)),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.discord, color: Color(0xFF7289DA), size: 18),
+              const SizedBox(width: 6),
+              Text(
+                'Join Us',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.white.withOpacity(0.6),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _glassAppBarButton({
+    required IconData icon,
+    required String tooltip,
+    VoidCallback? onTap,
+  }) {
+    final enabled = onTap != null;
+    return Tooltip(
+      message: tooltip,
+      child: GestureDetector(
+        onTap: onTap,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(10),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+            child: Container(
+              width: 38,
+              height: 38,
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(enabled ? 0.07 : 0.03),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: Colors.white.withOpacity(enabled ? 0.1 : 0.04),
+                ),
+              ),
+              child: Icon(
+                icon,
+                size: 17,
+                color: enabled
+                    ? AppTheme.primaryAccent.withOpacity(0.8)
+                    : Colors.white.withOpacity(0.2),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildGlassMenuButton() {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(10),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+        child: PopupMenuButton(
+          padding: EdgeInsets.zero,
+          offset: const Offset(0, 44),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+            side: BorderSide(color: Colors.white.withOpacity(0.1)),
+          ),
+          color: Colors.black.withOpacity(0.7),
+          elevation: 0,
+          icon: Container(
+            width: 38,
+            height: 38,
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.07),
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: Colors.white.withOpacity(0.1)),
+            ),
+            child: Icon(
+              Icons.more_vert_rounded,
+              color: Colors.white.withOpacity(0.7),
+              size: 18,
+            ),
+          ),
+          itemBuilder: (context) => [
+            _glassMenuItem(Icons.open_in_browser_rounded, 'Website', () {
+              Navigator.pop(context);
+              launchUrl(Uri.parse(AppConstants.websiteUrl));
+            }),
+            _glassMenuItem(Icons.help_outline_rounded, 'How to use', () {
+              Navigator.pop(context);
+              _showHelpDialog(Theme.of(context));
+            }),
+          ],
+        ),
+      ),
+    );
+  }
+
+  PopupMenuItem _glassMenuItem(
+    IconData icon,
+    String title,
+    VoidCallback onTap,
+  ) {
+    return PopupMenuItem(
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(10),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(7),
+                decoration: BoxDecoration(
+                  color: AppTheme.primaryAccent.withOpacity(0.15),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(icon, color: AppTheme.primaryAccent, size: 16),
+              ),
+              const SizedBox(width: 12),
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.white,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildConnectionPanel(List<UserServer> userServers) {
+    return ConnectionPanel(
+      ipController: _ipController,
+      portController: _portController,
+      broadcastingNotifier: _broadcastingNotifier,
+      onStartBroadcast: _startBroadcast,
+      onStopBroadcast: _stopBroadcast,
+      savedServers: userServers,
+      onServerSelected: _onUserServerSelected,
+      onManageServers: _showManageServersDialog,
+      selectedRelayIp: _selectedRelayIp,
+      onRelayChanged: (ip) {
+        setState(() => _selectedRelayIp = ip);
+        RelayPreferenceStorage.saveSelectedRelayIp(ip);
+      },
+      nintendoDnsMode: _nintendoDnsMode,
+      onNintendoDnsModeChanged: (value) =>
+          setState(() => _nintendoDnsMode = value),
     );
   }
 
@@ -685,32 +878,8 @@ class _HomeScreenState extends State<HomeScreen>
         children: [
           ValueListenableBuilder<List<UserServer>>(
             valueListenable: _userServersNotifier,
-            builder: (context, userServers, _) {
-              return ConnectionPanel(
-                ipController: _ipController,
-                portController: _portController,
-                broadcastingNotifier: _broadcastingNotifier,
-                onStartBroadcast: _startBroadcast,
-                onStopBroadcast: _stopBroadcast,
-                savedServers: userServers,
-                onServerSelected: _onUserServerSelected,
-                onManageServers: _showManageServersDialog,
-                selectedProfile: _selectedProfile,
-                onProfileChanged: (profile) {
-                  setState(() => _selectedProfile = profile);
-                },
-                selectedRelayIp: _selectedRelayIp,
-                onRelayChanged: (ip) {
-                  setState(() => _selectedRelayIp = ip);
-                  RelayPreferenceStorage.saveSelectedRelayIp(ip);
-                },
-
-                nintendoDnsMode: _nintendoDnsMode,
-                onNintendoDnsModeChanged: (value) {
-                  setState(() => _nintendoDnsMode = value);
-                },
-              );
-            },
+            builder: (context, userServers, _) =>
+                _buildConnectionPanel(userServers),
           ),
           const SizedBox(height: 16),
         ],
@@ -730,455 +899,30 @@ class _HomeScreenState extends State<HomeScreen>
               children: [
                 ValueListenableBuilder<List<UserServer>>(
                   valueListenable: _userServersNotifier,
-                  builder: (context, userServers, _) {
-                    return ConnectionPanel(
-                      ipController: _ipController,
-                      portController: _portController,
-                      broadcastingNotifier: _broadcastingNotifier,
-                      onStartBroadcast: _startBroadcast,
-                      onStopBroadcast: _stopBroadcast,
-                      savedServers: userServers,
-                      onServerSelected: _onUserServerSelected,
-                      onManageServers: _showManageServersDialog,
-                      selectedProfile: _selectedProfile,
-                      onProfileChanged: (profile) {
-                        setState(() => _selectedProfile = profile);
-                      },
-                      selectedRelayIp: _selectedRelayIp,
-                      onRelayChanged: (ip) {
-                        setState(() => _selectedRelayIp = ip);
-                        RelayPreferenceStorage.saveSelectedRelayIp(ip);
-                      },
-
-                      nintendoDnsMode: _nintendoDnsMode,
-                      onNintendoDnsModeChanged: (value) {
-                        setState(() => _nintendoDnsMode = value);
-                      },
-                    );
-                  },
+                  builder: (context, userServers, _) =>
+                      _buildConnectionPanel(userServers),
                 ),
                 const SizedBox(height: 16),
-                _buildConsoleSection(),
+                ConsoleWidget(
+                  logsNotifier: _logsNotifier,
+                  scrollController: _scrollController,
+                  debugEnabled: _debugEnabled,
+                  onToggleDebug: _toggleDebugMode,
+                  onClearLogs: _clearLogs,
+                  onCopyLogs: _copyLogsToClipboard,
+                ),
                 const SizedBox(height: 16),
               ],
             ),
           ),
         );
       },
-    );
-  }
-
-  Color _getLogColor(String log) {
-    if (log.contains('[ERROR]')) return AppTheme.error;
-    if (log.contains('[WARN]')) return AppTheme.warning;
-    if (log.contains('[INFO]')) return AppTheme.info;
-    if (log.contains('[DEBUG]')) return AppTheme.success;
-    return AppTheme.textSecondary;
-  }
-
-  void _showHelpDialog(ThemeData theme) {
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        backgroundColor: theme.colorScheme.surface,
-        title: const Text('How to use NetherLink'),
-        content: const SingleChildScrollView(
-          child: Text(AppConstants.helpText),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            style: TextButton.styleFrom(
-              foregroundColor: AppTheme.primaryAccent,
-            ),
-            child: const Text('Close'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  PreferredSizeWidget _buildAppBar(ThemeData theme) {
-    return AppBar(
-      backgroundColor: theme.colorScheme.surface,
-      elevation: 0,
-      toolbarHeight: 64,
-      automaticallyImplyLeading: false,
-      flexibleSpace: SafeArea(
-        child: Container(
-          decoration: BoxDecoration(
-            border: Border(
-              bottom: BorderSide(
-                color: AppTheme.borderGray.withOpacity(0.2),
-                width: 1,
-              ),
-            ),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: Row(
-              children: [
-                _buildSponsorAndDiscordRow(),
-                const Spacer(),
-                if (MediaQuery.of(context).size.width <
-                    AppConstants.mobileBreakpoint)
-                  IconButton(
-                    padding: const EdgeInsets.all(10),
-                    icon: const Icon(
-                      Icons.terminal,
-                      color: AppTheme.primaryAccent,
-                    ),
-                    tooltip: 'Open Console',
-                    onPressed: _consoleDialogOpen ? null : _showConsoleDialog,
-                  ),
-                const SizedBox(width: 12),
-                _buildMenuButton(theme),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSponsorAndDiscordRow() {
-    return Container(
-      decoration: BoxDecoration(
-        color: AppTheme.surfaceDark.withOpacity(0.30),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          _buildSupportButton(),
-          const SizedBox(width: 5),
-          _buildDiscordIcon(),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildDiscordIcon() {
-    return Tooltip(
-      message: 'Discord',
-      child: InkWell(
-        borderRadius: BorderRadius.circular(7),
-        onTap: () {
-          launchUrl(Uri.parse(AppConstants.discordUrl));
-        },
-        child: Padding(
-          padding: const EdgeInsets.all(7),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Icon(Icons.discord, color: Colors.indigo, size: 22),
-              const SizedBox(width: 6),
-              Text(
-                'Join Us',
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w400,
-                  color: AppTheme.textSecondary.withOpacity(0.8),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildMenuButton(ThemeData theme) {
-    return PopupMenuButton(
-      padding: EdgeInsets.zero,
-      icon: Container(
-        width: 40,
-        height: 40,
-        decoration: BoxDecoration(
-          color: theme.colorScheme.surface,
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(
-            color: AppTheme.borderGray.withOpacity(0.4),
-            width: 1.5,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 4,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: const Center(
-          child: Icon(
-            Icons.more_vert_rounded,
-            color: AppTheme.textPrimary,
-            size: 20,
-          ),
-        ),
-      ),
-      offset: const Offset(0, 48),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      color: theme.colorScheme.surface,
-      elevation: 8,
-      itemBuilder: (context) => [
-        _buildMenuItem(Icons.open_in_browser, 'Website', () {
-          Navigator.pop(context);
-          launchUrl(Uri.parse(AppConstants.websiteUrl));
-        }),
-        _buildMenuItem(Icons.info_outline, 'How to use', () {
-          Navigator.pop(context);
-          _showHelpDialog(theme);
-        }),
-      ],
-    );
-  }
-
-  PopupMenuItem _buildMenuItem(
-    IconData icon,
-    String title,
-    VoidCallback onTap,
-  ) {
-    return PopupMenuItem(
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(8),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
-          child: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: AppTheme.primaryAccent.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Icon(icon, color: AppTheme.primaryAccent, size: 20),
-              ),
-              const SizedBox(width: 12),
-              Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: AppTheme.textPrimary,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSupportButton() {
-    return _AnimatedSupportButton(
-      onTap: () {
-        showDialog(
-          context: context,
-          builder: (context) => const SupportDialog(),
-        );
-      },
-    );
-  }
-
-  Widget _buildConsoleSection() {
-    return Center(
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 800),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeInOut,
-          height: _consoleExpanded ? 400 : 56,
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surface,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AppTheme.borderGray),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              InkWell(
-                onTap: () {
-                  setState(() => _consoleExpanded = !_consoleExpanded);
-                },
-                borderRadius: BorderRadius.vertical(
-                  top: const Radius.circular(12),
-                  bottom: Radius.circular(_consoleExpanded ? 0 : 12),
-                ),
-                child: Container(
-                  height: 54,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 12,
-                  ),
-                  decoration: BoxDecoration(
-                    color: AppTheme.surfaceDark,
-                    borderRadius: BorderRadius.vertical(
-                      top: const Radius.circular(12),
-                      bottom: Radius.circular(_consoleExpanded ? 0 : 12),
-                    ),
-                    border: _consoleExpanded
-                        ? Border(
-                            bottom: BorderSide(
-                              color: AppTheme.primaryAccent.withOpacity(0.3),
-                            ),
-                          )
-                        : null,
-                  ),
-                  child: Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(6),
-                        decoration: BoxDecoration(
-                          color: AppTheme.primaryAccent.withOpacity(0.15),
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        child: const Icon(
-                          Icons.terminal,
-                          color: AppTheme.primaryAccent,
-                          size: 16,
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      const Expanded(
-                        child: Text(
-                          'Console Output',
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.bold,
-                            color: AppTheme.textPrimary,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      if (_consoleExpanded) ...[
-                        IconButton(
-                          icon: Icon(
-                            _debugEnabled
-                                ? Icons.bug_report
-                                : Icons.bug_report_outlined,
-                            size: 16,
-                          ),
-                          color: _debugEnabled
-                              ? AppTheme.success
-                              : AppTheme.textMuted,
-                          onPressed: _toggleDebugMode,
-                          tooltip: 'Toggle debug',
-                          padding: const EdgeInsets.all(6),
-                          constraints: const BoxConstraints(
-                            minWidth: 32,
-                            minHeight: 32,
-                          ),
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.copy, size: 16),
-                          color: AppTheme.primaryAccent,
-                          onPressed: _copyLogsToClipboard,
-                          tooltip: 'Copy logs',
-                          padding: const EdgeInsets.all(6),
-                          constraints: const BoxConstraints(
-                            minWidth: 32,
-                            minHeight: 32,
-                          ),
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.delete_outline, size: 16),
-                          color: AppTheme.primaryAccent,
-                          onPressed: () {
-                            _logsNotifier.value = [];
-                            logger.info('Console cleared');
-                          },
-                          tooltip: 'Clear logs',
-                          padding: const EdgeInsets.all(6),
-                          constraints: const BoxConstraints(
-                            minWidth: 32,
-                            minHeight: 32,
-                          ),
-                        ),
-                      ],
-                      Icon(
-                        _consoleExpanded
-                            ? Icons.expand_less
-                            : Icons.expand_more,
-                        color: AppTheme.primaryAccent,
-                        size: 20,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              if (_consoleExpanded)
-                Expanded(
-                  child: ValueListenableBuilder<List<String>>(
-                    valueListenable: _logsNotifier,
-                    builder: (context, logs, _) {
-                      if (logs.isEmpty) {
-                        return Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.info_outline,
-                                size: 48,
-                                color: AppTheme.primaryAccent.withOpacity(0.3),
-                              ),
-                              const SizedBox(height: 16),
-                              Text(
-                                'No logs yet',
-                                style: TextStyle(
-                                  color: AppTheme.primaryAccent.withOpacity(
-                                    0.5,
-                                  ),
-                                  fontSize: 14,
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                'Start broadcasting to see output',
-                                style: TextStyle(
-                                  color: AppTheme.textMuted.withOpacity(0.5),
-                                  fontSize: 12,
-                                ),
-                              ),
-                            ],
-                          ),
-                        );
-                      }
-                      return ListView.builder(
-                        controller: _scrollController,
-                        padding: const EdgeInsets.all(12),
-                        itemCount: logs.length,
-                        itemBuilder: (context, index) {
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 2),
-                            child: Text(
-                              logs[index],
-                              style: TextStyle(
-                                fontFamily: 'monospace',
-                                fontSize: 12,
-                                color: _getLogColor(logs[index]),
-                              ),
-                            ),
-                          );
-                        },
-                      );
-                    },
-                  ),
-                ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 }
 
 class _AnimatedSupportButton extends StatefulWidget {
   final VoidCallback onTap;
-
   const _AnimatedSupportButton({required this.onTap});
 
   @override
@@ -1188,39 +932,39 @@ class _AnimatedSupportButton extends StatefulWidget {
 class _AnimatedSupportButtonState extends State<_AnimatedSupportButton>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
-  late Animation<double> _heartbeatAnimation;
-  late Animation<Color?> _colorAnimation;
-  bool _isHovering = false;
+  late Animation<double> _pulse;
+  late Animation<Color?> _color;
+  bool _hovering = false;
 
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(
-      duration: const Duration(milliseconds: 1500),
+      duration: const Duration(milliseconds: 1400),
       vsync: this,
     )..repeat(reverse: true);
 
-    _heartbeatAnimation = TweenSequence<double>([
+    _pulse = TweenSequence<double>([
       TweenSequenceItem(
-        tween: Tween<double>(
+        tween: Tween(
           begin: 1.0,
-          end: 1.2,
+          end: 1.22,
         ).chain(CurveTween(curve: Curves.easeOut)),
         weight: 30,
       ),
       TweenSequenceItem(
-        tween: Tween<double>(
-          begin: 1.2,
+        tween: Tween(
+          begin: 1.22,
           end: 1.0,
         ).chain(CurveTween(curve: Curves.easeIn)),
         weight: 30,
       ),
-      TweenSequenceItem(tween: Tween<double>(begin: 1.0, end: 1.0), weight: 40),
+      TweenSequenceItem(tween: Tween(begin: 1.0, end: 1.0), weight: 40),
     ]).animate(_controller);
 
-    _colorAnimation = ColorTween(
+    _color = ColorTween(
       begin: Colors.pink.shade300,
-      end: Colors.pink.shade400,
+      end: Colors.pink.shade500,
     ).animate(_controller);
   }
 
@@ -1236,14 +980,14 @@ class _AnimatedSupportButtonState extends State<_AnimatedSupportButton>
       onTap: widget.onTap,
       child: MouseRegion(
         cursor: SystemMouseCursors.click,
-        onEnter: (_) => setState(() => _isHovering = true),
-        onExit: (_) => setState(() => _isHovering = false),
+        onEnter: (_) => setState(() => _hovering = true),
+        onExit: (_) => setState(() => _hovering = false),
         child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+          duration: const Duration(milliseconds: 180),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
           decoration: BoxDecoration(
-            color: _isHovering
-                ? Colors.pink.shade50.withOpacity(0.3)
+            color: _hovering
+                ? Colors.pink.withOpacity(0.1)
                 : Colors.transparent,
             borderRadius: BorderRadius.circular(8),
           ),
@@ -1252,27 +996,20 @@ class _AnimatedSupportButtonState extends State<_AnimatedSupportButton>
             children: [
               AnimatedBuilder(
                 animation: _controller,
-                builder: (context, child) {
-                  return Transform.scale(
-                    scale: _heartbeatAnimation.value,
-                    child: Icon(
-                      Icons.favorite,
-                      color: _colorAnimation.value,
-                      size: 18,
-                    ),
-                  );
-                },
+                builder: (_, __) => Transform.scale(
+                  scale: _pulse.value,
+                  child: Icon(Icons.favorite, color: _color.value, size: 16),
+                ),
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: 6),
               AnimatedDefaultTextStyle(
-                duration: const Duration(milliseconds: 200),
+                duration: const Duration(milliseconds: 180),
                 style: TextStyle(
-                  color: _isHovering
+                  fontSize: 12,
+                  fontWeight: _hovering ? FontWeight.w600 : FontWeight.w400,
+                  color: _hovering
                       ? Colors.pink.shade300
-                      : AppTheme.textSecondary.withOpacity(0.8),
-                  fontSize: 13,
-                  fontWeight: _isHovering ? FontWeight.w600 : FontWeight.w400,
-                  letterSpacing: 0.3,
+                      : Colors.white.withOpacity(0.5),
                 ),
                 child: const Text('Support'),
               ),

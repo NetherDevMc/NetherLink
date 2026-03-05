@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:wakelock_plus/wakelock_plus.dart';
 import '../util/Logger.dart';
+import '../constants/app_constants.dart';
 import 'ping_pong_connection.dart';
 import 'relay_config_sender.dart';
 import 'package:flutter/widgets.dart';
@@ -65,40 +66,28 @@ class BroadcastManager {
     }
   }
 
-  static const relayServers = [
-    {
-      'name': 'Europa (EU)',
-      'ip': '161.97.182.113',
-    },
-    {
-      'name': 'Amerika (US)',
-      'ip': '147.185.221.53',
-    },
-  ];
-
   Future<bool> sendRelayConfigOnly(
     String remoteHost,
-    int remotePort,
-    String username, {
+    int remotePort, {
     String? relayIp,
   }) async {
-    final usedRelayIp = relayIp ?? relayServers[0]['ip']!;
+    final usedRelayIp = relayIp ?? AppConstants.relayServers[0]['ip']!;
     const int RELAY_CONFIG_PORT = 19133;
 
     try {
-      logger.info('Sending config (DNS mode) to NetherLink server at $usedRelayIp...');
+      logger.info(
+        'Sending config (DNS mode) to NetherLink server at $usedRelayIp...',
+      );
 
       final success = await RelayConfigSender.sendConfigSimple(
         relayIp: usedRelayIp,
         relayConfigPort: RELAY_CONFIG_PORT,
         remoteServerIp: remoteHost,
         remoteServerPort: remotePort,
-        bedrockUsername: username,
       );
 
       if (!success) {
         logger.error('Failed to connect to NetherLink relay server');
-        logger.error('The relay server might be offline or unreachable');
         onRelayError?.call(
           'Unable to connect to NetherLink relay server. Please check your internet connection or try again later.',
         );
@@ -116,11 +105,10 @@ class BroadcastManager {
 
   Future<bool> startBroadcast(
     String remoteHost,
-    int remotePort,
-    String username, {
+    int remotePort, {
     String? relayIp,
   }) async {
-    final usedRelayIp = relayIp ?? relayServers[0]['ip']!;
+    final usedRelayIp = relayIp ?? AppConstants.relayServers[0]['ip']!;
     const int RELAY_CLIENT_PORT = 19132;
     const int RELAY_CONFIG_PORT = 19133;
 
@@ -132,12 +120,10 @@ class BroadcastManager {
         relayConfigPort: RELAY_CONFIG_PORT,
         remoteServerIp: remoteHost,
         remoteServerPort: remotePort,
-        bedrockUsername: username,
       );
 
       if (!success) {
         logger.error('Failed to connect to NetherLink relay server');
-        logger.error('The relay server might be offline or unreachable');
         onRelayError?.call(
           'Unable to connect to NetherLink relay server. Please check your internet connection or try again later.',
         );
@@ -149,9 +135,7 @@ class BroadcastManager {
       final relayAddress = InternetAddress(usedRelayIp);
 
       logger.info('Connecting to NetherLink servers');
-      logger.info(
-        'NetherLink will forward to $remoteHost:$remotePort for user: $username',
-      );
+      logger.info('NetherLink will forward to $remoteHost:$remotePort');
 
       socketHandler.setRemoteIp(relayAddress);
       socketHandler.setRemotePort(RELAY_CLIENT_PORT);
@@ -178,7 +162,6 @@ class BroadcastManager {
       );
 
       logger.info('NetherLink started broadcasting');
-
       _logLocalIPAddresses();
 
       return true;
