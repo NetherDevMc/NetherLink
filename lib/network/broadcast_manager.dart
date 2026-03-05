@@ -89,7 +89,7 @@ class BroadcastManager {
       if (!success) {
         logger.error('Failed to connect to NetherLink relay server');
         onRelayError?.call(
-          'Unable to connect to NetherLink relay server. Please check your internet connection or try again later.',
+          'Unable to connect to NetherLink relay server. Try to use a different NetherLink Server.',
         );
         return false;
       }
@@ -125,7 +125,7 @@ class BroadcastManager {
       if (!success) {
         logger.error('Failed to connect to NetherLink relay server');
         onRelayError?.call(
-          'Unable to connect to NetherLink relay server. Please check your internet connection or try again later.',
+          'Unable to connect to NetherLink relay server. Try to use a different NetherLink Server.',
         );
         return false;
       }
