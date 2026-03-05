@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:package_info_plus/package_info_plus.dart';
 
@@ -7,8 +6,6 @@ class GitHubUpdateService {
       'https://raw.githubusercontent.com/NetherDevMc/NetherLink/main/pubspec.yaml';
   static const String WINDOWS_DOWNLOAD =
       'https://github.com/NetherLinkMC/NetherLinkWebsite/raw/refs/heads/main/downloads/windows/NetherLinkInstaller.exe';
-  static const String MACOS_DOWNLOAD =
-      'https://github.com/NetherLinkMC/NetherLinkWebsite/raw/refs/heads/main/downloads/apple/NetherLink.dmg';
 
   Future<UpdateInfo?> checkForUpdates() async {
     try {
@@ -28,9 +25,7 @@ class GitHubUpdateService {
         final isNewer = _isNewerVersion(currentVersion, latestVersion);
 
         if (isNewer) {
-          final downloadUrl = Platform.isWindows
-              ? WINDOWS_DOWNLOAD
-              : MACOS_DOWNLOAD;
+          final downloadUrl = WINDOWS_DOWNLOAD;
 
           return UpdateInfo(
             version: latestVersion,

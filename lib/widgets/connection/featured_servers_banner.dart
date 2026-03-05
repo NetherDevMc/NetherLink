@@ -232,17 +232,6 @@ class _FeaturedServersBannerState extends State<FeaturedServersBanner> {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      const SizedBox(height: 3),
-                      Text(
-                        server.description,
-                        style: TextStyle(
-                          fontSize: 11,
-                          color: Colors.white.withOpacity(0.4),
-                          height: 1.3,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
                     ],
                   ),
                 ),

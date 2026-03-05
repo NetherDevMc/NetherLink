@@ -74,7 +74,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     _loadUserServers();
     _loadRelayServerPreference();
 
-    if (Platform.isWindows || Platform.isMacOS) {
+    if (Platform.isWindows) {
       _checkForUpdates();
     }
   }
