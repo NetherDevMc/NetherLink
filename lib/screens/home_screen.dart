@@ -5,7 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../network/ping_pong_connection.dart';
+import '../network/socket_handler.dart';
 import '../network/broadcast_manager.dart';
 import '../util/Logger.dart';
 import '../util/user_servers.dart';
@@ -324,7 +324,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               ),
               const SizedBox(height: 14),
               Text(
-                'Config was sent to the relay.\n\nNow set your Nintendo DNS and connect via the NetherLink server entry.',
+                'Your server settings have been submitted to Netherlink.\n\nTo connect:\n1. Set your Nintendo DNS to: ${meta['ip']}\n2. Open Minecraft Bedrock and select a featured server (like Cubecraft, Hive, etc.)\n3. You will automatically be connected to your own (remote) server!',
                 style: TextStyle(
                   color: Colors.white.withOpacity(0.6),
                   fontSize: 13,
@@ -472,7 +472,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         onCopyLogs: _copyLogsToClipboard,
       ),
     );
-    setState(() => _consoleDialogOpen = false);
+    if (mounted) setState(() => _consoleDialogOpen = false);
   }
 
   void _showHelpDialog(ThemeData theme) {
@@ -580,11 +580,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 padding: const EdgeInsets.all(16),
                 child: LayoutBuilder(
                   builder: (context, constraints) {
-                    final isMobile =
-                        constraints.maxWidth < AppConstants.mobileBreakpoint;
-                    return isMobile
-                        ? _buildMobileLayout()
-                        : _buildDesktopLayout();
+                    return _buildMobileLayout();
                   },
                 ),
               ),
@@ -648,15 +644,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 children: [
                   _buildGlassPill(),
                   const Spacer(),
-                  if (MediaQuery.of(context).size.width <
-                      AppConstants.mobileBreakpoint) ...[
-                    _glassAppBarButton(
-                      icon: Icons.terminal_rounded,
-                      tooltip: 'Console',
-                      onTap: _consoleDialogOpen ? null : _showConsoleDialog,
-                    ),
-                    const SizedBox(width: 8),
-                  ],
+                  _glassAppBarButton(
+                    icon: Icons.terminal_rounded,
+                    tooltip: 'Console',
+                    onTap: _consoleDialogOpen ? null : _showConsoleDialog,
+                  ),
+                  const SizedBox(width: 8),
                   _buildGlassMenuButton(),
                 ],
               ),
@@ -881,43 +874,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             builder: (context, userServers, _) =>
                 _buildConnectionPanel(userServers),
           ),
-          const SizedBox(height: 16),
         ],
       ),
     );
   }
 
   Widget _buildDesktopLayout() {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        return SingleChildScrollView(
-          controller: _desktopScrollController,
-          physics: const ClampingScrollPhysics(),
-          child: ConstrainedBox(
-            constraints: BoxConstraints(minHeight: constraints.maxHeight),
-            child: Column(
-              children: [
-                ValueListenableBuilder<List<UserServer>>(
-                  valueListenable: _userServersNotifier,
-                  builder: (context, userServers, _) =>
-                      _buildConnectionPanel(userServers),
-                ),
-                const SizedBox(height: 16),
-                ConsoleWidget(
-                  logsNotifier: _logsNotifier,
-                  scrollController: _scrollController,
-                  debugEnabled: _debugEnabled,
-                  onToggleDebug: _toggleDebugMode,
-                  onClearLogs: _clearLogs,
-                  onCopyLogs: _copyLogsToClipboard,
-                ),
-                const SizedBox(height: 16),
-              ],
-            ),
-          ),
-        );
-      },
-    );
+    return _buildMobileLayout();
   }
 }
 

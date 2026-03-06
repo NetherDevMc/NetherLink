@@ -254,6 +254,5 @@ class SocketHandler {
   }
 
   bool get isBroadcasting => _broadcasting;
-
   int get activeClientCount => _clientSockets.length;
 }

@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:wakelock_plus/wakelock_plus.dart';
 import '../util/Logger.dart';
 import '../constants/app_constants.dart';
-import 'ping_pong_connection.dart';
+import 'socket_handler.dart';
 import 'relay_config_sender.dart';
 import 'package:flutter/widgets.dart';
 
@@ -11,12 +11,11 @@ class BroadcastManager {
   late Logger logger;
 
   final SocketHandler socketHandler;
+  final List<RawDatagramSocket> _interfaceSockets = [];
+  final List<StreamSubscription<RawSocketEvent>> _interfaceSocketSubscriptions =
+      [];
 
-  RawDatagramSocket? _socketIPv4;
-  RawDatagramSocket? _socketIPv6;
-
-  StreamSubscription<RawSocketEvent>? _subscriptionIPv4;
-  StreamSubscription<RawSocketEvent>? _subscriptionIPv6;
+  bool _isBroadcasting = false;
 
   Function()? onAutoDisconnect;
   Function(String message)? onRelayError;
@@ -25,7 +24,7 @@ class BroadcastManager {
     socketHandler.onAllClientsDisconnected = _handleAllClientsDisconnected;
   }
 
-  bool get isBroadcasting => socketHandler.isBroadcasting;
+  bool get isBroadcasting => _isBroadcasting;
 
   void _handleAllClientsDisconnected() {
     logger.info('No active clients, auto-stopping broadcast...');
@@ -36,7 +35,10 @@ class BroadcastManager {
   Future<List<String>> _getLocalIPAddresses() async {
     List<String> ipAddresses = [];
     try {
-      for (var interface in await NetworkInterface.list()) {
+      for (var interface in await NetworkInterface.list(
+        includeLinkLocal: false,
+        type: InternetAddressType.IPv4,
+      )) {
         for (var addr in interface.addresses) {
           if (addr.type == InternetAddressType.IPv4 &&
               !addr.isLoopback &&
@@ -140,30 +142,62 @@ class BroadcastManager {
       socketHandler.setRemoteIp(relayAddress);
       socketHandler.setRemotePort(RELAY_CLIENT_PORT);
 
-      _socketIPv4 = await RawDatagramSocket.bind(
-        InternetAddress.anyIPv4,
-        SocketHandler.proxyPort,
+      final interfaces = await NetworkInterface.list(
+        includeLinkLocal: false,
+        type: InternetAddressType.IPv4,
       );
-      _socketIPv6 = await RawDatagramSocket.bind(
-        InternetAddress.anyIPv6,
-        SocketHandler.proxyPort,
-      );
+      if (interfaces.isEmpty) {
+        logger.error("No network interface found, can't broadcast");
+        return false;
+      }
 
-      _socketIPv4!.broadcastEnabled = true;
-      _socketIPv6!.broadcastEnabled = true;
+      await stopBroadcast();
 
+      bool atLeastOneSocket = false;
+      for (var interface in interfaces) {
+        for (var addr in interface.addresses) {
+          if (addr.type == InternetAddressType.IPv4 &&
+              !addr.isLoopback &&
+              !addr.isLinkLocal) {
+            try {
+              final socket = await RawDatagramSocket.bind(
+                addr,
+                SocketHandler.proxyPort,
+              );
+              socket.broadcastEnabled = true;
+              logger.info(
+                'UDP broadcast socket started on interface ${interface.name} (${addr.address})',
+              );
+
+              final sub = socket.listen(
+                (event) => socketHandler.handleSocketEvent(socket, event),
+                onError: (e, st) => logger.error('Socket error [$addr]: $e'),
+                cancelOnError: false,
+              );
+              _interfaceSockets.add(socket);
+              _interfaceSocketSubscriptions.add(sub);
+              atLeastOneSocket = true;
+            } catch (e) {
+              logger.error(
+                'Cant open upd socket on: $addr (${interface.name}): $e',
+              );
+            }
+          }
+        }
+      }
+
+      if (!atLeastOneSocket) {
+        logger.error('could not open networkinterface/listen socket:');
+        return false;
+      }
+
+      _isBroadcasting = true;
       socketHandler.setBroadcasting(true);
 
-      _subscriptionIPv4 = _socketIPv4!.listen(
-        (event) => socketHandler.handleSocketEvent(_socketIPv4!, event),
+      logger.info(
+        'NetherLink started broadcasting via ${_interfaceSockets.length} interface(s)',
       );
-      _subscriptionIPv6 = _socketIPv6!.listen(
-        (event) => socketHandler.handleSocketEvent(_socketIPv6!, event),
-      );
-
-      logger.info('NetherLink started broadcasting');
       _logLocalIPAddresses();
-
       return true;
     } catch (e) {
       logger.error('Error starting broadcast: $e');
@@ -174,21 +208,23 @@ class BroadcastManager {
   }
 
   Future<void> stopBroadcast() async {
-    await _subscriptionIPv4?.cancel();
-    await _subscriptionIPv6?.cancel();
-
-    _subscriptionIPv4 = null;
-    _subscriptionIPv6 = null;
-
-    _socketIPv4?.close();
-    _socketIPv6?.close();
-
-    _socketIPv4 = null;
-    _socketIPv6 = null;
+    for (final sub in _interfaceSocketSubscriptions) {
+      try {
+        await sub.cancel();
+      } catch (_) {}
+    }
+    for (final s in _interfaceSockets) {
+      try {
+        s.close();
+      } catch (_) {}
+    }
+    _interfaceSockets.clear();
+    _interfaceSocketSubscriptions.clear();
 
     socketHandler.closeAllClientSockets();
     socketHandler.setBroadcasting(false);
 
+    _isBroadcasting = false;
     logger.info('NetherLink stopped.');
 
     if (WidgetsBinding.instance.lifecycleState == AppLifecycleState.resumed) {
