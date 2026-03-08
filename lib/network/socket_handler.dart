@@ -47,7 +47,6 @@ class SocketHandler {
   final Map<String, RawDatagramSocket> _clientSockets = {};
   final Map<String, InternetAddress> _clientAddresses = {};
   final Map<String, int> _clientPorts = {};
-
   final Map<String, DateTime> _clientLastActivity = {};
   Timer? _timeoutCheckTimer;
 
@@ -55,7 +54,6 @@ class SocketHandler {
 
   void setBroadcasting(bool broadcasting) {
     _broadcasting = broadcasting;
-
     if (broadcasting) {
       _startTimeoutChecker();
     } else {
@@ -194,10 +192,8 @@ class SocketHandler {
           if (serverEvent == RawSocketEvent.read) {
             final resp = serverSocket.receive();
             if (resp == null) return;
-
             socket.send(resp.data, dg.address, dg.port);
             _updateClientActivity(clientKey);
-
             logger.debug(
               '[SERVER → CLIENT] $_remoteIp:$_remotePort → $clientKey | ${resp.data.length} bytes',
             );
