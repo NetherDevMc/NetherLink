@@ -65,6 +65,13 @@ class _FeaturedServersBannerState extends State<FeaturedServersBanner> {
             color: Colors.white.withOpacity(0.04),
             borderRadius: BorderRadius.circular(20),
             border: Border.all(color: Colors.white.withOpacity(0.08)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.10),
+                blurRadius: 12,
+                offset: const Offset(0, 6),
+              ),
+            ],
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -181,6 +188,13 @@ class _FeaturedServersBannerState extends State<FeaturedServersBanner> {
               color: Colors.white.withOpacity(0.05),
               borderRadius: BorderRadius.circular(16),
               border: Border.all(color: Colors.white.withOpacity(0.09)),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.10),
+                  blurRadius: 8,
+                  offset: const Offset(0, 4),
+                ),
+              ],
             ),
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
             child: Row(
@@ -287,18 +301,16 @@ class _FeaturedServersBannerState extends State<FeaturedServersBanner> {
                             vertical: 10,
                           ),
                           decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [
-                                AppTheme.primaryAccent,
-                                AppTheme.primaryAccent.withBlue(255),
-                              ],
-                            ),
+                            color: AppTheme.primaryAccent.withOpacity(0.16),
                             borderRadius: BorderRadius.circular(10),
+                            border: Border.all(
+                              color: AppTheme.primaryAccent.withOpacity(0.28),
+                            ),
                             boxShadow: [
                               BoxShadow(
-                                color: AppTheme.primaryAccent.withOpacity(0.35),
-                                blurRadius: 8,
-                                offset: const Offset(0, 3),
+                                color: Colors.black.withOpacity(0.12),
+                                blurRadius: 6,
+                                offset: const Offset(0, 2),
                               ),
                             ],
                           ),

@@ -46,26 +46,15 @@ class _ConnectionPanelState extends State<ConnectionPanel>
     with SingleTickerProviderStateMixin {
   UserServer? _selectedServer;
   Future<List<FeaturedServer>>? _featuredServersFuture;
-  late AnimationController _glowController;
-  late Animation<double> _glowAnimation;
 
   @override
   void initState() {
     super.initState();
     _featuredServersFuture = FeaturedServersService.fetchFeaturedServers();
-    _glowController = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 3),
-    )..repeat(reverse: true);
-    _glowAnimation = CurvedAnimation(
-      parent: _glowController,
-      curve: Curves.easeInOut,
-    );
   }
 
   @override
   void dispose() {
-    _glowController.dispose();
     super.dispose();
   }
 
@@ -116,123 +105,71 @@ class _ConnectionPanelState extends State<ConnectionPanel>
   }
 
   Widget _buildGlassCard(bool broadcasting) {
-    return AnimatedBuilder(
-      animation: _glowAnimation,
-      builder: (context, child) {
-        return Stack(
-          clipBehavior: Clip.none,
-          children: [
-            Positioned(
-              top: -30,
-              left: -20,
-              child: _glowBlob(
-                color: AppTheme.primaryAccent,
-                size: 180,
-                opacity: 0.10 + (_glowAnimation.value * 0.05),
-              ),
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(24),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(24),
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Colors.white.withOpacity(0.07),
+                Colors.white.withOpacity(0.03),
+              ],
             ),
-            Positioned(
-              bottom: -20,
-              right: -10,
-              child: _glowBlob(
-                color: Colors.purpleAccent,
-                size: 140,
-                opacity: 0.06 + (_glowAnimation.value * 0.03),
-              ),
+            border: Border.all(
+              color: Colors.white.withOpacity(0.12),
+              width: 1.5,
             ),
-            child!,
-          ],
-        );
-      },
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(24),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-          child: Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(24),
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  Colors.white.withOpacity(0.07),
-                  Colors.white.withOpacity(0.03),
-                ],
-              ),
-              border: Border.all(
-                color: Colors.white.withOpacity(0.12),
-                width: 1.5,
-              ),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      _buildServerPickerRow(broadcasting),
-                      const SizedBox(height: 10),
-                      _buildAddressFields(broadcasting),
-                    ],
-                  ),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    _buildServerPickerRow(broadcasting),
+                    const SizedBox(height: 10),
+                    _buildAddressFields(broadcasting),
+                  ],
                 ),
+              ),
 
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  child: Container(
-                    height: 1,
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          Colors.transparent,
-                          Colors.white.withOpacity(0.08),
-                          Colors.white.withOpacity(0.08),
-                          Colors.transparent,
-                        ],
-                      ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                child: Container(
+                  height: 1,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        Colors.transparent,
+                        Colors.white.withOpacity(0.08),
+                        Colors.white.withOpacity(0.08),
+                        Colors.transparent,
+                      ],
                     ),
                   ),
                 ),
+              ),
 
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      _buildRelaySection(broadcasting),
-                      const SizedBox(height: 14),
-                      _buildActionButton(broadcasting: broadcasting),
-                    ],
-                  ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    _buildRelaySection(broadcasting),
+                    const SizedBox(height: 14),
+                    _buildActionButton(broadcasting: broadcasting),
+                  ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget _glowBlob({
-    required Color color,
-    required double size,
-    required double opacity,
-  }) {
-    return IgnorePointer(
-      child: Container(
-        width: size,
-        height: size,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          boxShadow: [
-            BoxShadow(
-              color: color.withOpacity(opacity),
-              blurRadius: size,
-              spreadRadius: size * 0.3,
-            ),
-          ],
         ),
       ),
     );
