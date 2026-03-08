@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:ui';
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
@@ -19,6 +20,8 @@ import '../widgets/dialogs/manage_servers_dialog.dart';
 import '../widgets/dialogs/support_dialog.dart';
 import '../services/github_update_service.dart';
 import '../widgets/dialogs/update_dialog.dart';
+import '../widgets/components/global_notice_banner.dart'; 
+import '../services/notification_service.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -38,6 +41,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   bool _debugEnabled = false;
   bool _consoleDialogOpen = false;
   bool _nintendoDnsMode = false;
+  
+  Map<String, String>? _currentNotice;
+  Timer? _noticeTimer;
 
   final TextEditingController _ipController = TextEditingController(
     text: AppConstants.defaultServerAddress,
@@ -73,6 +79,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     _initializeComponents();
     _loadUserServers();
     _loadRelayServerPreference();
+    _fetchNotification();
 
     if (Platform.isWindows) {
       _checkForUpdates();
@@ -81,6 +88,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   @override
   void dispose() {
+    _noticeTimer?.cancel();
     _bgController.dispose();
     _ipController.dispose();
     _portController.dispose();
@@ -92,6 +100,20 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     _userServersNotifier.dispose();
     _stopBroadcast();
     super.dispose();
+  }
+
+  Future<void> _fetchNotification() async {
+    final notice = await NotificationService.fetchNotice();
+    if (mounted && notice != null) {
+      setState(() => _currentNotice = notice);
+      
+      _noticeTimer?.cancel();
+      _noticeTimer = Timer(const Duration(seconds: 20), () {
+        if (mounted) {
+          setState(() => _currentNotice = null);
+        }
+      });
+    }
   }
 
   Future<void> _loadRelayServerPreference() async {
@@ -125,7 +147,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         showDialog(
           context: context,
           barrierDismissible: false,
-          builder: (_) => UpdateDialog(updateInfo: updateInfo),
+          builder: (context) => UpdateDialog(updateInfo: updateInfo),
         );
       } else {
         logger.info('✅ App is up to date');
@@ -193,8 +215,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   Future<void> _loadUserServers() async {
     try {
       final servers = await UserServersStorage.loadServers();
-      if (servers.isNotEmpty)
+      if (servers.isNotEmpty) {
         logger.debug('Loaded ${servers.length} saved server(s)');
+      }
       _userServersNotifier.value = servers;
     } catch (e) {
       logger.error('Failed to load user servers: $e');
@@ -575,6 +598,15 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         child: Column(
           children: [
             _buildAppBar(),
+            if (_currentNotice != null)
+              GlobalNoticeBanner(
+                message: _currentNotice!['message']!,
+                type: _currentNotice!['type'] ?? 'info',
+                onDismiss: () {
+                  _noticeTimer?.cancel();
+                  setState(() => _currentNotice = null);
+                },
+              ),
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.all(16),
@@ -877,10 +909,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         ],
       ),
     );
-  }
-
-  Widget _buildDesktopLayout() {
-    return _buildMobileLayout();
   }
 }
 

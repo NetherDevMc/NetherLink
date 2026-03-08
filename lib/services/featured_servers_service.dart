@@ -4,7 +4,7 @@ import '../util/featured_servers.dart';
 
 class FeaturedServersService {
   static const String _endpoint =
-      'https://raw.githubusercontent.com/NetherDevMc/FeaturedServers/refs/heads/main/featured-servers';
+      'https://raw.githubusercontent.com/NetherDevMc/NetherLinkData/refs/heads/main/featured/featured-servers';
   static const Duration _timeout = Duration(seconds: 5);
 
   static Future<List<FeaturedServer>> fetchFeaturedServers() async {
