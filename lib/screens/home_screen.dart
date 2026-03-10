@@ -18,8 +18,6 @@ import '../widgets/connection/connection_panel.dart';
 import '../widgets/console/console_widget.dart';
 import '../widgets/dialogs/manage_servers_dialog.dart';
 import '../widgets/dialogs/support_dialog.dart';
-import '../services/github_update_service.dart';
-import '../widgets/dialogs/update_dialog.dart';
 import '../widgets/components/global_notice_banner.dart'; 
 import '../services/notification_service.dart';
 
@@ -80,10 +78,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     _loadUserServers();
     _loadRelayServerPreference();
     _fetchNotification();
-
-    if (Platform.isWindows) {
-      _checkForUpdates();
-    }
   }
 
   @override
@@ -133,28 +127,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
     _broadcastManager.onAutoDisconnect = _handleAutoDisconnect;
     _broadcastManager.onRelayError = _handleRelayError;
-  }
-
-  Future<void> _checkForUpdates() async {
-    await Future.delayed(const Duration(seconds: 3));
-    if (!mounted) return;
-    try {
-      logger.info('🔍 Checking for updates...');
-      final updateService = GitHubUpdateService();
-      final updateInfo = await updateService.checkForUpdates();
-      if (updateInfo != null && mounted) {
-        logger.info('📥 Update available: ${updateInfo.version}');
-        showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (context) => UpdateDialog(updateInfo: updateInfo),
-        );
-      } else {
-        logger.info('✅ App is up to date');
-      }
-    } catch (e) {
-      logger.error('❌ Update check failed: $e');
-    }
   }
 
   void _handleAutoDisconnect() {

@@ -1,4 +1,5 @@
 # Miscellaneous
+*.pem
 *.class
 .dmg
 *.log

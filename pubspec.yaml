@@ -21,6 +21,18 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
+  msix: ^3.16.13
 
 flutter:
   uses-material-design: true
+
+msix_config:
+  display_name: NetherLink
+  publisher_display_name: Jens Collaert
+  identity_name: JensCollaert.NetherLink
+  msix_version: 1.0.0.0
+  publisher: CN=ED8BFBA1-D05A-4503-813F-9B89DB1BE8A2
+  logo_path: windows\runner\resources\app_icon.ico
+  store: true
+
+
