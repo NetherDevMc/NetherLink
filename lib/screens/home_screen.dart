@@ -870,3 +870,103 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 }
+
+class _AnimatedSupportButton extends StatefulWidget {
+  final VoidCallback onTap;
+  const _AnimatedSupportButton({required this.onTap});
+
+  @override
+  State<_AnimatedSupportButton> createState() => _AnimatedSupportButtonState();
+}
+
+class _AnimatedSupportButtonState extends State<_AnimatedSupportButton>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _pulse;
+  late Animation<Color?> _color;
+  bool _hovering = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 1400),
+      vsync: this,
+    )..repeat(reverse: true);
+
+    _pulse = TweenSequence<double>([
+      TweenSequenceItem(
+        tween: Tween(
+          begin: 1.0,
+          end: 1.22,
+        ).chain(CurveTween(curve: Curves.easeOut)),
+        weight: 30,
+      ),
+      TweenSequenceItem(
+        tween: Tween(
+          begin: 1.22,
+          end: 1.0,
+        ).chain(CurveTween(curve: Curves.easeIn)),
+        weight: 30,
+      ),
+      TweenSequenceItem(tween: Tween(begin: 1.0, end: 1.0), weight: 40),
+    ]).animate(_controller);
+
+    _color = ColorTween(
+      begin: Colors.pink.shade300,
+      end: Colors.pink.shade500,
+    ).animate(_controller);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: widget.onTap,
+      child: MouseRegion(
+        cursor: SystemMouseCursors.click,
+        onEnter: (_) => setState(() => _hovering = true),
+        onExit: (_) => setState(() => _hovering = false),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 180),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+          decoration: BoxDecoration(
+            color: _hovering
+                ? Colors.pink.withOpacity(0.1)
+                : Colors.transparent,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              AnimatedBuilder(
+                animation: _controller,
+                builder: (_, __) => Transform.scale(
+                  scale: _pulse.value,
+                  child: Icon(Icons.favorite, color: _color.value, size: 16),
+                ),
+              ),
+              const SizedBox(width: 6),
+              AnimatedDefaultTextStyle(
+                duration: const Duration(milliseconds: 180),
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: _hovering ? FontWeight.w600 : FontWeight.w400,
+                  color: _hovering
+                      ? Colors.pink.shade300
+                      : Colors.white.withOpacity(0.5),
+                ),
+                child: const Text('Support'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
