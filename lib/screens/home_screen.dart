@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'dart:ui';
 import 'dart:async';
 import 'package:flutter/material.dart';
@@ -18,7 +17,7 @@ import '../widgets/connection/connection_panel.dart';
 import '../widgets/console/console_widget.dart';
 import '../widgets/dialogs/manage_servers_dialog.dart';
 import '../widgets/dialogs/support_dialog.dart';
-import '../widgets/components/global_notice_banner.dart'; 
+import '../widgets/components/global_notice_banner.dart';
 import '../services/notification_service.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -39,7 +38,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   bool _debugEnabled = false;
   bool _consoleDialogOpen = false;
   bool _nintendoDnsMode = false;
-  
+
   Map<String, String>? _currentNotice;
   Timer? _noticeTimer;
 
@@ -100,7 +99,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     final notice = await NotificationService.fetchNotice();
     if (mounted && notice != null) {
       setState(() => _currentNotice = notice);
-      
+
       _noticeTimer?.cancel();
       _noticeTimer = Timer(const Duration(seconds: 20), () {
         if (mounted) {
@@ -281,68 +280,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     return {'name': 'Relay', 'ip': ip};
   }
 
-  Future<void> _showNintendoDnsModal() async {
-    final meta = _getRelayMeta(_selectedRelayIp);
-    await showDialog(
-      context: context,
-      builder: (context) => BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-        child: AlertDialog(
-          backgroundColor: Colors.black.withOpacity(0.6),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-            side: BorderSide(color: Colors.white.withOpacity(0.1)),
-          ),
-          title: const Text(
-            'Nintendo Switch — DNS mode',
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Selected relay:',
-                style: TextStyle(
-                  color: Colors.white.withOpacity(0.5),
-                  fontSize: 12,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                '${meta['name']} — ${meta['ip']}',
-                style: TextStyle(
-                  color: AppTheme.primaryAccent,
-                  fontFamily: 'monospace',
-                  fontSize: 13,
-                ),
-              ),
-              const SizedBox(height: 14),
-              Text(
-                'Your server settings have been submitted to Netherlink.\n\nTo connect:\n1. Set your Nintendo DNS to: ${meta['ip']}\n2. Open Minecraft Bedrock and select a featured server (like Cubecraft, Hive, etc.)\n3. You will automatically be connected to your own (remote) server!',
-                style: TextStyle(
-                  color: Colors.white.withOpacity(0.6),
-                  fontSize: 13,
-                  height: 1.5,
-                ),
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: Text(
-                'Got it',
-                style: TextStyle(color: AppTheme.primaryAccent),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Future<void> _startBroadcast() async {
+  Future<void> _startBroadcast(PanelMode mode) async {
     final remoteHost = _ipController.text.trim();
     final remotePortParsed = int.tryParse(_portController.text);
 
@@ -367,8 +305,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       return;
     }
 
-    if (_nintendoDnsMode) {
-      logger.info('Nintendo DNS mode: sending config only...');
+    if (mode == PanelMode.nintendo || mode == PanelMode.friends) {
       final ok = await _broadcastManager.sendRelayConfigOnly(
         remoteHost,
         remotePortParsed,
@@ -382,7 +319,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             duration: const Duration(seconds: 2),
           ),
         );
-        await _showNintendoDnsModal();
+        await _showDnsInfoModal(isFriendsMode: mode == PanelMode.friends);
       }
       return;
     }
@@ -850,7 +787,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       ipController: _ipController,
       portController: _portController,
       broadcastingNotifier: _broadcastingNotifier,
-      onStartBroadcast: _startBroadcast,
+      onStartBroadcast: (mode) => _startBroadcast(mode),
       onStopBroadcast: _stopBroadcast,
       savedServers: userServers,
       onServerSelected: _onUserServerSelected,
@@ -879,6 +816,82 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 _buildConnectionPanel(userServers),
           ),
         ],
+      ),
+    );
+  }
+
+  Future<void> _showDnsInfoModal({required bool isFriendsMode}) async {
+    final meta = _getRelayMeta(_selectedRelayIp);
+    final relayName = meta['name'] ?? '-';
+    final relayIp = meta['ip'] ?? '-';
+
+    late String title;
+    late String body;
+    late String friend;
+
+    if (relayName == "EU Server") {
+      friend = 'NetherLinkEU';
+    } else if (relayName == "US Server") {
+      friend = 'NetherLinkUS';
+    }
+
+    if (!isFriendsMode) {
+      title = 'Play on Nintendo Switch';
+      body =
+          '''
+Selected: $relayName
+
+How to connect:
+1. Go to your Switch Settings and change the DNS to: $relayIp
+2. Open Minecraft and select a server from the list (like Cubecraft or Hive).
+3. You will now be sent to your own server automatically.
+''';
+    } else {
+      title = 'Play with Friends';
+      body =
+          '''
+How to connect:
+1. On your console, add $friend as a friend.
+2. Open Minecraft and go to the Friends tab.
+3. Look for your server under LAN Worlds and select it to join.
+''';
+    }
+
+    await showDialog(
+      context: context,
+      builder: (context) => BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        child: AlertDialog(
+          backgroundColor: Colors.black.withOpacity(0.8),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+            side: BorderSide(color: Colors.white.withOpacity(0.1)),
+          ),
+          title: Text(
+            title,
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              fontSize: 22,
+            ),
+          ),
+          content: Text(
+            body,
+            style: TextStyle(color: Colors.white, fontSize: 15, height: 1.5),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text(
+                'I understand',
+                style: TextStyle(
+                  color: AppTheme.primaryAccent,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

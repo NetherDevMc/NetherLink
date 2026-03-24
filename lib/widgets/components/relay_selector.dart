@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../../constants/app_constants.dart';
 import '../../theme/app_theme.dart';
@@ -48,52 +49,82 @@ class _RelaySelectorState extends State<RelaySelector> {
           ),
         ),
         const SizedBox(height: 10),
-        Container(
-          decoration: BoxDecoration(
-            color: AppTheme.surfaceLight,
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: AppTheme.borderGray),
-          ),
-          child: Row(
-            children: AppConstants.relayServers.map((srv) {
-              final isSelected = srv['ip'] == _relayIp;
-              final isFirst = AppConstants.relayServers.indexOf(srv) == 0;
-              final isLast =
-                  AppConstants.relayServers.indexOf(srv) ==
-                  AppConstants.relayServers.length - 1;
+        ClipRRect(
+          borderRadius: BorderRadius.circular(10),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 6, sigmaY: 6),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.03),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: Colors.white.withOpacity(0.06)),
+              ),
+              child: Row(
+                children: AppConstants.relayServers.map((srv) {
+                  final isSelected = srv['ip'] == _relayIp;
+                  final isFirst = AppConstants.relayServers.indexOf(srv) == 0;
+                  final isLast =
+                      AppConstants.relayServers.indexOf(srv) ==
+                      AppConstants.relayServers.length - 1;
 
-              return Expanded(
-                child: GestureDetector(
-                  onTap: () {
-                    setState(() => _relayIp = srv['ip']);
-                    widget.onChanged(srv['ip']);
-                  },
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 200),
-                    curve: Curves.easeInOut,
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    decoration: BoxDecoration(
-                      color: isSelected
-                          ? AppTheme.primaryAccent
-                          : Colors.transparent,
-                      borderRadius: BorderRadius.horizontal(
-                        left: isFirst ? const Radius.circular(9) : Radius.zero,
-                        right: isLast ? const Radius.circular(9) : Radius.zero,
+                  return Expanded(
+                    child: Semantics(
+                      button: true,
+                      selected: isSelected,
+                      label: 'Select relay ${srv['name']}',
+                      child: GestureDetector(
+                        onTap: () {
+                          setState(() => _relayIp = srv['ip']);
+                          widget.onChanged(srv['ip']);
+                        },
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 200),
+                          curve: Curves.easeInOut,
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          decoration: BoxDecoration(
+                            color: isSelected
+                                ? AppTheme.primaryAccent
+                                : Colors.transparent,
+                            borderRadius: BorderRadius.horizontal(
+                              left: isFirst
+                                  ? const Radius.circular(9)
+                                  : Radius.zero,
+                              right: isLast
+                                  ? const Radius.circular(9)
+                                  : Radius.zero,
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                srv['name']!,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: isSelected
+                                      ? Colors.white
+                                      : AppTheme.textMuted,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 14,
+                                ),
+                              ),
+                              if (isSelected) ...[
+                                const SizedBox(width: 8),
+                                Icon(
+                                  Icons.check_circle,
+                                  size: 14,
+                                  color: Colors.white70,
+                                ),
+                              ],
+                            ],
+                          ),
+                        ),
                       ),
                     ),
-                    child: Text(
-                      srv['name']!,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: isSelected ? Colors.white : AppTheme.textMuted,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 14,
-                      ),
-                    ),
-                  ),
-                ),
-              );
-            }).toList(),
+                  );
+                }).toList(),
+              ),
+            ),
           ),
         ),
       ],

@@ -15,8 +15,6 @@ class AppConstants {
     },
   ];
 
-  //'ip': '161.97.182.113',
-
   static const Duration serverRotationDuration = Duration(seconds: 5);
   static const Duration animationDuration = Duration(milliseconds: 300);
   static const Duration progressUpdateInterval = Duration(milliseconds: 50);

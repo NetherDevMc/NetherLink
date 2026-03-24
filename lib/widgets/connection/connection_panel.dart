@@ -1,12 +1,13 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import '../../constants/app_constants.dart';
 import '../../theme/app_theme.dart';
 import '../../util/user_servers.dart';
 import '../../util/featured_servers.dart';
 import '../../services/featured_servers_service.dart';
 import 'featured_servers_banner.dart';
 import '../components/relay_selector.dart';
+
+enum PanelMode { lan, nintendo, friends }
 
 class ConnectionPanel extends StatefulWidget {
   const ConnectionPanel({
@@ -28,7 +29,7 @@ class ConnectionPanel extends StatefulWidget {
   final TextEditingController ipController;
   final TextEditingController portController;
   final ValueNotifier<bool> broadcastingNotifier;
-  final VoidCallback onStartBroadcast;
+  final Future<void> Function(PanelMode) onStartBroadcast;
   final VoidCallback onStopBroadcast;
   final List<UserServer> savedServers;
   final Function(UserServer) onServerSelected;
@@ -46,16 +47,13 @@ class _ConnectionPanelState extends State<ConnectionPanel>
     with SingleTickerProviderStateMixin {
   UserServer? _selectedServer;
   Future<List<FeaturedServer>>? _featuredServersFuture;
+  PanelMode _mode = PanelMode.lan;
 
   @override
   void initState() {
     super.initState();
     _featuredServersFuture = FeaturedServersService.fetchFeaturedServers();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
+    _mode = widget.nintendoDnsMode ? PanelMode.nintendo : PanelMode.lan;
   }
 
   @override
@@ -139,7 +137,6 @@ class _ConnectionPanelState extends State<ConnectionPanel>
                   ],
                 ),
               ),
-
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 child: Container(
@@ -156,21 +153,62 @@ class _ConnectionPanelState extends State<ConnectionPanel>
                   ),
                 ),
               ),
-
               Padding(
                 padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     _buildRelaySection(broadcasting),
+                    const SizedBox(height: 10),
+
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Container(
+                          height: 1,
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                Colors.transparent,
+                                Colors.white.withOpacity(0.06),
+                                Colors.white.withOpacity(0.06),
+                                Colors.transparent,
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        _buildSectionHeader('Mode'),
+                      ],
+                    ),
+
+                    const SizedBox(height: 8),
+                    _buildModeToggleRow(broadcasting),
+                    if (_mode == PanelMode.nintendo ||
+                        _mode == PanelMode.friends) ...[
+                      const SizedBox(height: 10),
+                      _buildInfoBox(),
+                    ],
                     const SizedBox(height: 14),
-                    _buildActionButton(broadcasting: broadcasting),
+                    _buildActionButton(broadcasting),
                   ],
                 ),
               ),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildSectionHeader(String title) {
+    return Text(
+      title.toUpperCase(),
+      style: TextStyle(
+        color: AppTheme.textMuted,
+        fontWeight: FontWeight.w600,
+        fontSize: 11,
+        letterSpacing: 1.2,
       ),
     );
   }
@@ -274,35 +312,31 @@ class _ConnectionPanelState extends State<ConnectionPanel>
   }
 
   Widget _buildAddressFields(bool broadcasting) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final narrow = constraints.maxWidth < AppConstants.narrowBreakpoint;
-
-        final ip = _glassTextField(
-          controller: widget.ipController,
-          enabled: !broadcasting,
-          hint: 'Server address',
-          icon: Icons.language_rounded,
-        );
-        final port = _glassTextField(
-          controller: widget.portController,
-          enabled: !broadcasting,
-          hint: 'Port',
-          icon: Icons.tag_rounded,
-          keyboardType: TextInputType.number,
-        );
-
-        if (narrow) {
-          return Column(children: [ip, const SizedBox(height: 8), port]);
-        }
-        return Row(
-          children: [
-            Expanded(flex: 3, child: ip),
-            const SizedBox(width: 8),
-            Expanded(flex: 1, child: port),
-          ],
-        );
-      },
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          child: _glassTextField(
+            controller: widget.ipController,
+            enabled: !broadcasting,
+            hint: 'Server Address',
+            icon: null,
+            isPort: false,
+          ),
+        ),
+        const SizedBox(width: 8),
+        SizedBox(
+          width: 80,
+          child: _glassTextField(
+            controller: widget.portController,
+            enabled: !broadcasting,
+            hint: 'Port',
+            icon: null,
+            keyboardType: TextInputType.number,
+            isPort: true,
+          ),
+        ),
+      ],
     );
   }
 
@@ -310,13 +344,15 @@ class _ConnectionPanelState extends State<ConnectionPanel>
     required TextEditingController controller,
     required bool enabled,
     required String hint,
-    required IconData icon,
+    IconData? icon,
     TextInputType? keyboardType,
+    bool isPort = false,
   }) {
     return TextField(
       controller: controller,
       enabled: enabled,
       keyboardType: keyboardType,
+      textAlign: isPort ? TextAlign.center : TextAlign.start,
       style: TextStyle(
         fontSize: 14,
         fontWeight: FontWeight.w500,
@@ -328,24 +364,26 @@ class _ConnectionPanelState extends State<ConnectionPanel>
           fontSize: 13,
           color: Colors.white.withOpacity(0.3),
         ),
-        prefixIcon: Padding(
-          padding: const EdgeInsets.only(left: 14, right: 10),
-          child: Icon(
-            icon,
-            size: 16,
-            color: enabled
-                ? Colors.white.withOpacity(0.5)
-                : Colors.white.withOpacity(0.2),
-          ),
-        ),
+        prefixIcon: icon == null
+            ? null
+            : Padding(
+                padding: const EdgeInsets.only(left: 14, right: 10),
+                child: Icon(
+                  icon,
+                  size: 16,
+                  color: enabled
+                      ? Colors.white.withOpacity(0.5)
+                      : Colors.white.withOpacity(0.2),
+                ),
+              ),
         prefixIconConstraints: const BoxConstraints(minWidth: 0, minHeight: 0),
         isDense: true,
         filled: true,
         fillColor: enabled
             ? Colors.white.withOpacity(0.06)
             : Colors.white.withOpacity(0.02),
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 14,
+        contentPadding: EdgeInsets.symmetric(
+          horizontal: isPort ? 8 : 14,
           vertical: 14,
         ),
         border: OutlineInputBorder(
@@ -363,149 +401,11 @@ class _ConnectionPanelState extends State<ConnectionPanel>
             width: 1.5,
           ),
         ),
-        disabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: BorderSide(color: Colors.white.withOpacity(0.04)),
-        ),
       ),
     );
   }
 
-  Widget _buildRelaySection(bool broadcasting) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        ClipRRect(
-          borderRadius: BorderRadius.circular(12),
-          child: RelaySelector(
-            selectedIp: widget.selectedRelayIp,
-            onChanged: (ip) {
-              if (!broadcasting) widget.onRelayChanged(ip);
-            },
-          ),
-        ),
-
-        const SizedBox(height: 10),
-
-        GestureDetector(
-          onTap: broadcasting
-              ? null
-              : () => widget.onNintendoDnsModeChanged(!widget.nintendoDnsMode),
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-              color: widget.nintendoDnsMode && !broadcasting
-                  ? AppTheme.primaryAccent.withOpacity(0.12)
-                  : Colors.white.withOpacity(0.04),
-              border: Border.all(
-                color: widget.nintendoDnsMode && !broadcasting
-                    ? AppTheme.primaryAccent.withOpacity(0.4)
-                    : Colors.white.withOpacity(0.08),
-              ),
-            ),
-            child: Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(6),
-                  decoration: BoxDecoration(
-                    color: widget.nintendoDnsMode && !broadcasting
-                        ? AppTheme.primaryAccent.withOpacity(0.2)
-                        : Colors.white.withOpacity(0.06),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Icon(
-                    Icons.sports_esports_rounded,
-                    size: 15,
-                    color: broadcasting
-                        ? Colors.white.withOpacity(0.2)
-                        : widget.nintendoDnsMode
-                        ? AppTheme.primaryAccent
-                        : Colors.white.withOpacity(0.4),
-                  ),
-                ),
-                const SizedBox(width: 10),
-
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Nintendo Switch',
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                          color: broadcasting
-                              ? Colors.white.withOpacity(0.2)
-                              : widget.nintendoDnsMode
-                              ? AppTheme.primaryAccent
-                              : Colors.white.withOpacity(0.7),
-                        ),
-                      ),
-                      Text(
-                        'DNS mode — no LAN broadcast',
-                        style: TextStyle(
-                          fontSize: 11,
-                          color: broadcasting
-                              ? Colors.white.withOpacity(0.1)
-                              : Colors.white.withOpacity(0.3),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                _miniToggle(
-                  value: widget.nintendoDnsMode,
-                  enabled: !broadcasting,
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _miniToggle({required bool value, required bool enabled}) {
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 200),
-      width: 34,
-      height: 18,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(9),
-        color: value && enabled
-            ? AppTheme.primaryAccent
-            : Colors.white.withOpacity(0.12),
-      ),
-      child: AnimatedAlign(
-        duration: const Duration(milliseconds: 200),
-        alignment: value ? Alignment.centerRight : Alignment.centerLeft,
-        child: Container(
-          width: 14,
-          height: 14,
-          margin: const EdgeInsets.symmetric(horizontal: 2),
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: enabled ? Colors.white : Colors.white.withOpacity(0.3),
-            boxShadow: value && enabled
-                ? [
-                    BoxShadow(
-                      color: AppTheme.primaryAccent.withOpacity(0.4),
-                      blurRadius: 4,
-                    ),
-                  ]
-                : null,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildActionButton({required bool broadcasting}) {
-    final isNintendo = widget.nintendoDnsMode && !broadcasting;
-
+  Widget _buildActionButton(bool broadcasting) {
     if (broadcasting) {
       return _glassButton(
         onTap: widget.onStopBroadcast,
@@ -515,15 +415,22 @@ class _ConnectionPanelState extends State<ConnectionPanel>
       );
     }
 
-    if (isNintendo) {
+    if (_mode == PanelMode.nintendo) {
       return _glassButton(
-        onTap: widget.onStartBroadcast,
+        onTap: () => widget.onStartBroadcast(PanelMode.nintendo),
         color: Colors.purpleAccent,
         icon: Icons.wifi_tethering_rounded,
-        label: 'Send DNS Config',
+        label: 'Start Nintendo Mode',
       );
     }
-
+    if (_mode == PanelMode.friends) {
+      return _glassButton(
+        onTap: () => widget.onStartBroadcast(PanelMode.friends),
+        color: Colors.purpleAccent,
+        icon: Icons.person_add_alt_1_rounded,
+        label: 'Start Friends Mode',
+      );
+    }
     return Container(
       height: 52,
       decoration: BoxDecoration(
@@ -546,7 +453,7 @@ class _ConnectionPanelState extends State<ConnectionPanel>
         color: Colors.transparent,
         child: InkWell(
           borderRadius: BorderRadius.circular(14),
-          onTap: widget.onStartBroadcast,
+          onTap: () => widget.onStartBroadcast(PanelMode.lan),
           child: const Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -565,6 +472,172 @@ class _ConnectionPanelState extends State<ConnectionPanel>
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildModeToggleRow(bool broadcasting) {
+    return Row(
+      children: [
+        Expanded(
+          child: _modeButton(
+            label: "Xbox/PS4-5",
+            selected: _mode == PanelMode.lan,
+            onTap: broadcasting
+                ? null
+                : () {
+                    setState(() => _mode = PanelMode.lan);
+                    widget.onNintendoDnsModeChanged(false);
+                  },
+          ),
+        ),
+        const SizedBox(width: 8),
+        Expanded(
+          child: _modeButton(
+            label: "Nintendo",
+            selected: _mode == PanelMode.nintendo,
+            onTap: broadcasting
+                ? null
+                : () {
+                    setState(() => _mode = PanelMode.nintendo);
+                    widget.onNintendoDnsModeChanged(true);
+                  },
+          ),
+        ),
+        const SizedBox(width: 8),
+        Expanded(
+          child: _modeButton(
+            label: "Friends",
+            selected: _mode == PanelMode.friends,
+            onTap: broadcasting
+                ? null
+                : () {
+                    setState(() => _mode = PanelMode.friends);
+                    widget.onNintendoDnsModeChanged(true);
+                  },
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _modeButton({
+    required String label,
+    required bool selected,
+    VoidCallback? onTap,
+  }) {
+    return GestureDetector(
+      onTap: selected || onTap == null ? null : onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 150),
+        height: 38,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          color: selected
+              ? AppTheme.primaryAccent.withOpacity(0.21)
+              : Colors.white.withOpacity(0.08),
+          border: Border.all(
+            color: selected
+                ? AppTheme.primaryAccent
+                : Colors.white.withOpacity(0.10),
+            width: selected ? 2 : 1.2,
+          ),
+        ),
+        child: Center(
+          child: Text(
+            label,
+            style: TextStyle(
+              color: selected
+                  ? AppTheme.primaryAccent
+                  : Colors.white.withOpacity(0.9),
+              fontWeight: FontWeight.w600,
+              fontSize: 14,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInfoBox() {
+    if (_mode == PanelMode.nintendo) {
+      return _explanationBox(
+        icon: Icons.sports_esports_rounded,
+        title: 'Nintendo Switch DNS mode',
+        text:
+            'Start in Nintendo mode, set your DNS and join a featured server.',
+      );
+    } else if (_mode == PanelMode.friends) {
+      return _explanationBox(
+        icon: Icons.person_add_alt_1_rounded,
+        title: 'Friend mode',
+        text:
+            'Add NetherLink\'s friends bots as a friend. Start Friends mode and play',
+      );
+    }
+    return const SizedBox.shrink();
+  }
+
+  Widget _explanationBox({
+    required IconData icon,
+    required String title,
+    required String text,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.08),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.white.withOpacity(0.14)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, color: AppTheme.primaryAccent, size: 22),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 14,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  text,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: Colors.white70,
+                    height: 1.35,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRelaySection(bool broadcasting) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        ClipRRect(
+          borderRadius: BorderRadius.circular(12),
+          child: RelaySelector(
+            selectedIp: widget.selectedRelayIp,
+            onChanged: (ip) {
+              if (!broadcasting) widget.onRelayChanged(ip);
+            },
+          ),
+        ),
+        const SizedBox(height: 10),
+      ],
     );
   }
 
