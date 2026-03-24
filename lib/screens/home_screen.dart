@@ -616,13 +616,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              _buildSupportButton(),
-              Container(
-                width: 1,
-                height: 20,
-                margin: const EdgeInsets.symmetric(horizontal: 4),
-                color: Colors.white.withOpacity(0.08),
-              ),
               _buildDiscordButton(),
             ],
           ),
@@ -630,11 +623,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       ),
     );
   }
-
-  Widget _buildSupportButton() => _AnimatedSupportButton(
-    onTap: () =>
-        showDialog(context: context, builder: (_) => const SupportDialog()),
-  );
 
   Widget _buildDiscordButton() {
     return Tooltip(
