@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import '../../l10n/app_localizations.dart';
 import '../../theme/app_theme.dart';
 import '../../util/user_servers.dart';
 import '../../util/featured_servers.dart';
@@ -58,6 +59,8 @@ class _ConnectionPanelState extends State<ConnectionPanel>
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
+
     return Center(
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 720),
@@ -68,7 +71,7 @@ class _ConnectionPanelState extends State<ConnectionPanel>
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                _buildGlassCard(broadcasting),
+                _buildGlassCard(broadcasting, loc),
                 FutureBuilder<List<FeaturedServer>>(
                   future: _featuredServersFuture,
                   builder: (context, snapshot) {
@@ -84,7 +87,9 @@ class _ConnectionPanelState extends State<ConnectionPanel>
                           widget.portController.text = server.port.toString();
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text('Selected: ${server.name}'),
+                              content: Text(
+                                loc.selectedFeaturedServer(server.name),
+                              ),
                               duration: const Duration(seconds: 2),
                               backgroundColor: AppTheme.primaryAccent,
                             ),
@@ -102,7 +107,7 @@ class _ConnectionPanelState extends State<ConnectionPanel>
     );
   }
 
-  Widget _buildGlassCard(bool broadcasting) {
+  Widget _buildGlassCard(bool broadcasting, AppLocalizations loc) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(24),
       child: BackdropFilter(
@@ -131,9 +136,9 @@ class _ConnectionPanelState extends State<ConnectionPanel>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    _buildServerPickerRow(broadcasting),
+                    _buildServerPickerRow(broadcasting, loc),
                     const SizedBox(height: 10),
-                    _buildAddressFields(broadcasting),
+                    _buildAddressFields(broadcasting, loc),
                   ],
                 ),
               ),
@@ -160,7 +165,6 @@ class _ConnectionPanelState extends State<ConnectionPanel>
                   children: [
                     _buildRelaySection(broadcasting),
                     const SizedBox(height: 10),
-
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
@@ -178,19 +182,18 @@ class _ConnectionPanelState extends State<ConnectionPanel>
                           ),
                         ),
                         const SizedBox(height: 8),
-                        _buildSectionHeader('Mode'),
+                        _buildSectionHeader(loc.modeLabel),
                       ],
                     ),
-
                     const SizedBox(height: 8),
-                    _buildModeToggleRow(broadcasting),
+                    _buildModeToggleRow(broadcasting, loc),
                     if (_mode == PanelMode.nintendo ||
                         _mode == PanelMode.friends) ...[
                       const SizedBox(height: 10),
-                      _buildInfoBox(),
+                      _buildInfoBox(loc),
                     ],
                     const SizedBox(height: 14),
-                    _buildActionButton(broadcasting),
+                    _buildActionButton(broadcasting, loc),
                   ],
                 ),
               ),
@@ -213,7 +216,7 @@ class _ConnectionPanelState extends State<ConnectionPanel>
     );
   }
 
-  Widget _buildServerPickerRow(bool broadcasting) {
+  Widget _buildServerPickerRow(bool broadcasting, AppLocalizations loc) {
     return Row(
       children: [
         Expanded(
@@ -229,7 +232,7 @@ class _ConnectionPanelState extends State<ConnectionPanel>
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        'No saved servers',
+                        loc.noSavedServers,
                         style: TextStyle(
                           fontSize: 13,
                           color: Colors.white.withOpacity(0.35),
@@ -250,7 +253,7 @@ class _ConnectionPanelState extends State<ConnectionPanel>
                           ),
                           const SizedBox(width: 8),
                           Text(
-                            'Saved servers',
+                            loc.savedServers,
                             style: TextStyle(
                               fontSize: 13,
                               color: Colors.white.withOpacity(0.4),
@@ -304,14 +307,14 @@ class _ConnectionPanelState extends State<ConnectionPanel>
         const SizedBox(width: 8),
         _glassIconButton(
           icon: Icons.tune_rounded,
-          tooltip: 'Manage servers',
+          tooltip: loc.manageServersTooltip,
           onPressed: broadcasting ? null : widget.onManageServers,
         ),
       ],
     );
   }
 
-  Widget _buildAddressFields(bool broadcasting) {
+  Widget _buildAddressFields(bool broadcasting, AppLocalizations loc) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -319,7 +322,7 @@ class _ConnectionPanelState extends State<ConnectionPanel>
           child: _glassTextField(
             controller: widget.ipController,
             enabled: !broadcasting,
-            hint: 'Server Address',
+            hint: loc.serverAddressHint,
             icon: null,
             isPort: false,
           ),
@@ -330,7 +333,7 @@ class _ConnectionPanelState extends State<ConnectionPanel>
           child: _glassTextField(
             controller: widget.portController,
             enabled: !broadcasting,
-            hint: 'Port',
+            hint: loc.portHint,
             icon: null,
             keyboardType: TextInputType.number,
             isPort: true,
@@ -405,13 +408,13 @@ class _ConnectionPanelState extends State<ConnectionPanel>
     );
   }
 
-  Widget _buildActionButton(bool broadcasting) {
+  Widget _buildActionButton(bool broadcasting, AppLocalizations loc) {
     if (broadcasting) {
       return _glassButton(
         onTap: widget.onStopBroadcast,
         color: AppTheme.error,
         icon: Icons.stop_rounded,
-        label: 'Stop Broadcasting',
+        label: loc.stopBroadcasting,
       );
     }
 
@@ -420,7 +423,7 @@ class _ConnectionPanelState extends State<ConnectionPanel>
         onTap: () => widget.onStartBroadcast(PanelMode.nintendo),
         color: Colors.purpleAccent,
         icon: Icons.wifi_tethering_rounded,
-        label: 'Start Nintendo Mode',
+        label: loc.startNintendoMode,
       );
     }
     if (_mode == PanelMode.friends) {
@@ -428,7 +431,7 @@ class _ConnectionPanelState extends State<ConnectionPanel>
         onTap: () => widget.onStartBroadcast(PanelMode.friends),
         color: Colors.purpleAccent,
         icon: Icons.person_add_alt_1_rounded,
-        label: 'Start Friends Mode',
+        label: loc.startFriendsMode,
       );
     }
     return Container(
@@ -454,14 +457,18 @@ class _ConnectionPanelState extends State<ConnectionPanel>
         child: InkWell(
           borderRadius: BorderRadius.circular(14),
           onTap: () => widget.onStartBroadcast(PanelMode.lan),
-          child: const Row(
+          child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.play_arrow_rounded, color: Colors.white, size: 22),
-              SizedBox(width: 8),
+              const Icon(
+                Icons.play_arrow_rounded,
+                color: Colors.white,
+                size: 22,
+              ),
+              const SizedBox(width: 8),
               Text(
-                'Start Broadcasting',
-                style: TextStyle(
+                loc.startBroadcasting,
+                style: const TextStyle(
                   color: Colors.white,
                   fontSize: 15,
                   fontWeight: FontWeight.w700,
@@ -475,12 +482,12 @@ class _ConnectionPanelState extends State<ConnectionPanel>
     );
   }
 
-  Widget _buildModeToggleRow(bool broadcasting) {
+  Widget _buildModeToggleRow(bool broadcasting, AppLocalizations loc) {
     return Row(
       children: [
         Expanded(
           child: _modeButton(
-            label: "Xbox/PS4-5",
+            label: loc.labelXbox,
             selected: _mode == PanelMode.lan,
             onTap: broadcasting
                 ? null
@@ -493,7 +500,7 @@ class _ConnectionPanelState extends State<ConnectionPanel>
         const SizedBox(width: 8),
         Expanded(
           child: _modeButton(
-            label: "Nintendo",
+            label: loc.labelNintendo,
             selected: _mode == PanelMode.nintendo,
             onTap: broadcasting
                 ? null
@@ -506,7 +513,7 @@ class _ConnectionPanelState extends State<ConnectionPanel>
         const SizedBox(width: 8),
         Expanded(
           child: _modeButton(
-            label: "Friends",
+            label: loc.labelFriends,
             selected: _mode == PanelMode.friends,
             onTap: broadcasting
                 ? null
@@ -558,20 +565,18 @@ class _ConnectionPanelState extends State<ConnectionPanel>
     );
   }
 
-  Widget _buildInfoBox() {
+  Widget _buildInfoBox(AppLocalizations loc) {
     if (_mode == PanelMode.nintendo) {
       return _explanationBox(
         icon: Icons.sports_esports_rounded,
-        title: 'Nintendo Switch DNS mode',
-        text:
-            'Start in Nintendo mode, set your DNS and join a featured server.',
+        title: loc.nintendoInfoTitle,
+        text: loc.nintendoInfoText,
       );
     } else if (_mode == PanelMode.friends) {
       return _explanationBox(
         icon: Icons.person_add_alt_1_rounded,
-        title: 'Friend mode',
-        text:
-            'Add NetherLink\'s friends bots as a friend. Start Friends mode and play',
+        title: loc.friendModeTitle,
+        text: loc.friendModeText,
       );
     }
     return const SizedBox.shrink();

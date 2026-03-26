@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_localizations.dart';
 import '../../theme/app_theme.dart';
 import '../../util/user_servers.dart';
 import '../../util/user_servers_storage.dart';
@@ -31,7 +32,7 @@ class _ManageServersDialogState extends State<ManageServersDialog> {
   Future<void> _addServer() async {
     final result = await showDialog<UserServer>(
       context: context,
-      builder: (context) => const AddServerDialog(),
+      builder: (context) => AddServerDialog(),
     );
 
     if (result != null) {
@@ -53,27 +54,31 @@ class _ManageServersDialogState extends State<ManageServersDialog> {
   }
 
   Future<void> _deleteServer(int index) async {
+    final loc = AppLocalizations.of(context)!;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: AppTheme.surfaceDark,
-        title: const Text(
-          'Delete Server',
-          style: TextStyle(color: AppTheme.textPrimary),
+        title: Text(
+          loc.deleteServer,
+          style: const TextStyle(color: AppTheme.textPrimary),
         ),
         content: Text(
-          'Delete "${_servers[index].name}"?',
-          style: TextStyle(color: AppTheme.textSecondary),
+          '${loc.delete} "${_servers[index].name}"?',
+          style: const TextStyle(color: AppTheme.textSecondary),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: Text('Cancel', style: TextStyle(color: AppTheme.textMuted)),
+            child: Text(
+              loc.cancel,
+              style: TextStyle(color: AppTheme.textMuted),
+            ),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
             style: TextButton.styleFrom(foregroundColor: AppTheme.error),
-            child: const Text('Delete'),
+            child: Text(loc.delete),
           ),
         ],
       ),
@@ -88,6 +93,7 @@ class _ManageServersDialogState extends State<ManageServersDialog> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final loc = AppLocalizations.of(context)!;
 
     return Dialog(
       backgroundColor: AppTheme.surfaceDark,
@@ -118,9 +124,9 @@ class _ManageServersDialogState extends State<ManageServersDialog> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'My Servers',
-                        style: TextStyle(
+                      Text(
+                        loc.myServers,
+                        style: const TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                           color: AppTheme.textPrimary,
@@ -128,8 +134,8 @@ class _ManageServersDialogState extends State<ManageServersDialog> {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        'Quick access servers',
-                        style: TextStyle(
+                        loc.quickAccessServers,
+                        style: const TextStyle(
                           fontSize: 12,
                           color: AppTheme.textMuted,
                         ),
@@ -163,8 +169,8 @@ class _ManageServersDialogState extends State<ManageServersDialog> {
                           ),
                           const SizedBox(height: 16),
                           Text(
-                            'No saved servers',
-                            style: TextStyle(
+                            loc.noSavedServers,
+                            style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
                               color: AppTheme.textMuted,
@@ -172,9 +178,9 @@ class _ManageServersDialogState extends State<ManageServersDialog> {
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            'Add servers to quickly connect later',
+                            loc.addServersHint,
                             textAlign: TextAlign.center,
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 13,
                               color: AppTheme.textMuted,
                             ),
@@ -186,7 +192,7 @@ class _ManageServersDialogState extends State<ManageServersDialog> {
                       itemCount: _servers.length,
                       itemBuilder: (context, index) {
                         final server = _servers[index];
-                        return _buildServerCard(server, index, theme);
+                        return _buildServerCard(server, index, theme, loc);
                       },
                     ),
             ),
@@ -196,7 +202,7 @@ class _ManageServersDialogState extends State<ManageServersDialog> {
               child: ElevatedButton.icon(
                 onPressed: _addServer,
                 icon: const Icon(Icons.add),
-                label: const Text('Add Server'),
+                label: Text(loc.addServer),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppTheme.primaryAccent,
                   foregroundColor: Colors.white,
@@ -213,7 +219,12 @@ class _ManageServersDialogState extends State<ManageServersDialog> {
     );
   }
 
-  Widget _buildServerCard(UserServer server, int index, ThemeData theme) {
+  Widget _buildServerCard(
+    UserServer server,
+    int index,
+    ThemeData theme,
+    AppLocalizations loc,
+  ) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
@@ -331,7 +342,7 @@ class _ManageServersDialogState extends State<ManageServersDialog> {
                   Expanded(
                     child: Text(
                       server.description!,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 12,
                         color: AppTheme.textSecondary,
                       ),
@@ -389,6 +400,7 @@ class _AddServerDialogState extends State<AddServerDialog> {
   }
 
   void _save() {
+    final loc = AppLocalizations.of(context)!;
     final name = _nameController.text.trim();
     final address = _addressController.text.trim();
     final portStr = _portController.text.trim();
@@ -396,7 +408,9 @@ class _AddServerDialogState extends State<AddServerDialog> {
     if (name.isEmpty || address.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('⚠️ Name and address are required'),
+          content: Text(
+            '${loc.serverNameLabel} and ${loc.addressLabel} are required',
+          ),
           backgroundColor: AppTheme.warning,
         ),
       );
@@ -407,7 +421,7 @@ class _AddServerDialogState extends State<AddServerDialog> {
     if (port == null || port < 1 || port > 65535) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('⚠️ Invalid port number'),
+          content: Text(loc.invalidPort),
           backgroundColor: AppTheme.error,
         ),
       );
@@ -429,12 +443,14 @@ class _AddServerDialogState extends State<AddServerDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
+
     return AlertDialog(
       backgroundColor: AppTheme.surfaceDark,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      title: const Text(
-        'Add Server',
-        style: TextStyle(color: AppTheme.textPrimary),
+      title: Text(
+        loc.addServer,
+        style: const TextStyle(color: AppTheme.textPrimary),
       ),
       content: SingleChildScrollView(
         child: Column(
@@ -444,7 +460,7 @@ class _AddServerDialogState extends State<AddServerDialog> {
               controller: _nameController,
               style: const TextStyle(color: AppTheme.textPrimary),
               decoration: InputDecoration(
-                labelText: 'Server Name *',
+                labelText: loc.serverNameLabel,
                 hintText: 'My Awesome Server',
                 hintStyle: TextStyle(color: AppTheme.textMuted),
                 prefixIcon: const Icon(
@@ -477,7 +493,7 @@ class _AddServerDialogState extends State<AddServerDialog> {
               controller: _addressController,
               style: const TextStyle(color: AppTheme.textPrimary),
               decoration: InputDecoration(
-                labelText: 'Address *',
+                labelText: loc.addressLabel,
                 hintText: 'play.example.com',
                 hintStyle: TextStyle(color: AppTheme.textMuted),
                 prefixIcon: const Icon(
@@ -509,7 +525,7 @@ class _AddServerDialogState extends State<AddServerDialog> {
               controller: _portController,
               style: const TextStyle(color: AppTheme.textPrimary),
               decoration: InputDecoration(
-                labelText: 'Port *',
+                labelText: loc.portLabel,
                 prefixIcon: const Icon(
                   Icons.numbers,
                   color: AppTheme.primaryAccent,
@@ -540,7 +556,7 @@ class _AddServerDialogState extends State<AddServerDialog> {
               controller: _descriptionController,
               style: const TextStyle(color: AppTheme.textPrimary),
               decoration: InputDecoration(
-                labelText: 'Description (Optional)',
+                labelText: loc.descriptionLabel,
                 hintText: 'Survival server with friends',
                 hintStyle: TextStyle(color: AppTheme.textMuted),
                 prefixIcon: const Icon(
@@ -574,7 +590,7 @@ class _AddServerDialogState extends State<AddServerDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: Text('Cancel', style: TextStyle(color: AppTheme.textMuted)),
+          child: Text(loc.cancel, style: TextStyle(color: AppTheme.textMuted)),
         ),
         ElevatedButton(
           onPressed: _save,
@@ -585,7 +601,7 @@ class _AddServerDialogState extends State<AddServerDialog> {
               borderRadius: BorderRadius.circular(10),
             ),
           ),
-          child: const Text('Save'),
+          child: Text(loc.save),
         ),
       ],
     );

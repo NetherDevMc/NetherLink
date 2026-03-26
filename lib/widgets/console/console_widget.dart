@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import '../../l10n/app_localizations.dart';
 import '../../theme/app_theme.dart';
 
 class ConsoleWidget extends StatefulWidget {
@@ -37,6 +38,8 @@ class _ConsoleWidgetState extends State<ConsoleWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
+
     return Center(
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 800),
@@ -56,8 +59,8 @@ class _ConsoleWidgetState extends State<ConsoleWidget> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  _buildHeader(),
-                  if (_expanded) Expanded(child: _buildLogList()),
+                  _buildHeader(loc),
+                  if (_expanded) Expanded(child: _buildLogList(loc)),
                 ],
               ),
             ),
@@ -67,7 +70,7 @@ class _ConsoleWidgetState extends State<ConsoleWidget> {
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildHeader(AppLocalizations loc) {
     return GestureDetector(
       onTap: () => setState(() => _expanded = !_expanded),
       child: Container(
@@ -100,10 +103,10 @@ class _ConsoleWidgetState extends State<ConsoleWidget> {
             ),
             const SizedBox(width: 10),
 
-            const Expanded(
+            Expanded(
               child: Text(
-                'Console Output',
-                style: TextStyle(
+                loc.consoleOutput,
+                style: const TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
                   color: Colors.white,
@@ -147,19 +150,19 @@ class _ConsoleWidgetState extends State<ConsoleWidget> {
                 color: widget.debugEnabled
                     ? AppTheme.success
                     : Colors.white.withOpacity(0.3),
-                tooltip: 'Toggle debug',
+                tooltip: loc.toggleDebug,
                 onTap: widget.onToggleDebug,
               ),
               _iconBtn(
                 icon: Icons.copy_outlined,
                 color: Colors.white.withOpacity(0.3),
-                tooltip: 'Copy logs',
+                tooltip: loc.copyLogs,
                 onTap: widget.onCopyLogs,
               ),
               _iconBtn(
                 icon: Icons.delete_outline_rounded,
                 color: Colors.white.withOpacity(0.3),
-                tooltip: 'Clear',
+                tooltip: loc.clear,
                 onTap: widget.onClearLogs,
               ),
             ],
@@ -180,7 +183,7 @@ class _ConsoleWidgetState extends State<ConsoleWidget> {
     );
   }
 
-  Widget _buildLogList() {
+  Widget _buildLogList(AppLocalizations loc) {
     return ValueListenableBuilder<List<String>>(
       valueListenable: widget.logsNotifier,
       builder: (context, logs, _) {
@@ -196,7 +199,7 @@ class _ConsoleWidgetState extends State<ConsoleWidget> {
                 ),
                 const SizedBox(height: 10),
                 Text(
-                  'No logs yet',
+                  loc.noLogsYet,
                   style: TextStyle(
                     color: Colors.white.withOpacity(0.2),
                     fontSize: 13,
@@ -204,7 +207,7 @@ class _ConsoleWidgetState extends State<ConsoleWidget> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Start broadcasting to see output',
+                  loc.startBroadcastingToSeeOutput,
                   style: TextStyle(
                     color: Colors.white.withOpacity(0.1),
                     fontSize: 11,
@@ -305,6 +308,8 @@ class ConsoleDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
+
     return Dialog.fullscreen(
       backgroundColor: Colors.transparent,
       child: Container(
@@ -350,10 +355,10 @@ class ConsoleDialog extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(width: 10),
-                        const Expanded(
+                        Expanded(
                           child: Text(
-                            'Console Output',
-                            style: TextStyle(
+                            loc.consoleOutput,
+                            style: const TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.w600,
                               color: Colors.white,
@@ -367,25 +372,25 @@ class ConsoleDialog extends StatelessWidget {
                           color: debugEnabled
                               ? AppTheme.success
                               : Colors.white.withOpacity(0.3),
-                          tooltip: 'Toggle debug',
+                          tooltip: loc.toggleDebug,
                           onTap: onToggleDebug,
                         ),
                         _iconBtn(
                           icon: Icons.copy_outlined,
                           color: Colors.white.withOpacity(0.3),
-                          tooltip: 'Copy logs',
+                          tooltip: loc.copyLogs,
                           onTap: onCopyLogs,
                         ),
                         _iconBtn(
                           icon: Icons.delete_outline_rounded,
                           color: Colors.white.withOpacity(0.3),
-                          tooltip: 'Clear',
+                          tooltip: loc.clear,
                           onTap: onClearLogs,
                         ),
                         _iconBtn(
                           icon: Icons.close_rounded,
                           color: Colors.white.withOpacity(0.5),
-                          tooltip: 'Close',
+                          tooltip: loc.close,
                           onTap: () => Navigator.of(context).pop(),
                         ),
                       ],
@@ -410,7 +415,7 @@ class ConsoleDialog extends StatelessWidget {
                             ),
                             const SizedBox(height: 12),
                             Text(
-                              'No logs yet',
+                              loc.noLogsYet,
                               style: TextStyle(
                                 color: Colors.white.withOpacity(0.2),
                                 fontSize: 14,

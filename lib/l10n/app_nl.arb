@@ -1,0 +1,210 @@
+{
+  "@@locale": "nl",
+  "appName": "NetherLink",
+  "console": "Console",
+  "consoleOutput": "Console Uitvoer",
+  "noLogsYet": "Nog geen logs",
+  "startBroadcastingToSeeOutput": "Start uitzenden om uitvoer te zien",
+  "close": "Sluit",
+  "ok": "OK",
+  "joinUs": "Sluit je aan",
+  "website": "Website",
+  "howToUseMenu": "Hoe gebruiken",
+  "support": "Ondersteuning",
+  "helpText": "Gemaakt door {appCreator}.\n\nHoe te gebruiken:\n1. Voer uw Minecraft server adres en poort in (standaard: 19132)\n   - of selecteer een eerder opgeslagen server uit de dropdown\n2. (Optioneel) Kies een Relay server(EU of US) die het dichtst bij uw locatie is\n3. Klik op \"Start uitzending\"\n4 Om te starten ga op je console/apparaat: Minecraft > Play > Vrienden\n5. Je zou een LAN server moeten zien genaamd \"NetherLink\"\n6. Klik op de server om toe te treden tot uw externe server via NetherLink\n\nNintendo Switch (DNS-modus):\n1. Schakel \"Nintendo Switch\" in in het verbindingspaneel\n2. Selecteer een RelayServer (EU of US)\n3. Klik op \"Stuur DNS Config\" - dit stuurt uw configuratie naar het relais\n   (het zend NIET een LAN server)\n4. Op uw Switch, Pas uw NetherLink DNS setup toe en neem deel aan\n   met behulp van de server die u gebruikt voor NetherLink\n\nNotities:\n- voor LAN uitzendingen, Netherlink en console moeten op hetzelfde lokale netwerk zitten.\n- Tip: Kies de dichtstbijzijnde server voor de beste prestaties.",
+  "@helpText": {
+    "description": "Detailed help / instructions shown in the help dialog",
+    "placeholders": {
+      "appCreator": {}
+    }
+  },
+  "discord": "Discord",
+  "@discord": {
+    "description": "Name of the Discord community / link label"
+  },
+  "toggleDebug": "Schakel debug aan/uit",
+  "@toggleDebug": {
+    "description": "Tooltip for toggling debug logging in console"
+  },
+  "copyLogs": "Logs kopiëren",
+  "@copyLogs": {
+    "description": "Tooltip / button text to copy console logs"
+  },
+  "clear": "Wis",
+  "@clear": {
+    "description": "Button text to clear console logs or fields"
+  },
+  "cancel": "Annuleren",
+  "@cancel": {
+    "description": "Generic cancel button label"
+  },
+  "deleteServer": "Server Verwijderen",
+  "@deleteServer": {
+    "description": "Title for delete server confirmation dialog"
+  },
+  "delete": "Verwijderen",
+  "@delete": {
+    "description": "Delete action label"
+  },
+  "myServers": "Mijn Servers",
+  "@myServers": {
+    "description": "Title for manage servers dialog"
+  },
+  "quickAccessServers": "Snelle toegang tot servers",
+  "@quickAccessServers": {
+    "description": "Subtitle for manage servers dialog"
+  },
+  "addServer": "Server toevoegen",
+  "@addServer": {
+    "description": "Add server button label / dialog title"
+  },
+  "addServersHint": "Servers toevoegen om later snel te verbinden",
+  "@addServersHint": {
+    "description": "Hint text shown when there are no saved servers"
+  },
+  "serverNameLabel": "Server Naam *",
+  "@serverNameLabel": {
+    "description": "Form label for server name"
+  },
+  "addressLabel": "Adres *",
+  "@addressLabel": {
+    "description": "Form label for server address"
+  },
+  "portLabel": "Poort *",
+  "@portLabel": {
+    "description": "Form label for server port"
+  },
+  "descriptionLabel": "Beschrijving (optioneel)",
+  "@descriptionLabel": {
+    "description": "Form label for server description"
+  },
+  "save": "Opslaan",
+  "@save": {
+    "description": "Save button label"
+  },
+  "initializing": "Initialiseren...",
+  "@initializing": {
+    "description": "Shown on splash while app initializes"
+  },
+  "createdBy": "Gemaakt door NetherDev",
+  "@createdBy": {
+    "description": "Badge text on splash screen"
+  },
+  "bedrockBridge": "Bedrock Brug",
+  "@bedrockBridge": {
+    "description": "Subtitle on splash screen"
+  },
+  "clientDisconnected": "Client verbroken - Uitzending gestopt",
+  "@clientDisconnected": {
+    "description": "Snackbar shown when clients disconnect automatically"
+  },
+  "pleaseEnterServer": "⚠️ Voer een serveradres in",
+  "@pleaseEnterServer": {
+    "description": "Validation message when server address field is empty"
+  },
+  "invalidPort": "⚠️ Ongeldig poortnummer (1-65535)",
+  "@invalidPort": {
+    "description": "Validation message when port is invalid"
+  },
+  "dnsConfigSent": "✅ DNS configuratie verzonden naar relay",
+  "@dnsConfigSent": {
+    "description": "Confirmation after sending DNS config to relay"
+  },
+  "broadcastingStarted": "Uitzending gestart",
+  "@broadcastingStarted": {
+    "description": "Snackbar shown when broadcasting starts"
+  },
+  "broadcastStopped": "Uitzending gestopt",
+  "@broadcastStopped": {
+    "description": "Snackbar shown when broadcasting stops"
+  },
+  "selectedServer": "📋 Geselecteerd: {name}",
+  "@selectedServer": {
+    "description": "Shown when a saved server is selected",
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "selectedFeaturedServer": "Geselecteerd: {name}",
+  "@selectedFeaturedServer": {
+    "description": "Shown when a featured server is selected",
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "noLogsToCopy": "Geen logs om te kopiëren",
+  "@noLogsToCopy": {
+    "description": "Shown when user tries to copy logs but none exist"
+  },
+  "copiedLogs": "Gekopieerd {count} logs naar het klembord",
+  "@copiedLogs": {
+    "description": "Shown after copying logs to clipboard",
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "debugEnabled": "Debug logs ingeschakeld",
+  "debugDisabled": "Debug logs uitgeschakeld",
+  "@debugEnabled": {
+    "description": "Shown when debug logging is enabled/disabled"
+  },
+  "howToUseTitle": "Hoe gebruik je NetherLink",
+  "iUnderstand": "Ik begrijp het",
+  "playOnSwitchTitle": "Speel op Nintendo Switch",
+  "playWithFriendsTitle": "Spelen via vrienden",
+  "playInstructionsSwitch": "Geselecteerd: {relayName}\n\nHoe te verbinden:\n1. Ga naar uw Switch Instellingen en wijzig de DNS naar: {relayIp}\n2. Open Minecraft en selecteer een server uit de lijst (zoals Cubecraft of Hive).\n3. Je wordt nu automatisch naar je eigen server verzonden.",
+  "@playInstructionsSwitch": {
+    "description": "DNS instructions shown for Nintendo Switch mode",
+    "placeholders": {
+      "relayName": {},
+      "relayIp": {}
+    }
+  },
+  "playInstructionsFriends": "Hoe te verbinden:\n1. Voeg {friend} toe als vriend op je console.\n2. Open Minecraft en ga naar het tabblad Vrienden.\n3. Zoek naar je server onder LAN werelden en selecteer om mee te doen.",
+  "@playInstructionsFriends": {
+    "description": "Instructions shown for Friends mode",
+    "placeholders": {
+      "friend": {}
+    }
+  },
+  "nldServerLabel": "NETHERLINK SERVER",
+  "@nldServerLabel": {
+    "description": "Label text above the relay selector"
+  },
+  "selectRelayLabel": "Geselecteerd: {name}",
+  "@selectRelayLabel": {
+    "description": "Accessibility label for relay selection button",
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "noSavedServers": "Geen opgeslagen servers",
+  "savedServers": "Opgeslagen servers",
+  "serverAddressHint": "Server Address",
+  "portHint": "Poort",
+  "manageServers": "Beheer servers",
+  "manageServersTooltip": "Beheer servers",
+  "stopBroadcasting": "Uitzenden stoppen",
+  "startNintendoMode": "Nintendo Modus starten",
+  "startFriendsMode": "Start vrienden modus",
+  "startBroadcasting": "Uitzending starten",
+  "modeLabel": "Modus",
+  "labelXbox": "Xbox/PS4-5",
+  "labelNintendo": "Nintendo",
+  "labelFriends": "Vrienden",
+  "nintendoInfoTitle": "Nintendo Switch DNS-modus",
+  "nintendoInfoText": "Start in Nintendo modus, stel uw DNS in en word lid van een featured server.",
+  "friendModeTitle": "Vriend modus",
+  "friendModeText": "Voeg NetherLink's vriend bots toe als vriend, Start vriend modus en speel",
+  "selectedRelayCheck": "Geselecteerd",
+  "@selectedRelayCheck": {
+    "description": "Small label used when a relay is selected"
+  },
+  "relayFallbackWarning": "Waarschuwing: origineel Relay heeft niet gereageerd. Fallback Relay in gebruik: {name}",
+  "@relayFallbackWarning": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "relayUnableConnect": "Kan geen verbinding maken met geen enkele NetherLink relay server. Probeer het later opnieuw of controleer je internet."
+}

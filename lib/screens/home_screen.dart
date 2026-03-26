@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../l10n/app_localizations.dart';
 import '../network/socket_handler.dart';
 import '../network/broadcast_manager.dart';
 import '../util/Logger.dart';
@@ -16,7 +17,6 @@ import '../theme/app_theme.dart';
 import '../widgets/connection/connection_panel.dart';
 import '../widgets/console/console_widget.dart';
 import '../widgets/dialogs/manage_servers_dialog.dart';
-import '../widgets/dialogs/support_dialog.dart';
 import '../widgets/components/global_notice_banner.dart';
 import '../services/notification_service.dart';
 
@@ -131,16 +131,17 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   void _handleAutoDisconnect() {
     if (!mounted) return;
     setState(() => _broadcastingNotifier.value = false);
+    final loc = AppLocalizations.of(context)!;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: const Row(
+        content: Row(
           children: [
-            Icon(Icons.info_outline, color: Colors.white),
-            SizedBox(width: 12),
+            const Icon(Icons.info_outline, color: Colors.white),
+            const SizedBox(width: 12),
             Expanded(
               child: Text(
-                'Client disconnected — Broadcast stopped',
-                style: TextStyle(fontSize: 15),
+                loc.clientDisconnected,
+                style: const TextStyle(fontSize: 15),
               ),
             ),
           ],
@@ -149,7 +150,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         duration: const Duration(seconds: 4),
         behavior: SnackBarBehavior.floating,
         action: SnackBarAction(
-          label: 'OK',
+          label: loc.ok,
           textColor: Colors.white,
           onPressed: () {},
         ),
@@ -160,6 +161,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   void _handleRelayError(String message) {
     if (!mounted) return;
+    final loc = AppLocalizations.of(context)!;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Row(
@@ -175,7 +177,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         duration: const Duration(seconds: 6),
         behavior: SnackBarBehavior.floating,
         action: SnackBarAction(
-          label: 'OK',
+          label: loc.ok,
           textColor: Colors.white,
           onPressed: () {},
         ),
@@ -217,12 +219,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   Future<void> _copyLogsToClipboard() async {
+    final loc = AppLocalizations.of(context)!;
     final logs = _logsNotifier.value;
     if (logs.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('No logs to copy'),
-          duration: Duration(seconds: 2),
+        SnackBar(
+          content: Text(loc.noLogsToCopy),
+          duration: const Duration(seconds: 2),
         ),
       );
       return;
@@ -235,7 +238,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           children: [
             const Icon(Icons.check_circle, color: Colors.white, size: 18),
             const SizedBox(width: 8),
-            Text('Copied ${logs.length} log entries to clipboard'),
+            Text(loc.copiedLogs(logs.length)),
           ],
         ),
         backgroundColor: AppTheme.success,
@@ -245,6 +248,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   void _toggleDebugMode() {
+    final loc = AppLocalizations.of(context)!;
     setState(() {
       _debugEnabled = !_debugEnabled;
       logger.debugEnabled = _debugEnabled;
@@ -259,7 +263,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               color: Colors.white,
             ),
             const SizedBox(width: 12),
-            Text('Debug logs ${_debugEnabled ? "enabled" : "disabled"}'),
+            Text(_debugEnabled ? loc.debugEnabled : loc.debugDisabled),
           ],
         ),
         backgroundColor: _debugEnabled ? AppTheme.success : AppTheme.textMuted,
@@ -281,13 +285,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   Future<void> _startBroadcast(PanelMode mode) async {
+    final loc = AppLocalizations.of(context)!;
     final remoteHost = _ipController.text.trim();
     final remotePortParsed = int.tryParse(_portController.text);
 
     if (remoteHost.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('⚠️ Please enter a server address'),
+        SnackBar(
+          content: Text(loc.pleaseEnterServer),
           backgroundColor: Colors.orange,
         ),
       );
@@ -297,10 +302,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         remotePortParsed < 1 ||
         remotePortParsed > 65535) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('⚠️ Invalid port number (1-65535)'),
-          backgroundColor: Colors.red,
-        ),
+        SnackBar(content: Text(loc.invalidPort), backgroundColor: Colors.red),
       );
       return;
     }
@@ -314,7 +316,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       if (ok) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('✅ DNS config sent to relay'),
+            content: Text(loc.dnsConfigSent),
             backgroundColor: AppTheme.primaryAccent,
             duration: const Duration(seconds: 2),
           ),
@@ -341,11 +343,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     if (_broadcastManager.isBroadcasting && success) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Row(
+          content: Row(
             children: [
-              Icon(Icons.check_circle, color: Colors.white),
-              SizedBox(width: 12),
-              Text('Broadcasting started'),
+              const Icon(Icons.check_circle, color: Colors.white),
+              const SizedBox(width: 12),
+              Text(AppLocalizations.of(context)!.broadcastingStarted),
             ],
           ),
           backgroundColor: AppTheme.primaryAccent,
@@ -359,10 +361,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     await _broadcastManager.stopBroadcast();
     _broadcastingNotifier.value = false;
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Broadcast stopped'),
+      SnackBar(
+        content: Text(AppLocalizations.of(context)!.broadcastStopped),
         backgroundColor: Colors.grey,
-        duration: Duration(seconds: 2),
+        duration: const Duration(seconds: 2),
       ),
     );
   }
@@ -373,9 +375,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       _portController.text = server.port.toString();
     });
     logger.info('Selected saved server: ${server.name}');
+    final loc = AppLocalizations.of(context)!;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('📋 Selected: ${server.name}'),
+        content: Text(loc.selectedServer(server.name)),
         duration: const Duration(seconds: 1),
         backgroundColor: AppTheme.primaryAccentDark,
       ),
@@ -408,6 +411,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   void _showHelpDialog(ThemeData theme) {
+    final loc = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (_) => BackdropFilter(
@@ -418,13 +422,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             borderRadius: BorderRadius.circular(20),
             side: BorderSide(color: Colors.white.withOpacity(0.1)),
           ),
-          title: const Text(
-            'How to use NetherLink',
-            style: TextStyle(color: Colors.white),
+          title: Text(
+            loc.howToUseTitle,
+            style: const TextStyle(color: Colors.white),
           ),
           content: SingleChildScrollView(
             child: Text(
-              AppConstants.helpText,
+              loc.helpText(loc.createdBy),
               style: TextStyle(
                 color: Colors.white.withOpacity(0.7),
                 height: 1.5,
@@ -435,7 +439,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
               child: Text(
-                'Close',
+                loc.close,
                 style: TextStyle(color: AppTheme.primaryAccent),
               ),
             ),
@@ -447,6 +451,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: AnimatedBuilder(
@@ -506,7 +511,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         },
         child: Column(
           children: [
-            _buildAppBar(),
+            _buildAppBar(loc),
             if (_currentNotice != null)
               GlobalNoticeBanner(
                 message: _currentNotice!['message']!,
@@ -565,7 +570,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildAppBar() {
+  Widget _buildAppBar(AppLocalizations loc) {
     return ClipRect(
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
@@ -583,15 +588,15 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
                 children: [
-                  _buildGlassPill(),
+                  _buildGlassPill(loc),
                   const Spacer(),
                   _glassAppBarButton(
                     icon: Icons.terminal_rounded,
-                    tooltip: 'Console',
+                    tooltip: loc.console,
                     onTap: _consoleDialogOpen ? null : _showConsoleDialog,
                   ),
                   const SizedBox(width: 8),
-                  _buildGlassMenuButton(),
+                  _buildGlassMenuButton(loc),
                 ],
               ),
             ),
@@ -601,7 +606,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildGlassPill() {
+  Widget _buildGlassPill(AppLocalizations loc) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(12),
       child: BackdropFilter(
@@ -615,18 +620,16 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
-            children: [
-              _buildDiscordButton(),
-            ],
+            children: [_buildDiscordButton(loc)],
           ),
         ),
       ),
     );
   }
 
-  Widget _buildDiscordButton() {
+  Widget _buildDiscordButton(AppLocalizations loc) {
     return Tooltip(
-      message: 'Discord',
+      message: loc.discord,
       child: InkWell(
         borderRadius: BorderRadius.circular(8),
         onTap: () => launchUrl(Uri.parse(AppConstants.discordUrl)),
@@ -638,7 +641,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               const Icon(Icons.discord, color: Color(0xFF7289DA), size: 18),
               const SizedBox(width: 6),
               Text(
-                'Join Us',
+                loc.joinUs,
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w500,
@@ -690,7 +693,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildGlassMenuButton() {
+  Widget _buildGlassMenuButton(AppLocalizations loc) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(10),
       child: BackdropFilter(
@@ -719,11 +722,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             ),
           ),
           itemBuilder: (context) => [
-            _glassMenuItem(Icons.open_in_browser_rounded, 'Website', () {
+            _glassMenuItem(Icons.open_in_browser_rounded, loc.website, () {
               Navigator.pop(context);
               launchUrl(Uri.parse(AppConstants.websiteUrl));
             }),
-            _glassMenuItem(Icons.help_outline_rounded, 'How to use', () {
+            _glassMenuItem(Icons.help_outline_rounded, loc.howToUseMenu, () {
               Navigator.pop(context);
               _showHelpDialog(Theme.of(context));
             }),
@@ -809,40 +812,16 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   Future<void> _showDnsInfoModal({required bool isFriendsMode}) async {
+    final loc = AppLocalizations.of(context)!;
     final meta = _getRelayMeta(_selectedRelayIp);
     final relayName = meta['name'] ?? '-';
     final relayIp = meta['ip'] ?? '-';
 
-    late String title;
-    late String body;
-    late String friend;
-
+    String friend = '';
     if (relayName == "EU Server") {
       friend = 'NetherLinkEU';
     } else if (relayName == "US Server") {
       friend = 'NetherLinkUS';
-    }
-
-    if (!isFriendsMode) {
-      title = 'Play on Nintendo Switch';
-      body =
-          '''
-Selected: $relayName
-
-How to connect:
-1. Go to your Switch Settings and change the DNS to: $relayIp
-2. Open Minecraft and select a server from the list (like Cubecraft or Hive).
-3. You will now be sent to your own server automatically.
-''';
-    } else {
-      title = 'Play with Friends';
-      body =
-          '''
-How to connect:
-1. On your console, add $friend as a friend.
-2. Open Minecraft and go to the Friends tab.
-3. Look for your server under LAN Worlds and select it to join.
-''';
     }
 
     await showDialog(
@@ -856,7 +835,7 @@ How to connect:
             side: BorderSide(color: Colors.white.withOpacity(0.1)),
           ),
           title: Text(
-            title,
+            isFriendsMode ? loc.playWithFriendsTitle : loc.playOnSwitchTitle,
             style: const TextStyle(
               color: Colors.white,
               fontWeight: FontWeight.bold,
@@ -864,14 +843,16 @@ How to connect:
             ),
           ),
           content: Text(
-            body,
+            isFriendsMode
+                ? loc.playInstructionsFriends(friend)
+                : loc.playInstructionsSwitch(relayName, relayIp),
             style: TextStyle(color: Colors.white, fontSize: 15, height: 1.5),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
               child: Text(
-                'I understand',
+                loc.iUnderstand,
                 style: TextStyle(
                   color: AppTheme.primaryAccent,
                   fontWeight: FontWeight.bold,

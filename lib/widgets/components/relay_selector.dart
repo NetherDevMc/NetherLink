@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import '../../l10n/app_localizations.dart';
 import '../../constants/app_constants.dart';
 import '../../theme/app_theme.dart';
 
@@ -36,11 +37,13 @@ class _RelaySelectorState extends State<RelaySelector> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'NETHERLINK SERVER',
+          loc.nldServerLabel,
           style: TextStyle(
             color: AppTheme.textMuted,
             fontWeight: FontWeight.w600,
@@ -66,12 +69,13 @@ class _RelaySelectorState extends State<RelaySelector> {
                   final isLast =
                       AppConstants.relayServers.indexOf(srv) ==
                       AppConstants.relayServers.length - 1;
+                  final srvName = srv['name'] ?? '';
 
                   return Expanded(
                     child: Semantics(
                       button: true,
                       selected: isSelected,
-                      label: 'Select relay ${srv['name']}',
+                      label: loc.selectRelayLabel(srvName),
                       child: GestureDetector(
                         onTap: () {
                           setState(() => _relayIp = srv['ip']);
@@ -98,7 +102,7 @@ class _RelaySelectorState extends State<RelaySelector> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
-                                srv['name']!,
+                                srvName,
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                   color: isSelected
@@ -110,10 +114,13 @@ class _RelaySelectorState extends State<RelaySelector> {
                               ),
                               if (isSelected) ...[
                                 const SizedBox(width: 8),
-                                Icon(
-                                  Icons.check_circle,
-                                  size: 14,
-                                  color: Colors.white70,
+                                Tooltip(
+                                  message: loc.selectedRelayCheck,
+                                  child: Icon(
+                                    Icons.check_circle,
+                                    size: 14,
+                                    color: Colors.white70,
+                                  ),
                                 ),
                               ],
                             ],

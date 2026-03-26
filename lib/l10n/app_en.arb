@@ -1,0 +1,194 @@
+{
+  "@@locale": "en",
+
+  "appName": "NetherLink",
+
+  "console": "Console",
+  "consoleOutput": "Console Output",
+  "noLogsYet": "No logs yet",
+  "startBroadcastingToSeeOutput": "Start broadcasting to see output",
+  "close": "Close",
+  "ok": "OK",
+  "joinUs": "Join Us",
+  "website": "Website",
+  "howToUseMenu": "How to use",
+  "support": "Support",
+  "helpText": "Created by {appCreator}.\n\nHow to use:\n1. Enter your Minecraft server address and port (default: 19132)\n   — or select a previously saved server from the dropdown\n2. (Optional) Choose a Relay Server (EU or US) closest to your location\n3. Click \"Start Broadcasting\" to begin\n4. On your console/device: Minecraft > Play > Friends\n5. You should see a LAN server called \"NetherLink\"\n6. Click it to join your external server via NetherLink\n\nNintendo Switch (DNS mode):\n1. Enable \"Nintendo Switch\" in the connection panel\n2. Select a Relay Server (EU or US)\n3. Click \"Send DNS Config\" — this sends your config to the relay\n   (it does NOT broadcast a LAN server)\n4. On your Switch, apply your NetherLink DNS setup and join\n   using the server entry you use for NetherLink\n\nNotes:\n- For LAN broadcasting, NetherLink and console must be on the same local network.\n- Tip: Choose the relay server closest to you for the best performance.",
+  "@helpText": {
+    "description": "Detailed help / instructions shown in the help dialog",
+    "placeholders": {
+      "appCreator": {}
+    }
+  },
+
+  "discord": "Discord",
+  "@discord": { "description": "Name of the Discord community / link label" },
+
+  "toggleDebug": "Toggle debug",
+  "@toggleDebug": { "description": "Tooltip for toggling debug logging in console" },
+
+  "copyLogs": "Copy logs",
+  "@copyLogs": { "description": "Tooltip / button text to copy console logs" },
+
+  "clear": "Clear",
+  "@clear": { "description": "Button text to clear console logs or fields" },
+
+  "cancel": "Cancel",
+  "@cancel": { "description": "Generic cancel button label" },
+
+  "deleteServer": "Delete Server",
+  "@deleteServer": { "description": "Title for delete server confirmation dialog" },
+
+  "delete": "Delete",
+  "@delete": { "description": "Delete action label" },
+
+  "myServers": "My Servers",
+  "@myServers": { "description": "Title for manage servers dialog" },
+
+  "quickAccessServers": "Quick access servers",
+  "@quickAccessServers": { "description": "Subtitle for manage servers dialog" },
+
+  "addServer": "Add Server",
+  "@addServer": { "description": "Add server button label / dialog title" },
+
+  "addServersHint": "Add servers to quickly connect later",
+  "@addServersHint": { "description": "Hint text shown when there are no saved servers" },
+
+  "serverNameLabel": "Server Name *",
+  "@serverNameLabel": { "description": "Form label for server name" },
+
+  "addressLabel": "Address *",
+  "@addressLabel": { "description": "Form label for server address" },
+
+  "portLabel": "Port *",
+  "@portLabel": { "description": "Form label for server port" },
+
+  "descriptionLabel": "Description (Optional)",
+  "@descriptionLabel": { "description": "Form label for server description" },
+
+  "save": "Save",
+  "@save": { "description": "Save button label" },
+
+  "initializing": "Initializing...",
+  "@initializing": { "description": "Shown on splash while app initializes" },
+
+  "createdBy": "Created by NetherDev",
+  "@createdBy": { "description": "Badge text on splash screen" },
+
+  "bedrockBridge": "Bedrock Bridge",
+  "@bedrockBridge": { "description": "Subtitle on splash screen" },
+
+  "clientDisconnected": "Client disconnected — Broadcast stopped",
+  "@clientDisconnected": {
+    "description": "Snackbar shown when clients disconnect automatically"
+  },
+
+  "pleaseEnterServer": "⚠️ Please enter a server address",
+  "@pleaseEnterServer": {
+    "description": "Validation message when server address field is empty"
+  },
+
+  "invalidPort": "⚠️ Invalid port number (1-65535)",
+  "@invalidPort": {
+    "description": "Validation message when port is invalid"
+  },
+
+  "dnsConfigSent": "✅ DNS config sent to relay",
+  "@dnsConfigSent": {
+    "description": "Confirmation after sending DNS config to relay"
+  },
+
+  "broadcastingStarted": "Broadcasting started",
+  "@broadcastingStarted": {
+    "description": "Snackbar shown when broadcasting starts"
+  },
+
+  "broadcastStopped": "Broadcast stopped",
+  "@broadcastStopped": {
+    "description": "Snackbar shown when broadcasting stops"
+  },
+
+  "selectedServer": "📋 Selected: {name}",
+  "@selectedServer": {
+    "description": "Shown when a saved server is selected",
+    "placeholders": { "name": {} }
+  },
+
+  "selectedFeaturedServer": "Selected: {name}",
+  "@selectedFeaturedServer": {
+    "description": "Shown when a featured server is selected",
+    "placeholders": { "name": {} }
+  },
+
+  "noLogsToCopy": "No logs to copy",
+  "@noLogsToCopy": {
+    "description": "Shown when user tries to copy logs but none exist"
+  },
+
+  "copiedLogs": "Copied {count} log entries to clipboard",
+  "@copiedLogs": {
+    "description": "Shown after copying logs to clipboard",
+    "placeholders": { "count": {} }
+  },
+
+  "debugEnabled": "Debug logs enabled",
+  "debugDisabled": "Debug logs disabled",
+  "@debugEnabled": {
+    "description": "Shown when debug logging is enabled/disabled"
+  },
+
+  "howToUseTitle": "How to use NetherLink",
+  "iUnderstand": "I understand",
+
+  "playOnSwitchTitle": "Play on Nintendo Switch",
+  "playWithFriendsTitle": "Play with Friends",
+
+  "playInstructionsSwitch": "Selected: {relayName}\n\nHow to connect:\n1. Go to your Switch Settings and change the DNS to: {relayIp}\n2. Open Minecraft and select a server from the list (like Cubecraft or Hive).\n3. You will now be sent to your own server automatically.",
+  "@playInstructionsSwitch": {
+    "description": "DNS instructions shown for Nintendo Switch mode",
+    "placeholders": { "relayName": {}, "relayIp": {} }
+  },
+
+  "playInstructionsFriends": "How to connect:\n1. On your console, add {friend} as a friend.\n2. Open Minecraft and go to the Friends tab.\n3. Look for your server under LAN Worlds and select it to join.",
+  "@playInstructionsFriends": {
+    "description": "Instructions shown for Friends mode",
+    "placeholders": { "friend": {} }
+  },
+
+  "nldServerLabel": "NETHERLINK SERVER",
+  "@nldServerLabel": { "description": "Label text above the relay selector" },
+
+  "selectRelayLabel": "Select relay {name}",
+  "@selectRelayLabel": { "description": "Accessibility label for relay selection button", "placeholders": { "name": {} } },
+
+  "noSavedServers": "No saved servers",
+  "savedServers": "Saved servers",
+  "serverAddressHint": "Server Address",
+  "portHint": "Port",
+
+  "manageServers": "Manage servers",
+  "manageServersTooltip": "Manage servers",
+
+  "stopBroadcasting": "Stop Broadcasting",
+  "startNintendoMode": "Start Nintendo Mode",
+  "startFriendsMode": "Start Friends Mode",
+  "startBroadcasting": "Start Broadcasting",
+
+  "modeLabel": "Mode",
+  "labelXbox": "Xbox/PS4-5",
+  "labelNintendo": "Nintendo",
+  "labelFriends": "Friends",
+
+  "nintendoInfoTitle": "Nintendo Switch DNS mode",
+  "nintendoInfoText": "Start in Nintendo mode, set your DNS and join a featured server.",
+  "friendModeTitle": "Friend mode",
+  "friendModeText": "Add NetherLink's friends bots as a friend. Start Friends mode and play",
+
+  "selectedRelayCheck": "Selected",
+  "@selectedRelayCheck": { "description": "Small label used when a relay is selected" },
+
+  "relayFallbackWarning": "Warning: original relay did not respond. Fallback relay in use: {name}",
+  "@relayFallbackWarning": { "placeholders": { "name": {} } },
+
+  "relayUnableConnect": "Unable to connect to ANY NetherLink relay server. Try again later or check your internet."
+}

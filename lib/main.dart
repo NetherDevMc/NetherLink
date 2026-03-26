@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'screens/splash_screen.dart';
 import 'theme/app_theme.dart';
+import '../l10n/app_localizations.dart';
 
 void main() {
   runApp(const NetherLinkApp());
@@ -13,6 +14,8 @@ class NetherLinkApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'NetherLink',
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
       scrollBehavior: const MaterialScrollBehavior().copyWith(
         overscroll: false,
         physics: const ClampingScrollPhysics(),

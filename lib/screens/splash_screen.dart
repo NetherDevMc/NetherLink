@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 import '../../theme/app_theme.dart';
 import 'home_screen.dart';
 
@@ -101,6 +102,7 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: AnimatedBuilder(
@@ -184,11 +186,11 @@ class _SplashScreenState extends State<SplashScreen>
                     children: [
                       _buildLogo(),
                       const SizedBox(height: 44),
-                      _buildTitle(),
+                      _buildTitle(loc),
                       const SizedBox(height: 16),
-                      _buildBadge(),
+                      _buildBadge(loc),
                       const SizedBox(height: 64),
-                      _buildLoader(),
+                      _buildLoader(loc),
                     ],
                   ),
                 ),
@@ -294,7 +296,7 @@ class _SplashScreenState extends State<SplashScreen>
     );
   }
 
-  Widget _buildTitle() {
+  Widget _buildTitle(AppLocalizations loc) {
     return Column(
       children: [
         ShaderMask(
@@ -303,9 +305,9 @@ class _SplashScreenState extends State<SplashScreen>
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ).createShader(bounds),
-          child: const Text(
-            'NETHERLINK',
-            style: TextStyle(
+          child: Text(
+            loc.appName.toUpperCase(),
+            style: const TextStyle(
               fontSize: 34,
               fontWeight: FontWeight.w800,
               color: Colors.white,
@@ -315,7 +317,7 @@ class _SplashScreenState extends State<SplashScreen>
         ),
         const SizedBox(height: 6),
         Text(
-          'Bedrock Bridge',
+          loc.bedrockBridge,
           style: TextStyle(
             fontSize: 13,
             color: Colors.white.withOpacity(0.35),
@@ -327,7 +329,7 @@ class _SplashScreenState extends State<SplashScreen>
     );
   }
 
-  Widget _buildBadge() {
+  Widget _buildBadge(AppLocalizations loc) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(20),
       child: BackdropFilter(
@@ -340,7 +342,7 @@ class _SplashScreenState extends State<SplashScreen>
             border: Border.all(color: Colors.white.withOpacity(0.1)),
           ),
           child: Text(
-            'Created by NetherDev',
+            loc.createdBy,
             style: TextStyle(
               fontSize: 12,
               color: Colors.white.withOpacity(0.4),
@@ -353,7 +355,7 @@ class _SplashScreenState extends State<SplashScreen>
     );
   }
 
-  Widget _buildLoader() {
+  Widget _buildLoader(AppLocalizations loc) {
     return Column(
       children: [
         SizedBox(
@@ -374,7 +376,7 @@ class _SplashScreenState extends State<SplashScreen>
             return Opacity(
               opacity: 0.3 + (_pulseAnimation.value * 0.4),
               child: Text(
-                'Initializing...',
+                loc.initializing,
                 style: TextStyle(
                   fontSize: 12,
                   color: Colors.white.withOpacity(0.5),
