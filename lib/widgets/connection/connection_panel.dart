@@ -88,8 +88,7 @@ class _ConnectionPanelState extends State<ConnectionPanel>
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Text(
-                                loc.selectedFeaturedServer(server.name),
-                              ),
+                                  loc.selectedFeaturedServer(server.name)),
                               duration: const Duration(seconds: 2),
                               backgroundColor: AppTheme.primaryAccent,
                             ),
@@ -107,100 +106,78 @@ class _ConnectionPanelState extends State<ConnectionPanel>
     );
   }
 
+  // Card wrapper removed: return plain content (no ClipRRect / BackdropFilter / decoration)
   Widget _buildGlassCard(bool broadcasting, AppLocalizations loc) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(24),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(24),
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                Colors.white.withOpacity(0.07),
-                Colors.white.withOpacity(0.03),
-              ],
-            ),
-            border: Border.all(
-              color: Colors.white.withOpacity(0.12),
-              width: 1.5,
-            ),
-          ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    _buildServerPickerRow(broadcasting, loc),
-                    const SizedBox(height: 10),
-                    _buildAddressFields(broadcasting, loc),
-                  ],
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                child: Container(
-                  height: 1,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        Colors.transparent,
-                        Colors.white.withOpacity(0.08),
-                        Colors.white.withOpacity(0.08),
-                        Colors.transparent,
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    _buildRelaySection(broadcasting),
-                    const SizedBox(height: 10),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Container(
-                          height: 1,
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [
-                                Colors.transparent,
-                                Colors.white.withOpacity(0.06),
-                                Colors.white.withOpacity(0.06),
-                                Colors.transparent,
-                              ],
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        _buildSectionHeader(loc.modeLabel),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    _buildModeToggleRow(broadcasting, loc),
-                    if (_mode == PanelMode.nintendo ||
-                        _mode == PanelMode.friends) ...[
-                      const SizedBox(height: 10),
-                      _buildInfoBox(loc),
-                    ],
-                    const SizedBox(height: 14),
-                    _buildActionButton(broadcasting, loc),
-                  ],
-                ),
-              ),
+              _buildServerPickerRow(broadcasting, loc),
+              const SizedBox(height: 10),
+              _buildAddressFields(broadcasting, loc),
             ],
           ),
         ),
-      ),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          child: Container(
+            height: 1,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Colors.transparent,
+                  Colors.white.withOpacity(0.08),
+                  Colors.white.withOpacity(0.08),
+                  Colors.transparent,
+                ],
+              ),
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _buildRelaySection(broadcasting),
+              const SizedBox(height: 10),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Container(
+                    height: 1,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          Colors.transparent,
+                          Colors.white.withOpacity(0.06),
+                          Colors.white.withOpacity(0.06),
+                          Colors.transparent,
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  _buildSectionHeader(loc.modeLabel),
+                ],
+              ),
+              const SizedBox(height: 8),
+              _buildModeToggleRow(broadcasting, loc),
+              if (_mode == PanelMode.nintendo ||
+                  _mode == PanelMode.friends) ...[
+                const SizedBox(height: 10),
+                _buildInfoBox(loc),
+              ],
+              const SizedBox(height: 14),
+              _buildActionButton(broadcasting, loc),
+            ],
+          ),
+        ),
+      ],
     );
   }
 
@@ -460,11 +437,7 @@ class _ConnectionPanelState extends State<ConnectionPanel>
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(
-                Icons.play_arrow_rounded,
-                color: Colors.white,
-                size: 22,
-              ),
+              const Icon(Icons.play_arrow_rounded, color: Colors.white, size: 22),
               const SizedBox(width: 8),
               Text(
                 loc.startBroadcasting,

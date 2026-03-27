@@ -190,5 +190,67 @@
   "relayFallbackWarning": "Warning: original relay did not respond. Fallback relay in use: {name}",
   "@relayFallbackWarning": { "placeholders": { "name": {} } },
 
-  "relayUnableConnect": "Unable to connect to ANY NetherLink relay server. Try again later or check your internet."
+  "relayUnableConnect": "Unable to connect to ANY NetherLink relay server. Try again later or check your internet.",
+
+  "howToXboxTitle": "Xbox / PS4-5 (LAN / Proxy)",
+  "@howToXboxTitle": { "description": "Title for the Xbox / PS4-5 how-to modal" },
+
+  "howToXboxSubtitle": "Play via LAN broadcast or proxy",
+  "@howToXboxSubtitle": { "description": "Short subtitle for Xbox / PS4-5 menu tile" },
+
+  "howToXboxBody": "How to connect (Xbox / PS4 / PS5):\n1. Ensure your device running NetherLink and your console are on the same local network.\n2. In the app, enter your Minecraft server address and port and press \"Start Broadcasting\".\n3. On the console open Minecraft → Play → look for LAN Worlds or the Friends tab and refresh the list.\n4. Select the LAN server named \"NetherLink\" to join.\nNotes:\n- If the server does not appear, confirm both devices are on the same subnet and that the app is still broadcasting.\n- Some console models or routers may block LAN discovery; try toggling the app or router settings if needed.",
+  "@howToXboxBody": { "description": "Detailed steps for Xbox/PS4-5 how-to modal" },
+
+  "howToNintendoTitle": "Nintendo Switch (DNS mode)",
+  "@howToNintendoTitle": { "description": "Title for the Nintendo how-to modal" },
+
+  "howToNintendoSubtitle": "DNS relay instructions for Switch",
+  "@howToNintendoSubtitle": { "description": "Short subtitle for Nintendo menu tile" },
+
+  "howToNintendoBody": "Nintendo Switch — DNS mode (step-by-step):\n1. In the app enable \"Nintendo\" mode and select a Relay Server (EU or US).\n2. Tap \"Send DNS Config\" to push the DNS IP to the relay.\n3. On your Nintendo Switch go to System Settings → Internet → Internet Settings → (your network) → Change Settings → DNS and set the Primary DNS to the relay IP.\n4. Open Minecraft and join a public server; you will be redirected to your server using the relay DNS.\nNotes:\n- DNS mode does not broadcast a LAN server; it routes game traffic through the relay.\n- Revert your DNS after you are done if you need normal network behavior.",
+  "@howToNintendoBody": { "description": "Detailed steps for Nintendo Switch DNS setup" },
+
+  "howToFriendsTitle": "Friends mode",
+  "@howToFriendsTitle": { "description": "Title for the Friends-mode how-to modal" },
+
+  "howToFriendsSubtitle": "Invite friends and join via LAN",
+  "@howToFriendsSubtitle": { "description": "Short subtitle for Friends menu tile" },
+
+  "howToFriendsBody": "Friends mode — quick steps:\n1. Add the NetherLink friend account (relay friend) on your console or platform if required.\n2. In the app enable Friends mode and send the relay configuration (if applicable).\n3. On your console open Minecraft → Friends and search for LAN Worlds — your server should appear there as a LAN world.\n4. Select it to join your server with friends.\nNotes:\n- Make sure both you and your friends have the same NAT/settings that allow friend presence.\n- Friend-mode relies on platform friend features and may require accepting friend requests.",
+  "@howToFriendsBody": { "description": "Detailed steps for Friends mode" },
+  "helpNetherlinkTitle": "NetherLink does not appear",
+  "@helpNetherlinkTitle": { "description": "Title for help topic when NetherLink isn't visible on console" },
+
+  "helpNetherlinkSubtitle": "Troubleshooting LAN discovery issues",
+  "@helpNetherlinkSubtitle": { "description": "Short subtitle for NetherLink does not appear tile" },
+
+  "helpNetherlinkBody": "If the server isn't appearing on your console, try these steps:\n\n✅ Basic Checks:\n1. Same WiFi Network - Your phone/tablet and console MUST be on the same WiFi\n2. Correct Server Address - Double-check the IP and port (default: 19132)\n3. Broadcasting Active - Verify NetherLink shows \"Broadcasting\" status\n\n🔄 Quick Fixes:\n• Restart the app: Stop broadcasting, close NetherLink completely, reopen and try again\n• Restart your console: Sometimes the console needs a refresh to detect LAN games\n• Check Friends/LAN tab: The server appears under \"Friends\" or \"LAN Games\", NOT in server list\n• Wait 10-15 seconds after starting broadcasting\n• Disable VPNs: VPNs can block local broadcasts\n\n⚠️ Common Issues:\n\"No route found for user\" → Ensure both devices are on the same Wi‑Fi (avoid Guest networks)\n\"Unable to connect to NetherLink relay server\" → Check your internet / relay status\n\n📱 Still having issues? Enable Debug Mode in NetherLink and check logs, or try a different server.",
+  "@helpNetherlinkBody": { "description": "Detailed troubleshooting text for NetherLink not appearing" },
+
+  "helpMultiplayerFailedTitle": "Multiplayer Connection Failed",
+  "@helpMultiplayerFailedTitle": { "description": "Title for help topic when multiplayer connection fails" },
+
+  "helpMultiplayerFailedSubtitle": "Explanation why this is not a NetherLink error",
+  "@helpMultiplayerFailedSubtitle": { "description": "Short subtitle for multiplayer failed tile" },
+
+  "helpMultiplayerFailedBody": "⚠️ This is not an issue with NetherLink!\n\nNetherLink successfully redirected you to the requested server. The message \"Multiplayer Connection Failed\" indicates that the target server is currently unreachable. Possible reasons:\n\n• The target Minecraft server is offline or overloaded\n• The server requires an updated client version or specific edition\n• Network issues between the relay and the target server\n\nTry connecting to a different server or contact the server's support. If the problem persists for multiple servers, enable Debug Mode in NetherLink and check logs.",
+  "@helpMultiplayerFailedBody": { "description": "Explanation shown when multiplayer connection failed appears" },
+
+  "helpNintendoDnsTitle": "Nintendo DNS does not work",
+  "@helpNintendoDnsTitle": { "description": "Title for Nintendo DNS troubleshooting" },
+
+  "helpNintendoDnsSubtitle": "Common DNS / relay issues",
+  "@helpNintendoDnsSubtitle": { "description": "Short subtitle for Nintendo DNS troubleshooting tile" },
+
+  "helpNintendoDnsBody": "If Nintendo DNS mode isn't working, check the following:\n\n1. Confirm you pushed DNS config from the app (Send DNS Config).\n2. Verify you applied the relay IP as Primary DNS on the Switch.\n3. Ensure the relay server selected (EU/US) is online and not overloaded.\n4. Some networks (e.g., captive portals) prevent custom DNS — test on a different network.\n\nIf issues persist, enable Debug Mode and check logs or try the Friends-mode alternative.",
+  "@helpNintendoDnsBody": { "description": "Detailed placeholder for Nintendo DNS troubleshooting" },
+
+  "helpFriendsModeTitle": "Friends mode does not work",
+  "@helpFriendsModeTitle": { "description": "Title for Friends mode troubleshooting" },
+
+  "helpFriendsModeSubtitle": "Common friend issues",
+  "@helpFriendsModeSubtitle": { "description": "Short subtitle for Friends-mode troubleshooting tile" },
+
+  "helpFriendsModeBody": "Friends mode troubleshooting tips:\n\n1. Make sure the relay friend account is added/accepted on the console (if required).\n2. Try restarting the game and refreshing the Friends/LAN tab after enabling Friends mode.\n\nIf the server still doesn't appear to friends, enable Debug Mode and check logs to identify errors.",
+  "@helpFriendsModeBody": { "description": "Detailed placeholder for Friends mode troubleshooting" }
 }

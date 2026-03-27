@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../../l10n/app_localizations.dart';
 import '../../theme/app_theme.dart';
@@ -32,7 +33,7 @@ class _ManageServersDialogState extends State<ManageServersDialog> {
   Future<void> _addServer() async {
     final result = await showDialog<UserServer>(
       context: context,
-      builder: (context) => AddServerDialog(),
+      builder: (context) => const AddServerDialog(),
     );
 
     if (result != null) {
@@ -57,30 +58,59 @@ class _ManageServersDialogState extends State<ManageServersDialog> {
     final loc = AppLocalizations.of(context)!;
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: AppTheme.surfaceDark,
-        title: Text(
-          loc.deleteServer,
-          style: const TextStyle(color: AppTheme.textPrimary),
-        ),
-        content: Text(
-          '${loc.delete} "${_servers[index].name}"?',
-          style: const TextStyle(color: AppTheme.textSecondary),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text(
-              loc.cancel,
-              style: TextStyle(color: AppTheme.textMuted),
+      builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(14),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+            child: Container(
+              color: AppTheme.surfaceDark.withOpacity(0.9),
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    loc.deleteServer,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                      color: AppTheme.textPrimary,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    '${loc.delete} "${_servers[index].name}"?',
+                    style: const TextStyle(color: AppTheme.textSecondary),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context, false),
+                        child: Text(
+                          loc.cancel,
+                          style: TextStyle(color: AppTheme.textMuted),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      ElevatedButton(
+                        onPressed: () => Navigator.pop(context, true),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppTheme.error,
+                          foregroundColor: Colors.white,
+                        ),
+                        child: Text(loc.delete),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            style: TextButton.styleFrom(foregroundColor: AppTheme.error),
-            child: Text(loc.delete),
-          ),
-        ],
+        ),
       ),
     );
 
@@ -96,124 +126,155 @@ class _ManageServersDialogState extends State<ManageServersDialog> {
     final loc = AppLocalizations.of(context)!;
 
     return Dialog(
-      backgroundColor: AppTheme.surfaceDark,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: Container(
-        constraints: const BoxConstraints(maxWidth: 550, maxHeight: 650),
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: AppTheme.primaryAccent.withOpacity(0.15),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: const Icon(
-                    Icons.storage,
-                    color: AppTheme.primaryAccent,
-                    size: 24,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        loc.myServers,
-                        style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: AppTheme.textPrimary,
-                        ),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        loc.quickAccessServers,
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: AppTheme.textMuted,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                IconButton(
-                  icon: Icon(Icons.close, color: AppTheme.textMuted),
-                  onPressed: () => Navigator.pop(context),
-                ),
-              ],
+      backgroundColor: Colors.transparent,
+      insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(18),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+          child: Container(
+            constraints: const BoxConstraints(maxWidth: 640, maxHeight: 720),
+            padding: const EdgeInsets.all(18),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  Colors.white.withOpacity(0.03),
+                  AppTheme.primaryAccent.withOpacity(0.02),
+                ],
+              ),
+              borderRadius: BorderRadius.circular(18),
+              border: Border.all(color: Colors.white.withOpacity(0.06)),
             ),
-            const SizedBox(height: 20),
-            Expanded(
-              child: _loading
-                  ? const Center(
-                      child: CircularProgressIndicator(
-                        color: AppTheme.primaryAccent,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: AppTheme.primaryAccent.withOpacity(0.14),
+                        borderRadius: BorderRadius.circular(10),
                       ),
-                    )
-                  : _servers.isEmpty
-                  ? Center(
+                      child: const Icon(
+                        Icons.storage,
+                        color: AppTheme.primaryAccent,
+                        size: 24,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
                       child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Icon(
-                            Icons.dns_outlined,
-                            size: 64,
-                            color: AppTheme.borderGray,
-                          ),
-                          const SizedBox(height: 16),
                           Text(
-                            loc.noSavedServers,
+                            loc.myServers,
                             style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: AppTheme.textMuted,
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: AppTheme.textPrimary,
                             ),
                           ),
-                          const SizedBox(height: 8),
+                          const SizedBox(height: 2),
                           Text(
-                            loc.addServersHint,
-                            textAlign: TextAlign.center,
+                            loc.quickAccessServers,
                             style: const TextStyle(
-                              fontSize: 13,
+                              fontSize: 12,
                               color: AppTheme.textMuted,
                             ),
                           ),
                         ],
                       ),
-                    )
-                  : ListView.builder(
-                      itemCount: _servers.length,
-                      itemBuilder: (context, index) {
-                        final server = _servers[index];
-                        return _buildServerCard(server, index, theme, loc);
-                      },
                     ),
-            ),
-            const SizedBox(height: 16),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton.icon(
-                onPressed: _addServer,
-                icon: const Icon(Icons.add),
-                label: Text(loc.addServer),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppTheme.primaryAccent,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
+                    IconButton(
+                      icon: Icon(Icons.close, color: AppTheme.textMuted),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 12),
+
+                Expanded(
+                  child: _loading
+                      ? const Center(
+                          child: CircularProgressIndicator(
+                            color: AppTheme.primaryAccent,
+                          ),
+                        )
+                      : _servers.isEmpty
+                      ? Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.dns_outlined,
+                                size: 64,
+                                color: AppTheme.borderGray,
+                              ),
+                              const SizedBox(height: 16),
+                              Text(
+                                loc.noSavedServers,
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  color: AppTheme.textMuted,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                loc.addServersHint,
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
+                                  fontSize: 13,
+                                  color: AppTheme.textMuted,
+                                ),
+                              ),
+                            ],
+                          ),
+                        )
+                      : ListView.builder(
+                          itemCount: _servers.length,
+                          padding: EdgeInsets.zero,
+                          itemBuilder: (context, index) {
+                            final server = _servers[index];
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 12),
+                              child: _buildServerCard(
+                                server,
+                                index,
+                                theme,
+                                loc,
+                              ),
+                            );
+                          },
+                        ),
+                ),
+
+                const SizedBox(height: 12),
+
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    onPressed: _addServer,
+                    icon: const Icon(Icons.add),
+                    label: Text(loc.addServer),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppTheme.primaryAccent,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
                   ),
                 ),
-              ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
@@ -226,17 +287,13 @@ class _ManageServersDialogState extends State<ManageServersDialog> {
     AppLocalizations loc,
   ) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: AppTheme.surfaceLight,
+        color: Colors.white.withOpacity(0.02),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: AppTheme.primaryAccent.withOpacity(0.3),
-          width: 1,
-        ),
+        border: Border.all(color: AppTheme.primaryAccent.withOpacity(0.06)),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(12),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -245,7 +302,7 @@ class _ManageServersDialogState extends State<ManageServersDialog> {
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: AppTheme.primaryAccent.withOpacity(0.15),
+                    color: AppTheme.primaryAccent.withOpacity(0.12),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: const Icon(
@@ -269,7 +326,7 @@ class _ManageServersDialogState extends State<ManageServersDialog> {
                 ),
                 Container(
                   decoration: BoxDecoration(
-                    color: AppTheme.primaryAccent.withOpacity(0.1),
+                    color: AppTheme.primaryAccent.withOpacity(0.08),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: IconButton(
@@ -283,7 +340,7 @@ class _ManageServersDialogState extends State<ManageServersDialog> {
                 const SizedBox(width: 8),
                 Container(
                   decoration: BoxDecoration(
-                    color: AppTheme.error.withOpacity(0.1),
+                    color: AppTheme.error.withOpacity(0.06),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: IconButton(
@@ -296,15 +353,15 @@ class _ManageServersDialogState extends State<ManageServersDialog> {
                 ),
               ],
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 10),
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: AppTheme.surfaceDark,
+                color: Colors.white.withOpacity(0.01),
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(
-                  color: AppTheme.primaryAccent.withOpacity(0.2),
+                  color: AppTheme.primaryAccent.withOpacity(0.04),
                 ),
               ),
               child: Row(
@@ -445,165 +502,207 @@ class _AddServerDialogState extends State<AddServerDialog> {
   Widget build(BuildContext context) {
     final loc = AppLocalizations.of(context)!;
 
-    return AlertDialog(
-      backgroundColor: AppTheme.surfaceDark,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      title: Text(
-        loc.addServer,
-        style: const TextStyle(color: AppTheme.textPrimary),
-      ),
-      content: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: _nameController,
-              style: const TextStyle(color: AppTheme.textPrimary),
-              decoration: InputDecoration(
-                labelText: loc.serverNameLabel,
-                hintText: 'My Awesome Server',
-                hintStyle: TextStyle(color: AppTheme.textMuted),
-                prefixIcon: const Icon(
-                  Icons.label,
-                  color: AppTheme.primaryAccent,
-                ),
-                labelStyle: const TextStyle(color: AppTheme.primaryAccent),
-                filled: true,
-                fillColor: AppTheme.surfaceLight,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide.none,
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(color: AppTheme.borderGray),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: const BorderSide(
-                    color: AppTheme.primaryAccent,
-                    width: 2,
-                  ),
-                ),
+    return Dialog(
+      backgroundColor: Colors.transparent,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(16),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+          child: Container(
+            width: 520,
+            padding: const EdgeInsets.all(18),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  Colors.white.withOpacity(0.03),
+                  AppTheme.primaryAccent.withOpacity(0.02),
+                ],
               ),
-              autofocus: true,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: Colors.white.withOpacity(0.06)),
             ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: _addressController,
-              style: const TextStyle(color: AppTheme.textPrimary),
-              decoration: InputDecoration(
-                labelText: loc.addressLabel,
-                hintText: 'play.example.com',
-                hintStyle: TextStyle(color: AppTheme.textMuted),
-                prefixIcon: const Icon(
-                  Icons.dns,
-                  color: AppTheme.primaryAccent,
-                ),
-                labelStyle: const TextStyle(color: AppTheme.primaryAccent),
-                filled: true,
-                fillColor: AppTheme.surfaceLight,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide.none,
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(color: AppTheme.borderGray),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: const BorderSide(
-                    color: AppTheme.primaryAccent,
-                    width: 2,
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    loc.addServer,
+                    style: const TextStyle(
+                      color: AppTheme.textPrimary,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: _portController,
-              style: const TextStyle(color: AppTheme.textPrimary),
-              decoration: InputDecoration(
-                labelText: loc.portLabel,
-                prefixIcon: const Icon(
-                  Icons.numbers,
-                  color: AppTheme.primaryAccent,
-                ),
-                labelStyle: const TextStyle(color: AppTheme.primaryAccent),
-                filled: true,
-                fillColor: AppTheme.surfaceLight,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide.none,
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(color: AppTheme.borderGray),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: const BorderSide(
-                    color: AppTheme.primaryAccent,
-                    width: 2,
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: _nameController,
+                    style: const TextStyle(color: AppTheme.textPrimary),
+                    decoration: InputDecoration(
+                      labelText: loc.serverNameLabel,
+                      hintText: 'My Awesome Server',
+                      hintStyle: TextStyle(color: AppTheme.textMuted),
+                      prefixIcon: const Icon(
+                        Icons.label,
+                        color: AppTheme.primaryAccent,
+                      ),
+                      labelStyle: const TextStyle(
+                        color: AppTheme.primaryAccent,
+                      ),
+                      filled: true,
+                      fillColor: Colors.white.withOpacity(0.02),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide.none,
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(color: AppTheme.borderGray),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: const BorderSide(
+                          color: AppTheme.primaryAccent,
+                          width: 2,
+                        ),
+                      ),
+                    ),
+                    autofocus: true,
                   ),
-                ),
-              ),
-              keyboardType: TextInputType.number,
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: _descriptionController,
-              style: const TextStyle(color: AppTheme.textPrimary),
-              decoration: InputDecoration(
-                labelText: loc.descriptionLabel,
-                hintText: 'Survival server with friends',
-                hintStyle: TextStyle(color: AppTheme.textMuted),
-                prefixIcon: const Icon(
-                  Icons.description,
-                  color: AppTheme.primaryAccent,
-                ),
-                labelStyle: const TextStyle(color: AppTheme.primaryAccent),
-                filled: true,
-                fillColor: AppTheme.surfaceLight,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide.none,
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(color: AppTheme.borderGray),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: const BorderSide(
-                    color: AppTheme.primaryAccent,
-                    width: 2,
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: _addressController,
+                    style: const TextStyle(color: AppTheme.textPrimary),
+                    decoration: InputDecoration(
+                      labelText: loc.addressLabel,
+                      hintText: 'play.example.com',
+                      hintStyle: TextStyle(color: AppTheme.textMuted),
+                      prefixIcon: const Icon(
+                        Icons.dns,
+                        color: AppTheme.primaryAccent,
+                      ),
+                      labelStyle: const TextStyle(
+                        color: AppTheme.primaryAccent,
+                      ),
+                      filled: true,
+                      fillColor: Colors.white.withOpacity(0.02),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide.none,
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(color: AppTheme.borderGray),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: const BorderSide(
+                          color: AppTheme.primaryAccent,
+                          width: 2,
+                        ),
+                      ),
+                    ),
                   ),
-                ),
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: _portController,
+                    style: const TextStyle(color: AppTheme.textPrimary),
+                    decoration: InputDecoration(
+                      labelText: loc.portLabel,
+                      prefixIcon: const Icon(
+                        Icons.numbers,
+                        color: AppTheme.primaryAccent,
+                      ),
+                      labelStyle: const TextStyle(
+                        color: AppTheme.primaryAccent,
+                      ),
+                      filled: true,
+                      fillColor: Colors.white.withOpacity(0.02),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide.none,
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(color: AppTheme.borderGray),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: const BorderSide(
+                          color: AppTheme.primaryAccent,
+                          width: 2,
+                        ),
+                      ),
+                    ),
+                    keyboardType: TextInputType.number,
+                  ),
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: _descriptionController,
+                    style: const TextStyle(color: AppTheme.textPrimary),
+                    decoration: InputDecoration(
+                      labelText: loc.descriptionLabel,
+                      hintText: 'Survival server with friends',
+                      hintStyle: TextStyle(color: AppTheme.textMuted),
+                      prefixIcon: const Icon(
+                        Icons.description,
+                        color: AppTheme.primaryAccent,
+                      ),
+                      labelStyle: const TextStyle(
+                        color: AppTheme.primaryAccent,
+                      ),
+                      filled: true,
+                      fillColor: Colors.white.withOpacity(0.02),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide.none,
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(color: AppTheme.borderGray),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: const BorderSide(
+                          color: AppTheme.primaryAccent,
+                          width: 2,
+                        ),
+                      ),
+                    ),
+                    maxLines: 2,
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: Text(
+                          loc.cancel,
+                          style: TextStyle(color: AppTheme.textMuted),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      ElevatedButton(
+                        onPressed: _save,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppTheme.primaryAccent,
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        child: Text(loc.save),
+                      ),
+                    ],
+                  ),
+                ],
               ),
-              maxLines: 2,
-            ),
-          ],
-        ),
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: Text(loc.cancel, style: TextStyle(color: AppTheme.textMuted)),
-        ),
-        ElevatedButton(
-          onPressed: _save,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppTheme.primaryAccent,
-            foregroundColor: Colors.white,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
             ),
           ),
-          child: Text(loc.save),
         ),
-      ],
+      ),
     );
   }
 }

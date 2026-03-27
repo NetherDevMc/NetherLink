@@ -20,6 +20,16 @@ import '../widgets/dialogs/manage_servers_dialog.dart';
 import '../widgets/components/global_notice_banner.dart';
 import '../services/notification_service.dart';
 
+// navigation & menus
+import '../widgets/navigation/bottom_nav_bar.dart';
+import '../widgets/navigation/howto_menu.dart';
+import '../widgets/navigation/help_menu.dart';
+
+// dialog helpers
+import '../widgets/dialogs/info_dialog.dart';
+import '../widgets/dialogs/howto_dialogs.dart';
+import '../widgets/dialogs/help_dialogs.dart';
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -49,9 +59,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     text: SocketHandler.proxyPort.toString(),
   );
 
-  final ScrollController _scrollController = ScrollController();
+  final ScrollController _scroll_controller = ScrollController();
   final ScrollController _mainScrollController = ScrollController();
-  final ScrollController _desktopScrollController = ScrollController();
 
   final ValueNotifier<List<String>> _logsNotifier = ValueNotifier([]);
   final ValueNotifier<bool> _broadcastingNotifier = ValueNotifier(false);
@@ -85,15 +94,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     _bgController.dispose();
     _ipController.dispose();
     _portController.dispose();
-    _scrollController.dispose();
-    _mainScrollController.dispose();
-    _desktopScrollController.dispose();
     _logsNotifier.dispose();
     _broadcastingNotifier.dispose();
-    _userServersNotifier.dispose();
+    _user_servers_dispose();
     _stopBroadcast();
     super.dispose();
   }
+
+  void _user_servers_dispose() {}
 
   Future<void> _fetchNotification() async {
     final notice = await NotificationService.fetchNotice();
@@ -120,13 +128,19 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   void _initializeComponents() {
     logger = Logger(debugEnabled: _debugEnabled, logCallback: _log);
     socketHandler = SocketHandler(logger: logger);
+    _broadcast_manager_init();
+  }
+
+  void _broadcast_manager_init() {
     _broadcastManager = BroadcastManager(
-      socketHandler: socketHandler,
+      socketHandler: sockethandler_get(),
       logger: logger,
     );
     _broadcastManager.onAutoDisconnect = _handleAutoDisconnect;
     _broadcastManager.onRelayError = _handleRelayError;
   }
+
+  SocketHandler sockethandler_get() => socketHandler;
 
   void _handleAutoDisconnect() {
     if (!mounted) return;
@@ -208,14 +222,18 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     }
     _logsNotifier.value = currentLogs;
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_scrollController.hasClients && mounted) {
-        _scrollController.animateTo(
-          _scrollController.position.maxScrollExtent,
-          duration: AppConstants.animationDuration,
-          curve: Curves.fastOutSlowIn,
-        );
+      if (_scroll_controller.hasClients && mounted) {
+        _scroll_controller_scrollToEnd();
       }
     });
+  }
+
+  void _scroll_controller_scrollToEnd() {
+    _scroll_controller.animateTo(
+      _scroll_controller.position.maxScrollExtent,
+      duration: AppConstants.animationDuration,
+      curve: Curves.fastOutSlowIn,
+    );
   }
 
   Future<void> _copyLogsToClipboard() async {
@@ -287,7 +305,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   Future<void> _startBroadcast(PanelMode mode) async {
     final loc = AppLocalizations.of(context)!;
     final remoteHost = _ipController.text.trim();
-    final remotePortParsed = int.tryParse(_portController.text);
+    final remotePortParsed = int.tryParse(_port_controller_get().text);
 
     if (remoteHost.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -338,7 +356,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       remotePortParsed,
       relayIp: _selectedRelayIp,
     );
-    _broadcastingNotifier.value = _broadcastManager.isBroadcasting;
+    _broadcastingNotifier.value = _broadcast_manager_isBroadcasting();
 
     if (_broadcastManager.isBroadcasting && success) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -357,7 +375,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     }
   }
 
+  bool _broadcast_manager_isBroadcasting() => _broadcastManager.isBroadcasting;
+
   Future<void> _stopBroadcast() async {
+    await _broadcast_manager_stop();
+  }
+
+  Future<void> _broadcast_manager_stop() async {
     await _broadcastManager.stopBroadcast();
     _broadcastingNotifier.value = false;
     ScaffoldMessenger.of(context).showSnackBar(
@@ -371,8 +395,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   void _onUserServerSelected(UserServer server) {
     setState(() {
-      _ipController.text = server.address;
-      _portController.text = server.port.toString();
+      _ip_controller_set_text(server.address);
+      _port_controller_set_text(server.port.toString());
     });
     logger.info('Selected saved server: ${server.name}');
     final loc = AppLocalizations.of(context)!;
@@ -384,6 +408,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       ),
     );
   }
+
+  void _ip_controller_set_text(String text) => _ipController.text = text;
+  void _port_controller_set_text(String text) => _portController.text = text;
 
   Future<void> _showManageServersDialog() async {
     await showDialog(
@@ -400,7 +427,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       barrierDismissible: false,
       builder: (context) => ConsoleDialog(
         logsNotifier: _logsNotifier,
-        scrollController: _scrollController,
+        scrollController: _scroll_controller_get(),
         debugEnabled: _debugEnabled,
         onToggleDebug: _toggleDebugMode,
         onClearLogs: _clearLogs,
@@ -410,50 +437,54 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     if (mounted) setState(() => _consoleDialogOpen = false);
   }
 
-  void _showHelpDialog(ThemeData theme) {
+  ScrollController _scroll_controller_get() => _scroll_controller;
+
+  // --- Dialog wrappers: forward to dialog classes ---
+
+  void _showXboxHelp() {
+    HowToDialogs.showXboxInstructions(context);
+  }
+
+  // Show DNS info / friends information (uses InfoDialog to include "I understand" button)
+  Future<void> _showDnsInfoModal({required bool isFriendsMode}) async {
     final loc = AppLocalizations.of(context)!;
-    showDialog(
-      context: context,
-      builder: (_) => BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-        child: AlertDialog(
-          backgroundColor: Colors.black.withOpacity(0.6),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-            side: BorderSide(color: Colors.white.withOpacity(0.1)),
+    final meta = _getRelayMeta(_selectedRelayIp);
+    final relayName = meta['name'] ?? '-';
+    final relayIp = meta['ip'] ?? '-';
+
+    String friend = '';
+    if (relayName == "EU Server") {
+      friend = 'NetherLinkEU';
+    } else if (relayName == "US Server") {
+      friend = 'NetherLinkUS';
+    }
+
+    final title = isFriendsMode ? loc.playWithFriendsTitle : loc.playOnSwitchTitle;
+    final content = isFriendsMode
+        ? loc.playInstructionsFriends(friend)
+        : loc.playInstructionsSwitch(relayName, relayIp);
+
+    await InfoDialog.show(
+      context,
+      title: title,
+      content: content,
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: Text(
+            loc.iUnderstand,
+            style: TextStyle(color: AppTheme.primaryAccent, fontWeight: FontWeight.bold),
           ),
-          title: Text(
-            loc.howToUseTitle,
-            style: const TextStyle(color: Colors.white),
-          ),
-          content: SingleChildScrollView(
-            child: Text(
-              loc.helpText(loc.createdBy),
-              style: TextStyle(
-                color: Colors.white.withOpacity(0.7),
-                height: 1.5,
-              ),
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: Text(
-                loc.close,
-                style: TextStyle(color: AppTheme.primaryAccent),
-              ),
-            ),
-          ],
         ),
-      ),
+      ],
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final loc = AppLocalizations.of(context)!;
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      extendBody: true,
+      backgroundColor: const Color.fromARGB(0, 92, 24, 24),
       body: AnimatedBuilder(
         animation: _bgAnimation,
         builder: (context, child) {
@@ -509,30 +540,53 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             ),
           );
         },
-        child: Column(
-          children: [
-            _buildAppBar(loc),
-            if (_currentNotice != null)
-              GlobalNoticeBanner(
-                message: _currentNotice!['message']!,
-                type: _currentNotice!['type'] ?? 'info',
-                onDismiss: () {
-                  _noticeTimer?.cancel();
-                  setState(() => _currentNotice = null);
-                },
-              ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: LayoutBuilder(
-                  builder: (context, constraints) {
-                    return _buildMobileLayout();
+        child: SafeArea(
+          top: true,
+          bottom: false,
+          child: Column(
+            children: [
+              const SizedBox(height: 8),
+              if (_currentNotice != null)
+                GlobalNoticeBanner(
+                  message: _currentNotice!['message']!,
+                  type: _currentNotice!['type'] ?? 'info',
+                  onDismiss: () {
+                    _noticeTimer?.cancel();
+                    setState(() => _currentNotice = null);
                   },
                 ),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      return _buildMobileLayout();
+                    },
+                  ),
+                ),
               ),
-            ),
-          ],
+              const SizedBox(height: 8),
+            ],
+          ),
         ),
+      ),
+      bottomNavigationBar: BottomGlassSimpleNavBar(
+        onDiscordTap: () => launchUrl(Uri.parse(AppConstants.discordUrl)),
+        onConsoleTap: _consoleDialogOpen ? null : _showConsoleDialog,
+        onHowToTap: () => HowToMenu.show(
+          context,
+          onXbox: _showXboxHelp,
+          onNintendo: () => _showDnsInfoModal(isFriendsMode: false),
+          onFriends: () => _showDnsInfoModal(isFriendsMode: true),
+        ),
+        onHelpTap: () => HelpMenu.show(
+          context,
+          onNetherLink: () => HelpDialogs.showNetherlinkNotAppearing(context),
+          onMultiplayerFailed: () => HelpDialogs.showMultiplayerConnectionFailed(context),
+          onNintendoDns: () => HelpDialogs.showNintendoDns(context),
+          onFriendsMode: () => HelpDialogs.showFriendsMode(context),
+        ),
+        dark: true,
       ),
     );
   }
@@ -570,213 +624,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildAppBar(AppLocalizations loc) {
-    return ClipRect(
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-        child: Container(
-          color: Colors.white.withOpacity(0.05),
-          child: SafeArea(
-            bottom: false,
-            child: Container(
-              height: 60,
-              decoration: BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(color: Colors.white.withOpacity(0.08)),
-                ),
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Row(
-                children: [
-                  _buildGlassPill(loc),
-                  const Spacer(),
-                  _glassAppBarButton(
-                    icon: Icons.terminal_rounded,
-                    tooltip: loc.console,
-                    onTap: _consoleDialogOpen ? null : _showConsoleDialog,
-                  ),
-                  const SizedBox(width: 8),
-                  _buildGlassMenuButton(loc),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildGlassPill(AppLocalizations loc) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(12),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.06),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.white.withOpacity(0.08)),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [_buildDiscordButton(loc)],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildDiscordButton(AppLocalizations loc) {
-    return Tooltip(
-      message: loc.discord,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(8),
-        onTap: () => launchUrl(Uri.parse(AppConstants.discordUrl)),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Icon(Icons.discord, color: Color(0xFF7289DA), size: 18),
-              const SizedBox(width: 6),
-              Text(
-                loc.joinUs,
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.white.withOpacity(0.6),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _glassAppBarButton({
-    required IconData icon,
-    required String tooltip,
-    VoidCallback? onTap,
-  }) {
-    final enabled = onTap != null;
-    return Tooltip(
-      message: tooltip,
-      child: GestureDetector(
-        onTap: onTap,
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(10),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
-            child: Container(
-              width: 38,
-              height: 38,
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(enabled ? 0.07 : 0.03),
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(
-                  color: Colors.white.withOpacity(enabled ? 0.1 : 0.04),
-                ),
-              ),
-              child: Icon(
-                icon,
-                size: 17,
-                color: enabled
-                    ? AppTheme.primaryAccent.withOpacity(0.8)
-                    : Colors.white.withOpacity(0.2),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildGlassMenuButton(AppLocalizations loc) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(10),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
-        child: PopupMenuButton(
-          padding: EdgeInsets.zero,
-          offset: const Offset(0, 44),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-            side: BorderSide(color: Colors.white.withOpacity(0.1)),
-          ),
-          color: Colors.black.withOpacity(0.7),
-          elevation: 0,
-          icon: Container(
-            width: 38,
-            height: 38,
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.07),
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: Colors.white.withOpacity(0.1)),
-            ),
-            child: Icon(
-              Icons.more_vert_rounded,
-              color: Colors.white.withOpacity(0.7),
-              size: 18,
-            ),
-          ),
-          itemBuilder: (context) => [
-            _glassMenuItem(Icons.open_in_browser_rounded, loc.website, () {
-              Navigator.pop(context);
-              launchUrl(Uri.parse(AppConstants.websiteUrl));
-            }),
-            _glassMenuItem(Icons.help_outline_rounded, loc.howToUseMenu, () {
-              Navigator.pop(context);
-              _showHelpDialog(Theme.of(context));
-            }),
-          ],
-        ),
-      ),
-    );
-  }
-
-  PopupMenuItem _glassMenuItem(
-    IconData icon,
-    String title,
-    VoidCallback onTap,
-  ) {
-    return PopupMenuItem(
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(10),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
-          child: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(7),
-                decoration: BoxDecoration(
-                  color: AppTheme.primaryAccent.withOpacity(0.15),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Icon(icon, color: AppTheme.primaryAccent, size: 16),
-              ),
-              const SizedBox(width: 12),
-              Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.white,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
   Widget _buildConnectionPanel(List<UserServer> userServers) {
     return ConnectionPanel(
-      ipController: _ipController,
-      portController: _portController,
+      ipController: _ip_controller_get(),
+      portController: _port_controller_get(),
       broadcastingNotifier: _broadcastingNotifier,
       onStartBroadcast: (mode) => _startBroadcast(mode),
       onStopBroadcast: _stopBroadcast,
@@ -794,6 +645,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
+  TextEditingController _port_controller_get() => _portController;
+  TextEditingController _ip_controller_get() => _ipController;
+
   Widget _buildMobileLayout() {
     return SingleChildScrollView(
       controller: _mainScrollController,
@@ -802,7 +656,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         mainAxisSize: MainAxisSize.min,
         children: [
           ValueListenableBuilder<List<UserServer>>(
-            valueListenable: _userServersNotifier,
+            valueListenable: _user_servers_notifier_get(),
             builder: (context, userServers, _) =>
                 _buildConnectionPanel(userServers),
           ),
@@ -811,157 +665,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
-  Future<void> _showDnsInfoModal({required bool isFriendsMode}) async {
-    final loc = AppLocalizations.of(context)!;
-    final meta = _getRelayMeta(_selectedRelayIp);
-    final relayName = meta['name'] ?? '-';
-    final relayIp = meta['ip'] ?? '-';
-
-    String friend = '';
-    if (relayName == "EU Server") {
-      friend = 'NetherLinkEU';
-    } else if (relayName == "US Server") {
-      friend = 'NetherLinkUS';
-    }
-
-    await showDialog(
-      context: context,
-      builder: (context) => BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-        child: AlertDialog(
-          backgroundColor: Colors.black.withOpacity(0.8),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-            side: BorderSide(color: Colors.white.withOpacity(0.1)),
-          ),
-          title: Text(
-            isFriendsMode ? loc.playWithFriendsTitle : loc.playOnSwitchTitle,
-            style: const TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-              fontSize: 22,
-            ),
-          ),
-          content: Text(
-            isFriendsMode
-                ? loc.playInstructionsFriends(friend)
-                : loc.playInstructionsSwitch(relayName, relayIp),
-            style: TextStyle(color: Colors.white, fontSize: 15, height: 1.5),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: Text(
-                loc.iUnderstand,
-                style: TextStyle(
-                  color: AppTheme.primaryAccent,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _AnimatedSupportButton extends StatefulWidget {
-  final VoidCallback onTap;
-  const _AnimatedSupportButton({required this.onTap});
-
-  @override
-  State<_AnimatedSupportButton> createState() => _AnimatedSupportButtonState();
-}
-
-class _AnimatedSupportButtonState extends State<_AnimatedSupportButton>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _pulse;
-  late Animation<Color?> _color;
-  bool _hovering = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      duration: const Duration(milliseconds: 1400),
-      vsync: this,
-    )..repeat(reverse: true);
-
-    _pulse = TweenSequence<double>([
-      TweenSequenceItem(
-        tween: Tween(
-          begin: 1.0,
-          end: 1.22,
-        ).chain(CurveTween(curve: Curves.easeOut)),
-        weight: 30,
-      ),
-      TweenSequenceItem(
-        tween: Tween(
-          begin: 1.22,
-          end: 1.0,
-        ).chain(CurveTween(curve: Curves.easeIn)),
-        weight: 30,
-      ),
-      TweenSequenceItem(tween: Tween(begin: 1.0, end: 1.0), weight: 40),
-    ]).animate(_controller);
-
-    _color = ColorTween(
-      begin: Colors.pink.shade300,
-      end: Colors.pink.shade500,
-    ).animate(_controller);
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: widget.onTap,
-      child: MouseRegion(
-        cursor: SystemMouseCursors.click,
-        onEnter: (_) => setState(() => _hovering = true),
-        onExit: (_) => setState(() => _hovering = false),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 180),
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-          decoration: BoxDecoration(
-            color: _hovering
-                ? Colors.pink.withOpacity(0.1)
-                : Colors.transparent,
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              AnimatedBuilder(
-                animation: _controller,
-                builder: (_, __) => Transform.scale(
-                  scale: _pulse.value,
-                  child: Icon(Icons.favorite, color: _color.value, size: 16),
-                ),
-              ),
-              const SizedBox(width: 6),
-              AnimatedDefaultTextStyle(
-                duration: const Duration(milliseconds: 180),
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: _hovering ? FontWeight.w600 : FontWeight.w400,
-                  color: _hovering
-                      ? Colors.pink.shade300
-                      : Colors.white.withOpacity(0.5),
-                ),
-                child: const Text('Support'),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
+  ValueNotifier<List<UserServer>> _user_servers_notifier_get() =>
+      _userServersNotifier;
 }

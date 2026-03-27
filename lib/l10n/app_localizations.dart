@@ -526,6 +526,132 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Unable to connect to ANY NetherLink relay server. Try again later or check your internet.'**
   String get relayUnableConnect;
+
+  /// Title for the Xbox / PS4-5 how-to modal
+  ///
+  /// In en, this message translates to:
+  /// **'Xbox / PS4-5 (LAN / Proxy)'**
+  String get howToXboxTitle;
+
+  /// Short subtitle for Xbox / PS4-5 menu tile
+  ///
+  /// In en, this message translates to:
+  /// **'Play via LAN broadcast or proxy'**
+  String get howToXboxSubtitle;
+
+  /// Detailed steps for Xbox/PS4-5 how-to modal
+  ///
+  /// In en, this message translates to:
+  /// **'How to connect (Xbox / PS4 / PS5):\n1. Ensure your PC running NetherLink and your console are on the same local network.\n2. In the app, enter your Minecraft server address and port and press \"Start Broadcasting\".\n3. On the console open Minecraft → Play → look for LAN Worlds or the Friends tab and refresh the list.\n4. Select the LAN server named \"NetherLink\" to join.\nNotes:\n- If the server does not appear, confirm both devices are on the same subnet and that the app is still broadcasting.\n- Some console models or routers may block LAN discovery; try toggling the app or router settings if needed.'**
+  String get howToXboxBody;
+
+  /// Title for the Nintendo how-to modal
+  ///
+  /// In en, this message translates to:
+  /// **'Nintendo Switch (DNS mode)'**
+  String get howToNintendoTitle;
+
+  /// Short subtitle for Nintendo menu tile
+  ///
+  /// In en, this message translates to:
+  /// **'DNS relay instructions for Switch'**
+  String get howToNintendoSubtitle;
+
+  /// Detailed steps for Nintendo Switch DNS setup
+  ///
+  /// In en, this message translates to:
+  /// **'Nintendo Switch — DNS mode (step-by-step):\n1. In the app enable \"Nintendo\" mode and select a Relay Server (EU or US).\n2. Tap \"Send DNS Config\" to push the DNS IP to the relay.\n3. On your Nintendo Switch go to System Settings → Internet → Internet Settings → (your network) → Change Settings → DNS and set the Primary DNS to the relay IP.\n4. Open Minecraft and join a public server; you will be redirected to your server using the relay DNS.\nNotes:\n- DNS mode does not broadcast a LAN server; it routes game traffic through the relay.\n- Revert your DNS after you are done if you need normal network behavior.'**
+  String get howToNintendoBody;
+
+  /// Title for the Friends-mode how-to modal
+  ///
+  /// In en, this message translates to:
+  /// **'Friends mode'**
+  String get howToFriendsTitle;
+
+  /// Short subtitle for Friends menu tile
+  ///
+  /// In en, this message translates to:
+  /// **'Invite friends and join via LAN'**
+  String get howToFriendsSubtitle;
+
+  /// Detailed steps for Friends mode
+  ///
+  /// In en, this message translates to:
+  /// **'Friends mode — quick steps:\n1. Add the NetherLink friend account (relay friend) on your console or platform if required.\n2. In the app enable Friends mode and send the relay configuration (if applicable).\n3. On your console open Minecraft → Friends and search for LAN Worlds — your server should appear there as a LAN world.\n4. Select it to join your server with friends.\nNotes:\n- Make sure both you and your friends have the same NAT/settings that allow friend presence.\n- Friend-mode relies on platform friend features and may require accepting friend requests.'**
+  String get howToFriendsBody;
+
+  /// Title for help topic when NetherLink isn't visible on console
+  ///
+  /// In en, this message translates to:
+  /// **'NetherLink does not appear'**
+  String get helpNetherlinkTitle;
+
+  /// Short subtitle for NetherLink does not appear tile
+  ///
+  /// In en, this message translates to:
+  /// **'Troubleshooting LAN discovery issues'**
+  String get helpNetherlinkSubtitle;
+
+  /// Detailed troubleshooting text for NetherLink not appearing
+  ///
+  /// In en, this message translates to:
+  /// **'If the server isn\'t appearing on your console, try these steps:\n\n✅ Basic Checks:\n1. Same WiFi Network - Your phone/tablet and console MUST be on the same WiFi\n2. Correct Server Address - Double-check the IP and port (default: 19132)\n3. Broadcasting Active - Verify NetherLink shows \"Broadcasting\" status\n\n🔄 Quick Fixes:\n• Restart the app: Stop broadcasting, close NetherLink completely, reopen and try again\n• Restart your console: Sometimes the console needs a refresh to detect LAN games\n• Check Friends/LAN tab: The server appears under \"Friends\" or \"LAN Games\", NOT in server list\n• Wait 10-15 seconds after starting broadcasting\n• Disable VPNs: VPNs can block local broadcasts\n\n⚠️ Common Issues:\n\"No route found for user\" → Ensure both devices are on the same Wi‑Fi (avoid Guest networks)\n\"Unable to connect to NetherLink relay server\" → Check your internet / relay status\n\n📱 Still having issues? Enable Debug Mode in NetherLink and check logs, or try a different server.'**
+  String get helpNetherlinkBody;
+
+  /// Title for help topic when multiplayer connection fails
+  ///
+  /// In en, this message translates to:
+  /// **'Multiplayer Connection Failed'**
+  String get helpMultiplayerFailedTitle;
+
+  /// Short subtitle for multiplayer failed tile
+  ///
+  /// In en, this message translates to:
+  /// **'Explanation why this is not a NetherLink error'**
+  String get helpMultiplayerFailedSubtitle;
+
+  /// Explanation shown when multiplayer connection failed appears
+  ///
+  /// In en, this message translates to:
+  /// **'⚠️ This is not an issue with NetherLink!\n\nNetherLink successfully redirected you to the requested server. The message \"Multiplayer Connection Failed\" indicates that the target server is currently unreachable. Possible reasons:\n\n• The target Minecraft server is offline or overloaded\n• The server requires an updated client version or specific edition\n• Network issues between the relay and the target server\n\nTry connecting to a different server or contact the server\'s support. If the problem persists for multiple servers, enable Debug Mode in NetherLink and check logs.'**
+  String get helpMultiplayerFailedBody;
+
+  /// Title for Nintendo DNS troubleshooting
+  ///
+  /// In en, this message translates to:
+  /// **'Nintendo DNS does not work'**
+  String get helpNintendoDnsTitle;
+
+  /// Short subtitle for Nintendo DNS troubleshooting tile
+  ///
+  /// In en, this message translates to:
+  /// **'Common DNS / relay issues (placeholder)'**
+  String get helpNintendoDnsSubtitle;
+
+  /// Detailed placeholder for Nintendo DNS troubleshooting
+  ///
+  /// In en, this message translates to:
+  /// **'If Nintendo DNS mode isn\'t working, check the following:\n\n1. Confirm you pushed DNS config from the app (Send DNS Config).\n2. Verify you applied the relay IP as Primary DNS on the Switch.\n3. Ensure the relay server selected (EU/US) is online and not overloaded.\n4. Some networks (e.g., captive portals) prevent custom DNS — test on a different network.\n\nIf issues persist, enable Debug Mode and check logs or try the Friends-mode alternative.'**
+  String get helpNintendoDnsBody;
+
+  /// Title for Friends mode troubleshooting
+  ///
+  /// In en, this message translates to:
+  /// **'Friends mode does not work'**
+  String get helpFriendsModeTitle;
+
+  /// Short subtitle for Friends-mode troubleshooting tile
+  ///
+  /// In en, this message translates to:
+  /// **'Common friend/finding issues (placeholder)'**
+  String get helpFriendsModeSubtitle;
+
+  /// Detailed placeholder for Friends mode troubleshooting
+  ///
+  /// In en, this message translates to:
+  /// **'Friends mode troubleshooting tips:\n\n1. Make sure the relay friend account is added/accepted on the console (if required).\n2. Ensure both you and your friends have visibility / NAT settings that allow presence.\n3. Try restarting the game and refreshing the Friends/LAN tab after enabling Friends mode.\n\nIf the server still doesn\'t appear to friends, enable Debug Mode and check logs to identify errors.'**
+  String get helpFriendsModeBody;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
