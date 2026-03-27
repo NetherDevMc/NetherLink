@@ -7,6 +7,7 @@ import 'package:intl/intl.dart' as intl;
 
 import 'app_localizations_en.dart';
 import 'app_localizations_nl.dart';
+import 'app_localizations_tr.dart';
 
 // ignore_for_file: type=lint
 
@@ -92,7 +93,8 @@ abstract class AppLocalizations {
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[
     Locale('en'),
-    Locale('nl')
+    Locale('nl'),
+    Locale('tr')
   ];
 
   /// No description provided for @appName.
@@ -542,7 +544,7 @@ abstract class AppLocalizations {
   /// Detailed steps for Xbox/PS4-5 how-to modal
   ///
   /// In en, this message translates to:
-  /// **'How to connect (Xbox / PS4 / PS5):\n1. Ensure your PC running NetherLink and your console are on the same local network.\n2. In the app, enter your Minecraft server address and port and press \"Start Broadcasting\".\n3. On the console open Minecraft → Play → look for LAN Worlds or the Friends tab and refresh the list.\n4. Select the LAN server named \"NetherLink\" to join.\nNotes:\n- If the server does not appear, confirm both devices are on the same subnet and that the app is still broadcasting.\n- Some console models or routers may block LAN discovery; try toggling the app or router settings if needed.'**
+  /// **'How to connect (Xbox / PS4 / PS5):\n1. Ensure your device running NetherLink and your console are on the same local network.\n2. In the app, enter your Minecraft server address and port and press \"Start Broadcasting\".\n3. On the console open Minecraft → Play → look for LAN Worlds or the Friends tab and refresh the list.\n4. Select the LAN server named \"NetherLink\" to join.\nNotes:\n- If the server does not appear, confirm both devices are on the same subnet and that the app is still broadcasting.\n- Some console models or routers may block LAN discovery; try toggling the app or router settings if needed.'**
   String get howToXboxBody;
 
   /// Title for the Nintendo how-to modal
@@ -626,7 +628,7 @@ abstract class AppLocalizations {
   /// Short subtitle for Nintendo DNS troubleshooting tile
   ///
   /// In en, this message translates to:
-  /// **'Common DNS / relay issues (placeholder)'**
+  /// **'Common DNS / relay issues'**
   String get helpNintendoDnsSubtitle;
 
   /// Detailed placeholder for Nintendo DNS troubleshooting
@@ -644,13 +646,13 @@ abstract class AppLocalizations {
   /// Short subtitle for Friends-mode troubleshooting tile
   ///
   /// In en, this message translates to:
-  /// **'Common friend/finding issues (placeholder)'**
+  /// **'Common friend issues'**
   String get helpFriendsModeSubtitle;
 
   /// Detailed placeholder for Friends mode troubleshooting
   ///
   /// In en, this message translates to:
-  /// **'Friends mode troubleshooting tips:\n\n1. Make sure the relay friend account is added/accepted on the console (if required).\n2. Ensure both you and your friends have visibility / NAT settings that allow presence.\n3. Try restarting the game and refreshing the Friends/LAN tab after enabling Friends mode.\n\nIf the server still doesn\'t appear to friends, enable Debug Mode and check logs to identify errors.'**
+  /// **'Friends mode troubleshooting tips:\n\n1. Make sure the relay friend account is added/accepted on the console (if required).\n2. Try restarting the game and refreshing the Friends/LAN tab after enabling Friends mode.\n\nIf the server still doesn\'t appear to friends, enable Debug Mode and check logs to identify errors.'**
   String get helpFriendsModeBody;
 }
 
@@ -663,7 +665,7 @@ class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> 
   }
 
   @override
-  bool isSupported(Locale locale) => <String>['en', 'nl'].contains(locale.languageCode);
+  bool isSupported(Locale locale) => <String>['en', 'nl', 'tr'].contains(locale.languageCode);
 
   @override
   bool shouldReload(_AppLocalizationsDelegate old) => false;
@@ -676,6 +678,7 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
   switch (locale.languageCode) {
     case 'en': return AppLocalizationsEn();
     case 'nl': return AppLocalizationsNl();
+    case 'tr': return AppLocalizationsTr();
   }
 
   throw FlutterError(

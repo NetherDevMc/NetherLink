@@ -4,209 +4,209 @@ import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
 
-/// The translations for English (`en`).
-class AppLocalizationsEn extends AppLocalizations {
-  AppLocalizationsEn([String locale = 'en']) : super(locale);
+/// The translations for Turkish (`tr`).
+class AppLocalizationsTr extends AppLocalizations {
+  AppLocalizationsTr([String locale = 'tr']) : super(locale);
 
   @override
   String get appName => 'NetherLink';
 
   @override
-  String get console => 'Console';
+  String get console => 'Konsol';
 
   @override
-  String get consoleOutput => 'Console Output';
+  String get consoleOutput => 'Konsol Çıktısı';
 
   @override
-  String get noLogsYet => 'No logs yet';
+  String get noLogsYet => 'Henüz kayıt yok';
 
   @override
-  String get startBroadcastingToSeeOutput => 'Start broadcasting to see output';
+  String get startBroadcastingToSeeOutput => 'Çıktıyı görmek için yayına başlayın';
 
   @override
-  String get close => 'Close';
+  String get close => 'Kapat';
 
   @override
   String get ok => 'OK';
 
   @override
-  String get joinUs => 'Join Us';
+  String get joinUs => 'Bize Katılın';
 
   @override
-  String get website => 'Website';
+  String get website => 'Websitesi';
 
   @override
-  String get howToUseMenu => 'How to use';
+  String get howToUseMenu => 'Nasıl kullanılır';
 
   @override
-  String get support => 'Support';
+  String get support => 'Destek';
 
   @override
   String helpText(Object appCreator) {
-    return 'Created by $appCreator.\n\nHow to use:\n1. Enter your Minecraft server address and port (default: 19132)\n   — or select a previously saved server from the dropdown\n2. (Optional) Choose a Relay Server (EU or US) closest to your location\n3. Click \"Start Broadcasting\" to begin\n4. On your console/device: Minecraft > Play > Friends\n5. You should see a LAN server called \"NetherLink\"\n6. Click it to join your external server via NetherLink\n\nNintendo Switch (DNS mode):\n1. Enable \"Nintendo Switch\" in the connection panel\n2. Select a Relay Server (EU or US)\n3. Click \"Send DNS Config\" — this sends your config to the relay\n   (it does NOT broadcast a LAN server)\n4. On your Switch, apply your NetherLink DNS setup and join\n   using the server entry you use for NetherLink\n\nNotes:\n- For LAN broadcasting, NetherLink and console must be on the same local network.\n- Tip: Choose the relay server closest to you for the best performance.';
+    return 'Yapan: $appCreator\n\nKullanım Talimatları:\n1. Minecraft sunucu adresinizi ve portunuzu girin (varsayılan: 19132)\n   — veya daha önce kaydedilmiş bir sunucuyu açılır menüden seçin\n2. (İsteğe bağlı) Konumunuza en yakın aktarma sunucusunu (EU veya US) seçin\n3. Yayına başlamak için \"Yayına Başla\" düğmesine tıklayın\n4. Konsolunuz/cihazınızda: Minecraft > Oyna > Arkadaşlar\n5. \"NetherLink\" adlı bir LAN sunucusu görmelisiniz\n6. NetherLink üzerinden seçtiğiniz sunucunuya katılmak için üzerine tıklayın\n\nNintendo Switch (DNS modu):\n1. Bağlantı panelinde \"Nintendo Switch\"i etkinleştirin\n2. Bir  aktarma sunucusu  (EU veya US) seçin\n3. \"DNS Yapılandırmasını Gönder\" düğmesine tıklayın — bu yapılandırmanızı aktarıcıya gönderir\n   (LAN sunucusu yayınlamaz)\n4. Switch’inizde NetherLink DNS ayarlarınızı uygulayın ve NetherLink için kullandığınız sunucu girişini kullanarak katılın\n\nNotlar:\n- LAN yayını için NetherLink ve konsol aynı yerel ağda olmalıdır.\n- İpucu: En iyi performans için size en yakın aktarma sunucusunu seçin.';
   }
 
   @override
   String get discord => 'Discord';
 
   @override
-  String get toggleDebug => 'Toggle debug';
+  String get toggleDebug => 'Hata ayıklamayı aç/kapat';
 
   @override
-  String get copyLogs => 'Copy logs';
+  String get copyLogs => 'Kayıtları kopyala';
 
   @override
-  String get clear => 'Clear';
+  String get clear => 'Temizle';
 
   @override
-  String get cancel => 'Cancel';
+  String get cancel => 'İptal';
 
   @override
-  String get deleteServer => 'Delete Server';
+  String get deleteServer => 'Sunucuyu sil';
 
   @override
-  String get delete => 'Delete';
+  String get delete => 'Sil';
 
   @override
-  String get myServers => 'My Servers';
+  String get myServers => 'Benim sunucularım';
 
   @override
-  String get quickAccessServers => 'Quick access servers';
+  String get quickAccessServers => 'Sunuculara hızlı eriş';
 
   @override
-  String get addServer => 'Add Server';
+  String get addServer => 'Sunucu Ekle';
 
   @override
-  String get addServersHint => 'Add servers to quickly connect later';
+  String get addServersHint => 'Daha sonra hızlıca bağlanmak için sunucu ekleyin';
 
   @override
-  String get serverNameLabel => 'Server Name *';
+  String get serverNameLabel => 'Sunucu Adı *';
 
   @override
-  String get addressLabel => 'Address *';
+  String get addressLabel => 'Adres *';
 
   @override
   String get portLabel => 'Port *';
 
   @override
-  String get descriptionLabel => 'Description (Optional)';
+  String get descriptionLabel => 'Açıklama (Opsiyonel)';
 
   @override
-  String get save => 'Save';
+  String get save => 'Kaydet';
 
   @override
-  String get initializing => 'Initializing...';
+  String get initializing => 'Başlatılıyor...';
 
   @override
-  String get createdBy => 'Created by NetherDev';
+  String get createdBy => 'NetherDev tarafından yapıldı';
 
   @override
-  String get bedrockBridge => 'Bedrock Bridge';
+  String get bedrockBridge => 'Bedrock Köprüsü';
 
   @override
-  String get clientDisconnected => 'Client disconnected — Broadcast stopped';
+  String get clientDisconnected => 'İstemci bağlantısı kesildi — Yayın durduruldu';
 
   @override
-  String get pleaseEnterServer => '⚠️ Please enter a server address';
+  String get pleaseEnterServer => '⚠️ Lütfen bir sunucu adresi girin';
 
   @override
-  String get invalidPort => '⚠️ Invalid port number (1-65535)';
+  String get invalidPort => '⚠️ Geçersiz port numarası (1-65535)';
 
   @override
-  String get dnsConfigSent => '✅ DNS config sent to relay';
+  String get dnsConfigSent => '✅ DNS yapılandırması aktarıcıya gönderildi';
 
   @override
-  String get broadcastingStarted => 'Broadcasting started';
+  String get broadcastingStarted => 'Yayın başladı';
 
   @override
-  String get broadcastStopped => 'Broadcast stopped';
+  String get broadcastStopped => 'Yayın durdu';
 
   @override
   String selectedServer(Object name) {
-    return '📋 Selected: $name';
+    return '📋 Seçilen: $name';
   }
 
   @override
   String selectedFeaturedServer(Object name) {
-    return 'Selected: $name';
+    return 'Seçilen: $name';
   }
 
   @override
-  String get noLogsToCopy => 'No logs to copy';
+  String get noLogsToCopy => 'Kopyalanacak kayıt yok';
 
   @override
   String copiedLogs(Object count) {
-    return 'Copied $count log entries to clipboard';
+    return '$count kayıt panoya kopyalandı';
   }
 
   @override
-  String get debugEnabled => 'Debug logs enabled';
+  String get debugEnabled => 'Hata ayıklama kayıtları etkinleştirildi';
 
   @override
-  String get debugDisabled => 'Debug logs disabled';
+  String get debugDisabled => 'Hata ayıklama kayıtları devre dışı bırakıldı';
 
   @override
-  String get howToUseTitle => 'How to use NetherLink';
+  String get howToUseTitle => 'NetherLink nasıl kullanılır';
 
   @override
-  String get iUnderstand => 'I understand';
+  String get iUnderstand => 'Anlıyorum';
 
   @override
-  String get playOnSwitchTitle => 'Play on Nintendo Switch';
+  String get playOnSwitchTitle => 'Nintendo Switch\'te oyna';
 
   @override
-  String get playWithFriendsTitle => 'Play with Friends';
+  String get playWithFriendsTitle => 'Arkadaşlar ile oyna';
 
   @override
   String playInstructionsSwitch(Object relayName, Object relayIp) {
-    return 'Selected: $relayName\n\nHow to connect:\n1. Go to your Switch Settings and change the DNS to: $relayIp\n2. Open Minecraft and select a server from the list (like Cubecraft or Hive).\n3. You will now be sent to your own server automatically.';
+    return 'Seçilen: $relayName\n\nBağlanma Adımları:\n1. Switch Ayarlarına gidin ve DNS’inizi bu ip ile değiştirin: $relayIp\n2. Minecraft’ı açın ve listeden bir sunucu seçin (örneğin Cubecraft veya Hive).\n3. Artık otomatik olarak kendi sunucunuza yönlendirileceksiniz.';
   }
 
   @override
   String playInstructionsFriends(Object friend) {
-    return 'How to connect:\n1. On your console, add $friend as a friend.\n2. Open Minecraft and go to the Friends tab.\n3. Look for your server under LAN Worlds and select it to join.';
+    return 'Bağlanma Adımları:\n1. Konsolunuzda $friend’i arkadaş olarak ekleyin.\n2. Minecraft’ı açın ve Arkadaşlar sekmesine gidin.\n3. LAN Dünyaları altında sunucunuzu bulun ve katılmak için seçin.';
   }
 
   @override
-  String get nldServerLabel => 'NETHERLINK SERVER';
+  String get nldServerLabel => 'NETHERLINK SUNUCUSU';
 
   @override
   String selectRelayLabel(Object name) {
-    return 'Select relay $name';
+    return 'Seçilen aktarıcı $name';
   }
 
   @override
-  String get noSavedServers => 'No saved servers';
+  String get noSavedServers => 'Kaydedilen sunucu yok';
 
   @override
-  String get savedServers => 'Saved servers';
+  String get savedServers => 'Kaydedilen sunucular';
 
   @override
-  String get serverAddressHint => 'Server Address';
+  String get serverAddressHint => 'Sunucu Adresi';
 
   @override
   String get portHint => 'Port';
 
   @override
-  String get manageServers => 'Manage servers';
+  String get manageServers => 'Sunucuları yönet';
 
   @override
-  String get manageServersTooltip => 'Manage servers';
+  String get manageServersTooltip => 'Sunucuları yönet';
 
   @override
-  String get stopBroadcasting => 'Stop Broadcasting';
+  String get stopBroadcasting => 'Yayını Durdur';
 
   @override
-  String get startNintendoMode => 'Start Nintendo Mode';
+  String get startNintendoMode => 'Nintendo Modunu başlat';
 
   @override
-  String get startFriendsMode => 'Start Friends Mode';
+  String get startFriendsMode => 'Arkadaş Modunu başlat';
 
   @override
-  String get startBroadcasting => 'Start Broadcasting';
+  String get startBroadcasting => 'Yayına Başla';
 
   @override
-  String get modeLabel => 'Mode';
+  String get modeLabel => 'Mod';
 
   @override
   String get labelXbox => 'Xbox/PS4-5';
@@ -215,30 +215,30 @@ class AppLocalizationsEn extends AppLocalizations {
   String get labelNintendo => 'Nintendo';
 
   @override
-  String get labelFriends => 'Friends';
+  String get labelFriends => 'Arkadaşlar';
 
   @override
-  String get nintendoInfoTitle => 'Nintendo Switch DNS mode';
+  String get nintendoInfoTitle => 'Nintendo Switch DNS modu';
 
   @override
-  String get nintendoInfoText => 'Start in Nintendo mode, set your DNS and join a featured server.';
+  String get nintendoInfoText => 'Nintendo modunu başlatın, DNS ayarlarınızı ayarlayın ve öne çıkan bir sunucuya bağlanın.';
 
   @override
-  String get friendModeTitle => 'Friend mode';
+  String get friendModeTitle => 'Arkadaş modu';
 
   @override
-  String get friendModeText => 'Add NetherLink\'s friends bots as a friend. Start Friends mode and play';
+  String get friendModeText => 'NetherLink\'in arkadaş botlarını arkadaş olarak ekle. Arkadaş modunu başlat ve oyna';
 
   @override
-  String get selectedRelayCheck => 'Selected';
+  String get selectedRelayCheck => 'Seçilen';
 
   @override
   String relayFallbackWarning(Object name) {
-    return 'Warning: original relay did not respond. Fallback relay in use: $name';
+    return 'Uyarı: Orijinal aktarıcı yanıt vermedi. Yedek aktarıcı kullanılıyor: $name';
   }
 
   @override
-  String get relayUnableConnect => 'Unable to connect to ANY NetherLink relay server. Try again later or check your internet.';
+  String get relayUnableConnect => 'Hiçbir NetherLink aktarım sunucusuna bağlanılamıyor. Daha sonra tekrar deneyin veya internet bağlantınızı kontrol edin.';
 
   @override
   String get howToXboxTitle => 'Xbox / PS4-5 (LAN / Proxy)';
