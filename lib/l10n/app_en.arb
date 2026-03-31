@@ -21,6 +21,9 @@
     }
   },
 
+  "language": "English",
+  "@language": { "description": "Your language name in your own language" },
+
   "discord": "Discord",
   "@discord": { "description": "Name of the Discord community / link label" },
 
@@ -252,5 +255,17 @@
   "@helpFriendsModeSubtitle": { "description": "Short subtitle for Friends-mode troubleshooting tile" },
 
   "helpFriendsModeBody": "Friends mode troubleshooting tips:\n\n1. Make sure the relay friend account is added/accepted on the console (if required).\n2. Try restarting the game and refreshing the Friends/LAN tab after enabling Friends mode.\n\nIf the server still doesn't appear to friends, enable Debug Mode and check logs to identify errors.",
-  "@helpFriendsModeBody": { "description": "Detailed placeholder for Friends mode troubleshooting" }
+  "@helpFriendsModeBody": { "description": "Detailed placeholder for Friends mode troubleshooting" },
+
+  "changeLanguageTitle": "Change language",
+  "@changeLanguageTitle": { "description": "Title for the language selection dialog" },
+
+  "changeLanguage": "Language",
+  "@changeLanguage": { "description": "Label for the language button in the bottom nav" },
+
+  "useSystemLanguage": "Use system language",
+  "@useSystemLanguage": { "description": "Button that resets localization to the system/default locale" },
+
+  "couldNotOpenUrl": "Could not open URL",
+  "@couldNotOpenUrl": { "description": "Snackbar message when launching an external URL fails" }
 }

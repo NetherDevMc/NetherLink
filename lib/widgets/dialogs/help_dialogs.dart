@@ -3,7 +3,6 @@ import '../../l10n/app_localizations.dart';
 import 'info_dialog.dart';
 import '../buttons/themed_button.dart';
 
-/// HelpDialogs: grouped troubleshooting dialogs used by HelpMenu/HomeScreen.
 class HelpDialogs {
   static Future<void> showNetherlinkNotAppearing(BuildContext context) {
     final loc = AppLocalizations.of(context)!;
@@ -15,7 +14,10 @@ class HelpDialogs {
         ThemedButton(
           onPressed: () => Navigator.of(context).pop(),
           variant: ThemedButtonVariant.primary,
-          child: Text(loc.ok, style: const TextStyle(fontWeight: FontWeight.w700)),
+          child: Text(
+            loc.ok,
+            style: const TextStyle(fontWeight: FontWeight.w700),
+          ),
         ),
       ],
     );
@@ -31,7 +33,10 @@ class HelpDialogs {
         ThemedButton(
           onPressed: () => Navigator.of(context).pop(),
           variant: ThemedButtonVariant.primary,
-          child: Text(loc.ok, style: const TextStyle(fontWeight: FontWeight.w700)),
+          child: Text(
+            loc.ok,
+            style: const TextStyle(fontWeight: FontWeight.w700),
+          ),
         ),
       ],
     );
@@ -47,7 +52,10 @@ class HelpDialogs {
         ThemedButton(
           onPressed: () => Navigator.of(context).pop(),
           variant: ThemedButtonVariant.primary,
-          child: Text(loc.ok, style: const TextStyle(fontWeight: FontWeight.w700)),
+          child: Text(
+            loc.ok,
+            style: const TextStyle(fontWeight: FontWeight.w700),
+          ),
         ),
       ],
     );
@@ -63,7 +71,10 @@ class HelpDialogs {
         ThemedButton(
           onPressed: () => Navigator.of(context).pop(),
           variant: ThemedButtonVariant.primary,
-          child: Text(loc.ok, style: const TextStyle(fontWeight: FontWeight.w700)),
+          child: Text(
+            loc.ok,
+            style: const TextStyle(fontWeight: FontWeight.w700),
+          ),
         ),
       ],
     );

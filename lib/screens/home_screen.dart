@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../l10n/app_localizations.dart';
 import '../network/socket_handler.dart';
@@ -15,17 +14,16 @@ import '../util/relay_preference_storage.dart';
 import '../constants/app_constants.dart';
 import '../theme/app_theme.dart';
 import '../widgets/connection/connection_panel.dart';
-import '../widgets/console/console_widget.dart';
 import '../widgets/dialogs/manage_servers_dialog.dart';
 import '../widgets/components/global_notice_banner.dart';
 import '../services/notification_service.dart';
 
-// navigation & menus
 import '../widgets/navigation/bottom_nav_bar.dart';
 import '../widgets/navigation/howto_menu.dart';
 import '../widgets/navigation/help_menu.dart';
+import '../services/navigation_controller.dart';
+import '../services/locale_provider.dart';
 
-// dialog helpers
 import '../widgets/dialogs/info_dialog.dart';
 import '../widgets/dialogs/howto_dialogs.dart';
 import '../widgets/dialogs/help_dialogs.dart';
@@ -45,8 +43,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   late AnimationController _bgController;
   late Animation<double> _bgAnimation;
 
-  bool _debugEnabled = false;
-  bool _consoleDialogOpen = false;
+  final ValueNotifier<bool> _debugEnabledNotifier = ValueNotifier<bool>(false);
+
   bool _nintendoDnsMode = false;
 
   Map<String, String>? _currentNotice;
@@ -70,6 +68,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   String? _selectedRelayIp = AppConstants.relayServers[0]['ip'];
 
+  late final NavigationController navigationController;
+
   @override
   void initState() {
     super.initState();
@@ -86,6 +86,46 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     _loadUserServers();
     _loadRelayServerPreference();
     _fetchNotification();
+
+    navigationController = NavigationController(
+      websiteUrl: AppConstants.websiteUrl,
+      discordUrl: AppConstants.discordUrl,
+      appLocaleNotifier: appLocale,
+      logsNotifier: _logsNotifier,
+      logsScrollController: _scroll_controller,
+      debugEnabledNotifier: _debugEnabledNotifier,
+      toggleDebugCallback: () async {
+        _toggleDebugMode();
+      },
+      copyLogsCallback: () async {
+        await _copyLogsToClipboard();
+      },
+      clearLogsCallback: () {
+        _clearLogs();
+      },
+      showDnsInfoModalCallback: (ctx, {required bool isFriendsMode}) async {
+        await _showDnsInfoModal(isFriendsMode: isFriendsMode);
+      },
+      showXboxHelpCallback: _showXboxHelp,
+      showHowToMenuCallback: (ctx) {
+        HowToMenu.show(
+          ctx,
+          onXbox: _showXboxHelp,
+          onNintendo: () => _showDnsInfoModal(isFriendsMode: false),
+          onFriends: () => _showDnsInfoModal(isFriendsMode: true),
+        );
+      },
+      showHelpMenuCallback: (ctx) {
+        HelpMenu.show(
+          ctx,
+          onNetherLink: () => HelpDialogs.showNetherlinkNotAppearing(ctx),
+          onMultiplayerFailed: () =>
+              HelpDialogs.showMultiplayerConnectionFailed(ctx),
+          onNintendoDns: () => HelpDialogs.showNintendoDns(ctx),
+          onFriendsMode: () => HelpDialogs.showFriendsMode(ctx),
+        );
+      },
+    );
   }
 
   @override
@@ -96,6 +136,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     _portController.dispose();
     _logsNotifier.dispose();
     _broadcastingNotifier.dispose();
+    _debugEnabledNotifier.dispose();
+    navigationController.consoleOpen.dispose();
     _user_servers_dispose();
     _stopBroadcast();
     super.dispose();
@@ -126,7 +168,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   void _initializeComponents() {
-    logger = Logger(debugEnabled: _debugEnabled, logCallback: _log);
+    logger = Logger(
+      debugEnabled: _debugEnabledNotifier.value,
+      logCallback: _log,
+    );
     socketHandler = SocketHandler(logger: logger);
     _broadcast_manager_init();
   }
@@ -267,24 +312,24 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   void _toggleDebugMode() {
     final loc = AppLocalizations.of(context)!;
-    setState(() {
-      _debugEnabled = !_debugEnabled;
-      logger.debugEnabled = _debugEnabled;
-    });
-    logger.info('Debug mode ${_debugEnabled ? "enabled" : "disabled"}');
+    final newVal = !_debugEnabledNotifier.value;
+    _debugEnabledNotifier.value = newVal;
+    setState(() {});
+    logger.debugEnabled = newVal;
+    logger.info('Debug mode ${newVal ? "enabled" : "disabled"}');
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Row(
           children: [
             Icon(
-              _debugEnabled ? Icons.bug_report : Icons.bug_report_outlined,
+              newVal ? Icons.bug_report : Icons.bug_report_outlined,
               color: Colors.white,
             ),
             const SizedBox(width: 12),
-            Text(_debugEnabled ? loc.debugEnabled : loc.debugDisabled),
+            Text(newVal ? loc.debugEnabled : loc.debugDisabled),
           ],
         ),
-        backgroundColor: _debugEnabled ? AppTheme.success : AppTheme.textMuted,
+        backgroundColor: newVal ? AppTheme.success : AppTheme.textMuted,
         duration: const Duration(seconds: 2),
       ),
     );
@@ -420,32 +465,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     _loadUserServers();
   }
 
-  Future<void> _showConsoleDialog() async {
-    setState(() => _consoleDialogOpen = true);
-    await showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => ConsoleDialog(
-        logsNotifier: _logsNotifier,
-        scrollController: _scroll_controller_get(),
-        debugEnabled: _debugEnabled,
-        onToggleDebug: _toggleDebugMode,
-        onClearLogs: _clearLogs,
-        onCopyLogs: _copyLogsToClipboard,
-      ),
-    );
-    if (mounted) setState(() => _consoleDialogOpen = false);
-  }
-
-  ScrollController _scroll_controller_get() => _scroll_controller;
-
-  // --- Dialog wrappers: forward to dialog classes ---
-
   void _showXboxHelp() {
     HowToDialogs.showXboxInstructions(context);
   }
 
-  // Show DNS info / friends information (uses InfoDialog to include "I understand" button)
   Future<void> _showDnsInfoModal({required bool isFriendsMode}) async {
     final loc = AppLocalizations.of(context)!;
     final meta = _getRelayMeta(_selectedRelayIp);
@@ -459,7 +482,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       friend = 'NetherLinkUS';
     }
 
-    final title = isFriendsMode ? loc.playWithFriendsTitle : loc.playOnSwitchTitle;
+    final title = isFriendsMode
+        ? loc.playWithFriendsTitle
+        : loc.playOnSwitchTitle;
     final content = isFriendsMode
         ? loc.playInstructionsFriends(friend)
         : loc.playInstructionsSwitch(relayName, relayIp);
@@ -473,7 +498,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           onPressed: () => Navigator.of(context).pop(),
           child: Text(
             loc.iUnderstand,
-            style: TextStyle(color: AppTheme.primaryAccent, fontWeight: FontWeight.bold),
+            style: TextStyle(
+              color: AppTheme.primaryAccent,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
       ],
@@ -571,21 +599,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         ),
       ),
       bottomNavigationBar: BottomGlassSimpleNavBar(
-        onDiscordTap: () => launchUrl(Uri.parse(AppConstants.discordUrl)),
-        onConsoleTap: _consoleDialogOpen ? null : _showConsoleDialog,
-        onHowToTap: () => HowToMenu.show(
-          context,
-          onXbox: _showXboxHelp,
-          onNintendo: () => _showDnsInfoModal(isFriendsMode: false),
-          onFriends: () => _showDnsInfoModal(isFriendsMode: true),
-        ),
-        onHelpTap: () => HelpMenu.show(
-          context,
-          onNetherLink: () => HelpDialogs.showNetherlinkNotAppearing(context),
-          onMultiplayerFailed: () => HelpDialogs.showMultiplayerConnectionFailed(context),
-          onNintendoDns: () => HelpDialogs.showNintendoDns(context),
-          onFriendsMode: () => HelpDialogs.showFriendsMode(context),
-        ),
+        navigationController: navigationController,
         dark: true,
       ),
     );

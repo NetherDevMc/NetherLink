@@ -5,106 +5,117 @@ import '../../theme/app_theme.dart';
 import '../dialogs/help_dialogs.dart';
 
 class HelpMenu {
-  static Future<void> show(
-    BuildContext context, {
-    VoidCallback? onNetherLink,
-    VoidCallback? onMultiplayerFailed,
-    VoidCallback? onNintendoDns,
-    VoidCallback? onFriendsMode,
-  }) {
-    final loc = AppLocalizations.of(context)!;
+static Future<void> show(
+  BuildContext context, {
+  VoidCallback? onNetherLink,
+  VoidCallback? onMultiplayerFailed,
+  VoidCallback? onNintendoDns,
+  VoidCallback? onFriendsMode,
+}) {
+  final loc = AppLocalizations.of(context)!;
 
-    return showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      isScrollControlled: false,
-      builder: (ctx) {
-        return ClipRRect(
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
-            child: Container(
-              color: const Color.fromARGB(255, 20, 13, 32).withOpacity(0.95),
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 20),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    width: 40,
-                    height: 4,
-                    margin: const EdgeInsets.only(bottom: 12),
-                    decoration: BoxDecoration(
-                      color: AppTheme.primaryAccent.withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(4),
+  return showModalBottomSheet(
+    context: context,
+    backgroundColor: Colors.transparent,
+    isScrollControlled: true,
+    builder: (ctx) {
+      final media = MediaQuery.of(ctx);
+      final screenH = media.size.height;
+      final maxHeight = screenH * 0.80;
+      final bottomInset = media.viewInsets.bottom;
+
+      return ClipRRect(
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+          child: Container(
+            color: const Color.fromARGB(255, 20, 13, 32).withOpacity(0.95),
+            padding: EdgeInsets.fromLTRB(16, 12, 16, 20 + bottomInset),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(maxHeight: maxHeight),
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      width: 40,
+                      height: 4,
+                      margin: const EdgeInsets.only(bottom: 12),
+                      decoration: BoxDecoration(
+                        color: AppTheme.primaryAccent.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
                     ),
-                  ),
-                  _menuTile(
-                    context,
-                    icon: Icons.wifi_off_rounded,
-                    title: loc.helpNetherlinkTitle,
-                    subtitle: loc.helpNetherlinkSubtitle,
-                    onTap: () {
-                      Navigator.of(ctx).pop();
-                      if (onNetherLink != null) {
-                        onNetherLink();
-                      } else {
-                        HelpDialogs.showNetherlinkNotAppearing(context);
-                      }
-                    },
-                  ),
-                  const SizedBox(height: 8),
-                  _menuTile(
-                    context,
-                    icon: Icons.cloud_off_rounded,
-                    title: loc.helpMultiplayerFailedTitle,
-                    subtitle: loc.helpMultiplayerFailedSubtitle,
-                    onTap: () {
-                      Navigator.of(ctx).pop();
-                      if (onMultiplayerFailed != null) {
-                        onMultiplayerFailed();
-                      } else {
-                        HelpDialogs.showMultiplayerConnectionFailed(context);
-                      }
-                    },
-                  ),
-                  const SizedBox(height: 8),
-                  _menuTile(
-                    context,
-                    icon: Icons.dns_rounded,
-                    title: loc.helpNintendoDnsTitle,
-                    subtitle: loc.helpNintendoDnsSubtitle,
-                    onTap: () {
-                      Navigator.of(ctx).pop();
-                      if (onNintendoDns != null) {
-                        onNintendoDns();
-                      } else {
-                        HelpDialogs.showNintendoDns(context);
-                      }
-                    },
-                  ),
-                  const SizedBox(height: 8),
-                  _menuTile(
-                    context,
-                    icon: Icons.group_off_rounded,
-                    title: loc.helpFriendsModeTitle,
-                    subtitle: loc.helpFriendsModeSubtitle,
-                    onTap: () {
-                      Navigator.of(ctx).pop();
-                      if (onFriendsMode != null) {
-                        onFriendsMode();
-                      } else {
-                        HelpDialogs.showFriendsMode(context);
-                      }
-                    },
-                  ),
-                ],
+                    _menuTile(
+                      context,
+                      icon: Icons.wifi_off_rounded,
+                      title: loc.helpNetherlinkTitle,
+                      subtitle: loc.helpNetherlinkSubtitle,
+                      onTap: () {
+                        Navigator.of(ctx).pop();
+                        if (onNetherLink != null) {
+                          onNetherLink();
+                        } else {
+                          HelpDialogs.showNetherlinkNotAppearing(context);
+                        }
+                      },
+                    ),
+                    const SizedBox(height: 8),
+                    _menuTile(
+                      context,
+                      icon: Icons.cloud_off_rounded,
+                      title: loc.helpMultiplayerFailedTitle,
+                      subtitle: loc.helpMultiplayerFailedSubtitle,
+                      onTap: () {
+                        Navigator.of(ctx).pop();
+                        if (onMultiplayerFailed != null) {
+                          onMultiplayerFailed();
+                        } else {
+                          HelpDialogs.showMultiplayerConnectionFailed(context);
+                        }
+                      },
+                    ),
+                    const SizedBox(height: 8),
+                    _menuTile(
+                      context,
+                      icon: Icons.dns_rounded,
+                      title: loc.helpNintendoDnsTitle,
+                      subtitle: loc.helpNintendoDnsSubtitle,
+                      onTap: () {
+                        Navigator.of(ctx).pop();
+                        if (onNintendoDns != null) {
+                          onNintendoDns();
+                        } else {
+                          HelpDialogs.showNintendoDns(context);
+                        }
+                      },
+                    ),
+                    const SizedBox(height: 8),
+                    _menuTile(
+                      context,
+                      icon: Icons.group_off_rounded,
+                      title: loc.helpFriendsModeTitle,
+                      subtitle: loc.helpFriendsModeSubtitle,
+                      onTap: () {
+                        Navigator.of(ctx).pop();
+                        if (onFriendsMode != null) {
+                          onFriendsMode();
+                        } else {
+                          HelpDialogs.showFriendsMode(context);
+                        }
+                      },
+                    ),
+                    const SizedBox(height: 8),
+                  ],
+                ),
               ),
             ),
           ),
-        );
-      },
-    );
-  }
+        ),
+      );
+    },
+  );
+}
 
   static Widget _menuTile(
     BuildContext context, {

@@ -169,6 +169,12 @@ abstract class AppLocalizations {
   /// **'Created by {appCreator}.\n\nHow to use:\n1. Enter your Minecraft server address and port (default: 19132)\n   — or select a previously saved server from the dropdown\n2. (Optional) Choose a Relay Server (EU or US) closest to your location\n3. Click \"Start Broadcasting\" to begin\n4. On your console/device: Minecraft > Play > Friends\n5. You should see a LAN server called \"NetherLink\"\n6. Click it to join your external server via NetherLink\n\nNintendo Switch (DNS mode):\n1. Enable \"Nintendo Switch\" in the connection panel\n2. Select a Relay Server (EU or US)\n3. Click \"Send DNS Config\" — this sends your config to the relay\n   (it does NOT broadcast a LAN server)\n4. On your Switch, apply your NetherLink DNS setup and join\n   using the server entry you use for NetherLink\n\nNotes:\n- For LAN broadcasting, NetherLink and console must be on the same local network.\n- Tip: Choose the relay server closest to you for the best performance.'**
   String helpText(Object appCreator);
 
+  /// Your language name in your own language
+  ///
+  /// In en, this message translates to:
+  /// **'English'**
+  String get language;
+
   /// Name of the Discord community / link label
   ///
   /// In en, this message translates to:
@@ -654,6 +660,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Friends mode troubleshooting tips:\n\n1. Make sure the relay friend account is added/accepted on the console (if required).\n2. Try restarting the game and refreshing the Friends/LAN tab after enabling Friends mode.\n\nIf the server still doesn\'t appear to friends, enable Debug Mode and check logs to identify errors.'**
   String get helpFriendsModeBody;
+
+  /// Title for the language selection dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Change language'**
+  String get changeLanguageTitle;
+
+  /// Label for the language button in the bottom nav
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
+  String get changeLanguage;
+
+  /// Button that resets localization to the system/default locale
+  ///
+  /// In en, this message translates to:
+  /// **'Use system language'**
+  String get useSystemLanguage;
+
+  /// Snackbar message when launching an external URL fails
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open URL'**
+  String get couldNotOpenUrl;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

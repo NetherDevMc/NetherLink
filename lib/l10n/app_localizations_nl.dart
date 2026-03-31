@@ -47,6 +47,9 @@ class AppLocalizationsNl extends AppLocalizations {
   }
 
   @override
+  String get language => 'Nederlands';
+
+  @override
   String get discord => 'Discord';
 
   @override
@@ -302,4 +305,16 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get helpFriendsModeBody => 'Vrienden-modus probleemoplossingstips:\n\n1. Zorg ervoor dat de relay account is toegevoegd/geaccepteerd in de console (indien nodig).\n2. Zorg ervoor dat zowel jij als je vrienden zichtbaarheid / NAT instellingen hebben die aanwezigheid toestaan.\n3. Probeer het spel opnieuw te starten en het tabblad Vrienden/LAN te verversen na het inschakelen van Vrienden-modus.\n\nAls de server nog steeds niet bij vrienden verschijnt, schakel dan Debugmodus in en controleer de logs om fouten te identificeren.';
+
+  @override
+  String get changeLanguageTitle => 'Change language';
+
+  @override
+  String get changeLanguage => 'Language';
+
+  @override
+  String get useSystemLanguage => 'Use system language';
+
+  @override
+  String get couldNotOpenUrl => 'Could not open URL';
 }

@@ -112,14 +112,17 @@ class _InfoDialogContentState extends State<_InfoDialogContent> {
   @override
   Widget build(BuildContext context) {
     final screenW = MediaQuery.of(context).size.width;
+    final screenH = MediaQuery.of(context).size.height;
     final maxDialogWidth = math.min(760.0, screenW - 40.0);
-    final maxHeight = MediaQuery.of(context).size.height * 0.78;
+
+    final maxDialogHeight = screenH * 0.78;
+    final bodyMaxHeight = screenH * 0.48;
 
     return Container(
       padding: const EdgeInsets.all(_horizontalPadding),
       constraints: BoxConstraints(
         maxWidth: maxDialogWidth,
-        maxHeight: maxHeight,
+        maxHeight: maxDialogHeight,
         minWidth: 220.0,
         minHeight: 0.0,
       ),
@@ -142,73 +145,79 @@ class _InfoDialogContentState extends State<_InfoDialogContent> {
           ),
         ],
       ),
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          return SingleChildScrollView(
-            child: IntrinsicHeight(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          widget.title,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: _titleFontSize,
-                            fontWeight: FontWeight.w800,
-                            height: 1.1,
-                          ),
-                        ),
-                      ),
-                      Material(
-                        color: Colors.white12,
-                        shape: const CircleBorder(),
-                        child: InkWell(
-                          customBorder: const CircleBorder(),
-                          onTap: () => Navigator.of(context).pop(),
-                          child: Padding(
-                            padding: const EdgeInsets.all(6.0),
-                            child: Icon(
-                              Icons.close,
-                              color: Colors.white.withOpacity(0.95),
-                              size: 20,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  widget.title,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: _titleFontSize,
+                    fontWeight: FontWeight.w800,
+                    height: 1.1,
                   ),
-                  const SizedBox(height: _headerBottomGap),
-                  DefaultTextStyle(
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: _bodyFontSize,
-                      height: 1.6,
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.only(right: 4.0),
-                      child: Text(widget.content),
+                ),
+              ),
+              Material(
+                color: Colors.white12,
+                shape: const CircleBorder(),
+                child: InkWell(
+                  customBorder: const CircleBorder(),
+                  onTap: () => Navigator.of(context).pop(),
+                  child: Padding(
+                    padding: const EdgeInsets.all(6.0),
+                    child: Icon(
+                      Icons.close,
+                      color: Colors.white.withOpacity(0.95),
+                      size: 20,
                     ),
                   ),
-                  const SizedBox(height: _actionsTopGap),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: widget.actions
-                        .map(
-                          (w) => Padding(
-                            padding: const EdgeInsets.only(left: 8.0),
-                            child: w,
-                          ),
-                        )
-                        .toList(),
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: _headerBottomGap),
+
+          Flexible(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                maxHeight: bodyMaxHeight,
+                minHeight: 0,
+              ),
+              child: SingleChildScrollView(
+                child: DefaultTextStyle(
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: _bodyFontSize,
+                    height: 1.6,
                   ),
-                ],
+                  child: Padding(
+                    padding: const EdgeInsets.only(right: 4.0),
+                    child: Text(widget.content),
+                  ),
+                ),
               ),
             ),
-          );
-        },
+          ),
+
+          const SizedBox(height: _actionsTopGap),
+
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: widget.actions
+                .map(
+                  (w) => Padding(
+                    padding: const EdgeInsets.only(left: 8.0),
+                    child: w,
+                  ),
+                )
+                .toList(),
+          ),
+        ],
       ),
     );
   }

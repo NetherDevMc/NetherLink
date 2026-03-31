@@ -18,6 +18,9 @@
       "appCreator": {}
     }
   },
+  "language": "Türkçe",
+  "@language": { "description": "Your language name in your own language" },
+
   "discord": "Discord",
   "@discord": {
     "description": "Name of the Discord community / link label"

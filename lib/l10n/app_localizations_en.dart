@@ -47,6 +47,9 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get language => 'English';
+
+  @override
   String get discord => 'Discord';
 
   @override
@@ -302,4 +305,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get helpFriendsModeBody => 'Friends mode troubleshooting tips:\n\n1. Make sure the relay friend account is added/accepted on the console (if required).\n2. Try restarting the game and refreshing the Friends/LAN tab after enabling Friends mode.\n\nIf the server still doesn\'t appear to friends, enable Debug Mode and check logs to identify errors.';
+
+  @override
+  String get changeLanguageTitle => 'Change language';
+
+  @override
+  String get changeLanguage => 'Language';
+
+  @override
+  String get useSystemLanguage => 'Use system language';
+
+  @override
+  String get couldNotOpenUrl => 'Could not open URL';
 }
