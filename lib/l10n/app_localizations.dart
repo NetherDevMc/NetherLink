@@ -730,9 +730,21 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
 
   // Lookup logic when only language code is specified.
   switch (locale.languageCode) {
+    case 'ar': return AppLocalizationsAr();
+    case 'bn': return AppLocalizationsBn();
+    case 'de': return AppLocalizationsDe();
     case 'en': return AppLocalizationsEn();
-    case 'nl': return AppLocalizationsNl();
+    case 'es': return AppLocalizationsEs();
+    case 'fr': return AppLocalizationsFr();
+    case 'hi': return AppLocalizationsHi();
+    case 'id': return AppLocalizationsId();
+    case 'ja': return AppLocalizationsJa();
+    case 'pt': return AppLocalizationsPt();
+    case 'ru': return AppLocalizationsRu();
+    case 'sw': return AppLocalizationsSw();
     case 'tr': return AppLocalizationsTr();
+    case 'ur': return AppLocalizationsUr();
+    case 'zn': return AppLocalizationsZn();
   }
 
   throw FlutterError(
