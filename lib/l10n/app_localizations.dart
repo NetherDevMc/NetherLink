@@ -120,7 +120,7 @@ abstract class AppLocalizations {
     Locale('sw'),
     Locale('tr'),
     Locale('ur'),
-    Locale('zh'),
+    Locale('zh')
   ];
 
   /// No description provided for @appName.
