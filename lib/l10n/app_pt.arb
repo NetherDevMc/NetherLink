@@ -1,0 +1,332 @@
+{
+    "@@locale":  "pt",
+    "appName":  "NetherLink",
+    "console":  "Console",
+    "consoleOutput":  "Saída do console",
+    "noLogsYet":  "Ainda não há logs",
+    "startBroadcastingToSeeOutput":  "Inicie a transmissão para ver a saída",
+    "close":  "Fechar",
+    "ok":  "OK",
+    "joinUs":  "Junte-se a nós",
+    "website":  "Site",
+    "howToUseMenu":  "Como usar",
+    "support":  "Suporte",
+    "helpText":  "Criado por {appCreator}.\r\n\r\nComo usar:\r\n1. Digite o endereço e a porta do seu servidor de Minecraft (padrão: 19132)\r\n   — ou selecione um servidor salvo anteriormente no menu suspenso\r\n2. (Opcional) Escolha um Servidor Relay (EU ou US) mais próximo da sua localização\r\n3. Clique em \\\"Iniciar Transmissão\\\" para começar\r\n4. No seu console/dispositivo: Minecraft \u003e Jogar \u003e Amigos\r\n5. Você deverá ver um servidor LAN chamado \\\"NetherLink\\\"\r\n6. Clique nele para entrar no seu servidor externo via NetherLink\r\n\r\nNintendo Switch (modo DNS):\r\n1. Ative \\\"Nintendo Switch\\\" no painel de conexão\r\n2. Selecione um Servidor Relay (EU ou US)\r\n3. Clique em \\\"Enviar Configuração DNS\\\" — isso envia sua configuração ao relay\r\n   (isso NÃO transmite um servidor LAN)\r\n4. No seu Switch, aplique a configuração DNS do NetherLink e entre\r\n   usando a entrada de servidor que você usa para o NetherLink\r\n\r\nNotas:\r\n- Para transmissão LAN, o NetherLink e o console devem estar na mesma rede local.\r\n- Dica: escolha o servidor relay mais próximo de você para obter o melhor desempenho.",
+    "@helpText":  {
+                      "description":  "Detailed help / instructions shown in the help dialog",
+                      "placeholders":  {
+                                           "appCreator":  {
+
+                                                          }
+                                       }
+                  },
+    "language":  "Português",
+    "@language":  {
+                      "description":  "Your language name in your own language"
+                  },
+    "discord":  "Discord",
+    "@discord":  {
+                     "description":  "Name of the Discord community / link label"
+                 },
+    "toggleDebug":  "Alternar depuração",
+    "@toggleDebug":  {
+                         "description":  "Tooltip for toggling debug logging in console"
+                     },
+    "copyLogs":  "Copiar logs",
+    "@copyLogs":  {
+                      "description":  "Tooltip / button text to copy console logs"
+                  },
+    "clear":  "Limpar",
+    "@clear":  {
+                   "description":  "Button text to clear console logs or fields"
+               },
+    "cancel":  "Cancelar",
+    "@cancel":  {
+                    "description":  "Generic cancel button label"
+                },
+    "deleteServer":  "Excluir servidor",
+    "@deleteServer":  {
+                          "description":  "Title for delete server confirmation dialog"
+                      },
+    "delete":  "Excluir",
+    "@delete":  {
+                    "description":  "Delete action label"
+                },
+    "myServers":  "Meus servidores",
+    "@myServers":  {
+                       "description":  "Title for manage servers dialog"
+                   },
+    "quickAccessServers":  "Servidores de acesso rápido",
+    "@quickAccessServers":  {
+                                "description":  "Subtitle for manage servers dialog"
+                            },
+    "addServer":  "Adicionar servidor",
+    "@addServer":  {
+                       "description":  "Add server button label / dialog title"
+                   },
+    "addServersHint":  "Adicione servidores para se conectar rapidamente depois",
+    "@addServersHint":  {
+                            "description":  "Hint text shown when there are no saved servers"
+                        },
+    "serverNameLabel":  "Nome do servidor *",
+    "@serverNameLabel":  {
+                             "description":  "Form label for server name"
+                         },
+    "addressLabel":  "Endereço *",
+    "@addressLabel":  {
+                          "description":  "Form label for server address"
+                      },
+    "portLabel":  "Porta *",
+    "@portLabel":  {
+                       "description":  "Form label for server port"
+                   },
+    "descriptionLabel":  "Descrição (Opcional)",
+    "@descriptionLabel":  {
+                              "description":  "Form label for server description"
+                          },
+    "save":  "Salvar",
+    "@save":  {
+                  "description":  "Save button label"
+              },
+    "initializing":  "Inicializando...",
+    "@initializing":  {
+                          "description":  "Shown on splash while app initializes"
+                      },
+    "createdBy":  "Criado por NetherDev",
+    "@createdBy":  {
+                       "description":  "Badge text on splash screen"
+                   },
+    "bedrockBridge":  "Ponte Bedrock",
+    "@bedrockBridge":  {
+                           "description":  "Subtitle on splash screen"
+                       },
+    "clientDisconnected":  "Cliente desconectado — transmissão interrompida",
+    "@clientDisconnected":  {
+                                "description":  "Snackbar shown when clients disconnect automatically"
+                            },
+    "pleaseEnterServer":  "⚠️ Por favor, insira um endereço de servidor",
+    "@pleaseEnterServer":  {
+                               "description":  "Validation message when server address field is empty"
+                           },
+    "invalidPort":  "⚠️ Número de porta inválido (1-65535)",
+    "@invalidPort":  {
+                         "description":  "Validation message when port is invalid"
+                     },
+    "dnsConfigSent":  "✅ Configuração DNS enviada ao relay",
+    "@dnsConfigSent":  {
+                           "description":  "Confirmation after sending DNS config to relay"
+                       },
+    "broadcastingStarted":  "Transmissão iniciada",
+    "@broadcastingStarted":  {
+                                 "description":  "Snackbar shown when broadcasting starts"
+                             },
+    "broadcastStopped":  "Transmissão interrompida",
+    "@broadcastStopped":  {
+                              "description":  "Snackbar shown when broadcasting stops"
+                          },
+    "selectedServer":  "📋 Selecionado: {name}",
+    "@selectedServer":  {
+                            "description":  "Shown when a saved server is selected",
+                            "placeholders":  {
+                                                 "name":  {
+
+                                                          }
+                                             }
+                        },
+    "selectedFeaturedServer":  "Selecionado: {name}",
+    "@selectedFeaturedServer":  {
+                                    "description":  "Shown when a featured server is selected",
+                                    "placeholders":  {
+                                                         "name":  {
+
+                                                                  }
+                                                     }
+                                },
+    "noLogsToCopy":  "Não há logs para copiar",
+    "@noLogsToCopy":  {
+                          "description":  "Shown when user tries to copy logs but none exist"
+                      },
+    "copiedLogs":  "{count} entradas de log copiadas para a área de transferência",
+    "@copiedLogs":  {
+                        "description":  "Shown after copying logs to clipboard",
+                        "placeholders":  {
+                                             "count":  {
+
+                                                       }
+                                         }
+                    },
+    "debugEnabled":  "Logs de depuração ativados",
+    "debugDisabled":  "Logs de depuração desativados",
+    "@debugEnabled":  {
+                          "description":  "Shown when debug logging is enabled/disabled"
+                      },
+    "howToUseTitle":  "Como usar o NetherLink",
+    "iUnderstand":  "Entendi",
+    "playOnSwitchTitle":  "Jogar no Nintendo Switch",
+    "playWithFriendsTitle":  "Jogar com amigos",
+    "playInstructionsSwitch":  "Selecionado: {relayName}\r\n\r\nComo se conectar:\r\n1. Vá para as configurações do seu Switch e altere o DNS para: {relayIp}\r\n2. Abra o Minecraft e selecione um servidor da lista (como Cubecraft ou Hive).\r\n3. Agora você será enviado automaticamente para o seu próprio servidor.",
+    "@playInstructionsSwitch":  {
+                                    "description":  "DNS instructions shown for Nintendo Switch mode",
+                                    "placeholders":  {
+                                                         "relayName":  {
+
+                                                                       },
+                                                         "relayIp":  {
+
+                                                                     }
+                                                     }
+                                },
+    "playInstructionsFriends":  "Como se conectar:\r\n1. No seu console, adicione {friend} como amigo.\r\n2. Abra o Minecraft e vá para a aba Amigos.\r\n3. Procure seu servidor em Mundos LAN e selecione-o para entrar.",
+    "@playInstructionsFriends":  {
+                                     "description":  "Instructions shown for Friends mode",
+                                     "placeholders":  {
+                                                          "friend":  {
+
+                                                                     }
+                                                      }
+                                 },
+    "nldServerLabel":  "SERVIDOR NETHERLINK",
+    "@nldServerLabel":  {
+                            "description":  "Label text above the relay selector"
+                        },
+    "selectRelayLabel":  "Selecionar relay {name}",
+    "@selectRelayLabel":  {
+                              "description":  "Accessibility label for relay selection button",
+                              "placeholders":  {
+                                                   "name":  {
+
+                                                            }
+                                               }
+                          },
+    "noSavedServers":  "Nenhum servidor salvo",
+    "savedServers":  "Servidores salvos",
+    "serverAddressHint":  "Endereço do servidor",
+    "portHint":  "Porta",
+    "manageServers":  "Gerenciar servidores",
+    "manageServersTooltip":  "Gerenciar servidores",
+    "stopBroadcasting":  "Parar transmissão",
+    "startNintendoMode":  "Iniciar modo Nintendo",
+    "startFriendsMode":  "Iniciar modo Amigos",
+    "startBroadcasting":  "Iniciar transmissão",
+    "modeLabel":  "Modo",
+    "labelXbox":  "Xbox/PS4-5",
+    "labelNintendo":  "Nintendo",
+    "labelFriends":  "Amigos",
+    "nintendoInfoTitle":  "Modo DNS do Nintendo Switch",
+    "nintendoInfoText":  "Comece no modo Nintendo, configure seu DNS e entre em um servidor em destaque.",
+    "friendModeTitle":  "Modo Amigos",
+    "friendModeText":  "Adicione os bots de amigos do NetherLink como amigos. Inicie o modo Amigos e jogue",
+    "selectedRelayCheck":  "Selecionado",
+    "@selectedRelayCheck":  {
+                                "description":  "Small label used when a relay is selected"
+                            },
+    "relayFallbackWarning":  "Aviso: o relay original não respondeu. Relay alternativo em uso: {name}",
+    "@relayFallbackWarning":  {
+                                  "placeholders":  {
+                                                       "name":  {
+
+                                                                }
+                                                   }
+                              },
+    "relayUnableConnect":  "Não foi possível conectar a NENHUM servidor relay do NetherLink. Tente novamente mais tarde ou verifique sua internet.",
+    "howToXboxTitle":  "Xbox / PS4-5 (LAN / Proxy)",
+    "@howToXboxTitle":  {
+                            "description":  "Title for the Xbox / PS4-5 how-to modal"
+                        },
+    "howToXboxSubtitle":  "Jogue via transmissão LAN ou proxy",
+    "@howToXboxSubtitle":  {
+                               "description":  "Short subtitle for Xbox / PS4-5 menu tile"
+                           },
+    "howToXboxBody":  "Como se conectar (Xbox / PS4 / PS5):\r\n1. Certifique-se de que o dispositivo que está executando o NetherLink e o seu console estejam na mesma rede local.\r\n2. No aplicativo, informe o endereço e a porta do seu servidor de Minecraft e pressione \\\"Iniciar transmissão\\\".\r\n3. No console, abra Minecraft → Jogar → procure por Mundos LAN ou pela aba Amigos e atualize a lista.\r\n4. Selecione o servidor LAN chamado \\\"NetherLink\\\" para entrar.\r\nNotas:\r\n- Se o servidor não aparecer, confirme que ambos os dispositivos estão na mesma sub-rede e que o aplicativo ainda está transmitindo.\r\n- Alguns modelos de console ou roteadores podem bloquear a descoberta LAN; tente ajustar as configurações do aplicativo ou do roteador, se necessário.",
+    "@howToXboxBody":  {
+                           "description":  "Detailed steps for Xbox/PS4-5 how-to modal"
+                       },
+    "howToNintendoTitle":  "Nintendo Switch (modo DNS)",
+    "@howToNintendoTitle":  {
+                                "description":  "Title for the Nintendo how-to modal"
+                            },
+    "howToNintendoSubtitle":  "Instruções de relay DNS para Switch",
+    "@howToNintendoSubtitle":  {
+                                   "description":  "Short subtitle for Nintendo menu tile"
+                               },
+    "howToNintendoBody":  "Nintendo Switch — modo DNS (passo a passo):\r\n1. No aplicativo, ative o modo \\\"Nintendo\\\" e selecione um Servidor Relay (EU ou US).\r\n2. Toque em \\\"Enviar Configuração DNS\\\" para enviar o IP DNS ao relay.\r\n3. No seu Nintendo Switch, vá para Configurações do sistema → Internet → Configurações de Internet → (sua rede) → Alterar configurações → DNS e defina o DNS primário como o IP do relay.\r\n4. Abra o Minecraft e entre em um servidor público; você será redirecionado ao seu servidor usando o DNS do relay.\r\nNotas:\r\n- O modo DNS não transmite um servidor LAN; ele roteia o tráfego do jogo pelo relay.\r\n- Reverta seu DNS quando terminar se precisar do comportamento normal da rede.",
+    "@howToNintendoBody":  {
+                               "description":  "Detailed steps for Nintendo Switch DNS setup"
+                           },
+    "howToFriendsTitle":  "Modo Amigos",
+    "@howToFriendsTitle":  {
+                               "description":  "Title for the Friends-mode how-to modal"
+                           },
+    "howToFriendsSubtitle":  "Convide amigos e entre via LAN",
+    "@howToFriendsSubtitle":  {
+                                  "description":  "Short subtitle for Friends menu tile"
+                              },
+    "howToFriendsBody":  "Modo Amigos — passos rápidos:\r\n1. Adicione a conta de amigo do NetherLink no seu console ou plataforma, se necessário.\r\n2. No aplicativo, ative o modo Amigos e envie a configuração do relay (se aplicável).\r\n3. No seu console, abra Minecraft → Amigos e procure por Mundos LAN — seu servidor deve aparecer lá como um mundo LAN.\r\n4. Selecione-o para entrar no seu servidor com amigos.\r\nNotas:\r\n- Certifique-se de que você e seus amigos tenham as mesmas configurações de NAT/configurações que permitem presença de amigos.\r\n- O modo Amigos depende dos recursos de amizade da plataforma e pode exigir aceitar solicitações de amizade.",
+    "@howToFriendsBody":  {
+                              "description":  "Detailed steps for Friends mode"
+                          },
+    "helpNetherlinkTitle":  "NetherLink não aparece",
+    "@helpNetherlinkTitle":  {
+                                 "description":  "Title for help topic when NetherLink isn\u0027t visible on console"
+                             },
+    "helpNetherlinkSubtitle":  "Solução de problemas de descoberta LAN",
+    "@helpNetherlinkSubtitle":  {
+                                    "description":  "Short subtitle for NetherLink does not appear tile"
+                                },
+    "helpNetherlinkBody":  "Se o servidor não estiver aparecendo no seu console, tente estas etapas:\r\n\r\n✅ Verificações básicas:\r\n1. Mesma rede WiFi - Seu telefone/tablet e o console DEVEM estar na mesma rede WiFi\r\n2. Endereço correto do servidor - Verifique novamente o IP e a porta (padrão: 19132)\r\n3. Transmissão ativa - Verifique se o NetherLink mostra o status \"Transmitindo\"\r\n\r\n🔄 Correções rápidas:\r\n• Reinicie o aplicativo: pare a transmissão, feche o NetherLink completamente, abra-o novamente e tente de novo\r\n• Reinicie seu console: às vezes o console precisa ser atualizado para detectar jogos LAN\r\n• Verifique a aba Amigos/LAN: o servidor aparece em \"Amigos\" ou \"Jogos LAN\", e NÃO na lista de servidores\r\n• Aguarde de 10 a 15 segundos após iniciar a transmissão\r\n• Desative VPNs: VPNs podem bloquear transmissões locais\r\n\r\n⚠️ Problemas comuns:\r\n\"No route found for user\" → Certifique-se de que ambos os dispositivos estejam na mesma rede Wi‑Fi (evite redes de convidados)\r\n\"Unable to connect to NetherLink relay server\" → Verifique sua internet / status do relay\r\n\r\n📱 Ainda está com problemas? Ative o Modo de depuração no NetherLink e verifique os logs, ou tente um servidor diferente.",
+    "@helpNetherlinkBody":  {
+                                "description":  "Detailed troubleshooting text for NetherLink not appearing"
+                            },
+    "helpMultiplayerFailedTitle":  "Falha na conexão multijogador",
+    "@helpMultiplayerFailedTitle":  {
+                                        "description":  "Title for help topic when multiplayer connection fails"
+                                    },
+    "helpMultiplayerFailedSubtitle":  "Explicação de por que isso não é um erro do NetherLink",
+    "@helpMultiplayerFailedSubtitle":  {
+                                           "description":  "Short subtitle for multiplayer failed tile"
+                                       },
+    "helpMultiplayerFailedBody":  "⚠️ Isso não é um problema do NetherLink!\r\n\r\nO NetherLink redirecionou você com sucesso para o servidor solicitado. A mensagem \\\"Falha na conexão multijogador\\\" indica que o servidor de destino está inacessível no momento. Motivos possíveis:\r\n\r\n• O servidor de Minecraft de destino está offline ou sobrecarregado\r\n• O servidor exige uma versão atualizada do cliente ou uma edição específica\r\n• Problemas de rede entre o relay e o servidor de destino\r\n\r\nTente se conectar a outro servidor ou entre em contato com o suporte do servidor. Se o problema persistir em vários servidores, ative o Modo de depuração no NetherLink e verifique os logs.",
+    "@helpMultiplayerFailedBody":  {
+                                       "description":  "Explanation shown when multiplayer connection failed appears"
+                                   },
+    "helpNintendoDnsTitle":  "O DNS do Nintendo não funciona",
+    "@helpNintendoDnsTitle":  {
+                                  "description":  "Title for Nintendo DNS troubleshooting"
+                              },
+    "helpNintendoDnsSubtitle":  "Problemas comuns de DNS / relay",
+    "@helpNintendoDnsSubtitle":  {
+                                     "description":  "Short subtitle for Nintendo DNS troubleshooting tile"
+                                 },
+    "helpNintendoDnsBody":  "Se o modo DNS do Nintendo não estiver funcionando, verifique o seguinte:\r\n\r\n1. Confirme que você enviou a configuração DNS pelo aplicativo (Enviar Configuração DNS).\r\n2. Verifique se você aplicou o IP do relay como DNS Primário no Switch.\r\n3. Certifique-se de que o servidor relay selecionado (EU/US) está online e não está sobrecarregado.\r\n4. Algumas redes (por exemplo, captive portals) impedem DNS personalizado — teste em outra rede.\r\n\r\nSe os problemas persistirem, ative o Modo de depuração e verifique os logs, ou tente a alternativa do modo Amigos.",
+    "@helpNintendoDnsBody":  {
+                                 "description":  "Detailed placeholder for Nintendo DNS troubleshooting"
+                             },
+    "helpFriendsModeTitle":  "O modo Amigos não funciona",
+    "@helpFriendsModeTitle":  {
+                                  "description":  "Title for Friends mode troubleshooting"
+                              },
+    "helpFriendsModeSubtitle":  "Problemas comuns com amigos",
+    "@helpFriendsModeSubtitle":  {
+                                     "description":  "Short subtitle for Friends-mode troubleshooting tile"
+                                 },
+    "helpFriendsModeBody":  "Dicas de solução de problemas para o modo Amigos:\r\n\r\n1. Certifique-se de que a conta de amigo do relay foi adicionada/aceita no console (se necessário).\r\n2. Tente reiniciar o jogo e atualizar a aba Amigos/LAN depois de ativar o modo Amigos.\r\n\r\nSe o servidor ainda não aparecer para os amigos, ative o Modo de depuração e verifique os logs para identificar erros.",
+    "@helpFriendsModeBody":  {
+                                 "description":  "Detailed placeholder for Friends mode troubleshooting"
+                             },
+    "changeLanguageTitle":  "Alterar idioma",
+    "@changeLanguageTitle":  {
+                                 "description":  "Title for the language selection dialog"
+                             },
+    "changeLanguage":  "Idioma",
+    "@changeLanguage":  {
+                            "description":  "Label for the language button in the bottom nav"
+                        },
+    "useSystemLanguage":  "Usar idioma do sistema",
+    "@useSystemLanguage":  {
+                               "description":  "Button that resets localization to the system/default locale"
+                           },
+    "couldNotOpenUrl":  "Não foi possível abrir a URL",
+    "@couldNotOpenUrl":  {
+                             "description":  "Snackbar message when launching an external URL fails"
+                         }
+}
