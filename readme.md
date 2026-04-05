@@ -53,7 +53,7 @@ NetherLink makes external Minecraft Bedrock servers appear as local LAN games, a
      ```bash
      flutter build apk
      ```  
-   - iOS:  
+   - iOS (requires macOS with Xcode installed; code signing may also be required):  
      ```bash
      flutter build ios
      ```
