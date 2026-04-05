@@ -1,0 +1,332 @@
+{
+    "@@locale":  "zn",
+    "appName":  "NetherLink",
+    "console":  "控制台",
+    "consoleOutput":  "控制台输出",
+    "noLogsYet":  "暂无日志",
+    "startBroadcastingToSeeOutput":  "开始广播以查看输出",
+    "close":  "关闭",
+    "ok":  "OK",
+    "joinUs":  "加入我们",
+    "website":  "网站",
+    "howToUseMenu":  "使用方法",
+    "support":  "支持",
+    "helpText":  "由 {appCreator} 创建。\r\n\r\n使用方法：\r\n1. 输入你的 Minecraft 服务器地址和端口（默认：19132）\r\n   — 或从下拉菜单中选择之前保存的服务器\r\n2. （可选）选择离你位置最近的中继服务器（EU 或 US）\r\n3. 点击 \\\"开始广播\\\" 以开始\r\n4. 在你的主机/设备上：Minecraft \u003e 游玩 \u003e 好友\r\n5. 你应该会看到一个名为 \\\"NetherLink\\\" 的局域网服务器\r\n6. 点击它即可通过 NetherLink 加入你的外部服务器\r\n\r\nNintendo Switch（DNS 模式）：\r\n1. 在连接面板中启用 \\\"Nintendo Switch\\\"\r\n2. 选择一个中继服务器（EU 或 US）\r\n3. 点击 \\\"发送 DNS 配置\\\" — 这会将你的配置发送到中继服务器\r\n   （它不会广播局域网服务器）\r\n4. 在你的 Switch 上应用 NetherLink DNS 设置并加入\r\n   使用你为 NetherLink 所使用的服务器条目\r\n\r\n注意：\r\n- 进行局域网广播时，NetherLink 和主机必须位于同一局域网中。\r\n- 提示：选择离你最近的中继服务器以获得最佳性能。",
+    "@helpText":  {
+                      "description":  "Detailed help / instructions shown in the help dialog",
+                      "placeholders":  {
+                                           "appCreator":  {
+
+                                                          }
+                                       }
+                  },
+    "language":  "简体中文",
+    "@language":  {
+                      "description":  "Your language name in your own language"
+                  },
+    "discord":  "Discord",
+    "@discord":  {
+                     "description":  "Name of the Discord community / link label"
+                 },
+    "toggleDebug":  "切换调试",
+    "@toggleDebug":  {
+                         "description":  "Tooltip for toggling debug logging in console"
+                     },
+    "copyLogs":  "复制日志",
+    "@copyLogs":  {
+                      "description":  "Tooltip / button text to copy console logs"
+                  },
+    "clear":  "清除",
+    "@clear":  {
+                   "description":  "Button text to clear console logs or fields"
+               },
+    "cancel":  "取消",
+    "@cancel":  {
+                    "description":  "Generic cancel button label"
+                },
+    "deleteServer":  "删除服务器",
+    "@deleteServer":  {
+                          "description":  "Title for delete server confirmation dialog"
+                      },
+    "delete":  "删除",
+    "@delete":  {
+                    "description":  "Delete action label"
+                },
+    "myServers":  "我的服务器",
+    "@myServers":  {
+                       "description":  "Title for manage servers dialog"
+                   },
+    "quickAccessServers":  "快速访问服务器",
+    "@quickAccessServers":  {
+                                "description":  "Subtitle for manage servers dialog"
+                            },
+    "addServer":  "添加服务器",
+    "@addServer":  {
+                       "description":  "Add server button label / dialog title"
+                   },
+    "addServersHint":  "添加服务器以便稍后快速连接",
+    "@addServersHint":  {
+                            "description":  "Hint text shown when there are no saved servers"
+                        },
+    "serverNameLabel":  "服务器名称 *",
+    "@serverNameLabel":  {
+                             "description":  "Form label for server name"
+                         },
+    "addressLabel":  "地址 *",
+    "@addressLabel":  {
+                          "description":  "Form label for server address"
+                      },
+    "portLabel":  "端口 *",
+    "@portLabel":  {
+                       "description":  "Form label for server port"
+                   },
+    "descriptionLabel":  "描述（可选）",
+    "@descriptionLabel":  {
+                              "description":  "Form label for server description"
+                          },
+    "save":  "保存",
+    "@save":  {
+                  "description":  "Save button label"
+              },
+    "initializing":  "正在初始化...",
+    "@initializing":  {
+                          "description":  "Shown on splash while app initializes"
+                      },
+    "createdBy":  "由 NetherDev 创建",
+    "@createdBy":  {
+                       "description":  "Badge text on splash screen"
+                   },
+    "bedrockBridge":  "基岩桥",
+    "@bedrockBridge":  {
+                           "description":  "Subtitle on splash screen"
+                       },
+    "clientDisconnected":  "客户端已断开连接 — 广播已停止",
+    "@clientDisconnected":  {
+                                "description":  "Snackbar shown when clients disconnect automatically"
+                            },
+    "pleaseEnterServer":  "⚠️ 请输入服务器地址",
+    "@pleaseEnterServer":  {
+                               "description":  "Validation message when server address field is empty"
+                           },
+    "invalidPort":  "⚠️ 无效的端口号（1-65535）",
+    "@invalidPort":  {
+                         "description":  "Validation message when port is invalid"
+                     },
+    "dnsConfigSent":  "✅ DNS 配置已发送到中继服务器",
+    "@dnsConfigSent":  {
+                           "description":  "Confirmation after sending DNS config to relay"
+                       },
+    "broadcastingStarted":  "广播已开始",
+    "@broadcastingStarted":  {
+                                 "description":  "Snackbar shown when broadcasting starts"
+                             },
+    "broadcastStopped":  "广播已停止",
+    "@broadcastStopped":  {
+                              "description":  "Snackbar shown when broadcasting stops"
+                          },
+    "selectedServer":  "📋 已选择：{name}",
+    "@selectedServer":  {
+                            "description":  "Shown when a saved server is selected",
+                            "placeholders":  {
+                                                 "name":  {
+
+                                                          }
+                                             }
+                        },
+    "selectedFeaturedServer":  "已选择：{name}",
+    "@selectedFeaturedServer":  {
+                                    "description":  "Shown when a featured server is selected",
+                                    "placeholders":  {
+                                                         "name":  {
+
+                                                                  }
+                                                     }
+                                },
+    "noLogsToCopy":  "没有可复制的日志",
+    "@noLogsToCopy":  {
+                          "description":  "Shown when user tries to copy logs but none exist"
+                      },
+    "copiedLogs":  "已将 {count} 条日志复制到剪贴板",
+    "@copiedLogs":  {
+                        "description":  "Shown after copying logs to clipboard",
+                        "placeholders":  {
+                                             "count":  {
+
+                                                       }
+                                         }
+                    },
+    "debugEnabled":  "调试日志已启用",
+    "debugDisabled":  "调试日志已禁用",
+    "@debugEnabled":  {
+                          "description":  "Shown when debug logging is enabled/disabled"
+                      },
+    "howToUseTitle":  "如何使用 NetherLink",
+    "iUnderstand":  "我明白了",
+    "playOnSwitchTitle":  "在 Nintendo Switch 上游玩",
+    "playWithFriendsTitle":  "与朋友一起游玩",
+    "playInstructionsSwitch":  "已选择：{relayName}\r\n\r\n连接方法：\r\n1. 前往你的 Switch 设置，将 DNS 更改为：{relayIp}\r\n2. 打开 Minecraft，并从列表中选择一个服务器（例如 Cubecraft 或 Hive）。\r\n3. 现在你将自动被发送到你自己的服务器。",
+    "@playInstructionsSwitch":  {
+                                    "description":  "DNS instructions shown for Nintendo Switch mode",
+                                    "placeholders":  {
+                                                         "relayName":  {
+
+                                                                       },
+                                                         "relayIp":  {
+
+                                                                     }
+                                                     }
+                                },
+    "playInstructionsFriends":  "连接方法：\r\n1. 在你的主机上，将 {friend} 添加为好友。\r\n2. 打开 Minecraft 并前往 Friends 标签页。\r\n3. 在 LAN Worlds 下找到你的服务器并选择加入。",
+    "@playInstructionsFriends":  {
+                                     "description":  "Instructions shown for Friends mode",
+                                     "placeholders":  {
+                                                          "friend":  {
+
+                                                                     }
+                                                      }
+                                 },
+    "nldServerLabel":  "NETHERLINK 服务器",
+    "@nldServerLabel":  {
+                            "description":  "Label text above the relay selector"
+                        },
+    "selectRelayLabel":  "选择中继服务器 {name}",
+    "@selectRelayLabel":  {
+                              "description":  "Accessibility label for relay selection button",
+                              "placeholders":  {
+                                                   "name":  {
+
+                                                            }
+                                               }
+                          },
+    "noSavedServers":  "没有已保存的服务器",
+    "savedServers":  "已保存的服务器",
+    "serverAddressHint":  "服务器地址",
+    "portHint":  "端口",
+    "manageServers":  "管理服务器",
+    "manageServersTooltip":  "管理服务器",
+    "stopBroadcasting":  "停止广播",
+    "startNintendoMode":  "启动 Nintendo 模式",
+    "startFriendsMode":  "启动好友模式",
+    "startBroadcasting":  "开始广播",
+    "modeLabel":  "模式",
+    "labelXbox":  "Xbox/PS4-5",
+    "labelNintendo":  "Nintendo",
+    "labelFriends":  "好友",
+    "nintendoInfoTitle":  "Nintendo Switch DNS 模式",
+    "nintendoInfoText":  "在 Nintendo 模式下开始，设置你的 DNS 并加入推荐服务器。",
+    "friendModeTitle":  "好友模式",
+    "friendModeText":  "将 NetherLink 的好友机器人添加为好友。启动好友模式并开始游玩",
+    "selectedRelayCheck":  "已选择",
+    "@selectedRelayCheck":  {
+                                "description":  "Small label used when a relay is selected"
+                            },
+    "relayFallbackWarning":  "警告：原始 Relay 未响应。正在使用备用 Relay：{name}",
+    "@relayFallbackWarning":  {
+                                  "placeholders":  {
+                                                       "name":  {
+
+                                                                }
+                                                   }
+                              },
+    "relayUnableConnect":  "无法连接到任何 NetherLink Relay 服务器。请稍后再试或检查你的网络连接。",
+    "howToXboxTitle":  "Xbox / PS4-5 (LAN / Proxy)",
+    "@howToXboxTitle":  {
+                            "description":  "Title for the Xbox / PS4-5 how-to modal"
+                        },
+    "howToXboxSubtitle":  "通过局域网广播或代理游玩",
+    "@howToXboxSubtitle":  {
+                               "description":  "Short subtitle for Xbox / PS4-5 menu tile"
+                           },
+    "howToXboxBody":  "连接方法（Xbox / PS4 / PS5）：\r\n1. 确保运行 NetherLink 的设备和你的主机位于同一本地网络中。\r\n2. 在应用中输入你的 Minecraft 服务器地址和端口，然后按下 \\\"开始广播\\\"。\r\n3. 在主机上打开 Minecraft → Play → 查找 LAN Worlds 或 Friends 标签页，并刷新列表。\r\n4. 选择名为 \\\"NetherLink\\\" 的局域网服务器以加入。\r\n注意：\r\n- 如果服务器没有出现，请确认两台设备位于同一子网，并且应用仍在广播。\r\n- 某些主机型号或路由器可能会阻止局域网发现；如有需要，请尝试切换应用或路由器设置。",
+    "@howToXboxBody":  {
+                           "description":  "Detailed steps for Xbox/PS4-5 how-to modal"
+                       },
+    "howToNintendoTitle":  "Nintendo Switch（DNS 模式）",
+    "@howToNintendoTitle":  {
+                                "description":  "Title for the Nintendo how-to modal"
+                            },
+    "howToNintendoSubtitle":  "适用于 Switch 的 DNS 中继说明",
+    "@howToNintendoSubtitle":  {
+                                   "description":  "Short subtitle for Nintendo menu tile"
+                               },
+    "howToNintendoBody":  "Nintendo Switch — DNS 模式（分步说明）：\r\n1. 在应用中启用 \\\"Nintendo\\\" 模式，并选择一个中继服务器（EU 或 US）。\r\n2. 点击 \\\"发送 DNS 配置\\\"，将 DNS IP 发送到中继服务器。\r\n3. 在你的 Nintendo Switch 上前往系统设置 → 网络 → 互联网设置 → （你的网络）→ 更改设置 → DNS，并将主 DNS 设置为中继服务器 IP。\r\n4. 打开 Minecraft 并加入一个公共服务器；你将通过中继 DNS 被重定向到你的服务器。\r\n注意：\r\n- DNS 模式不会广播局域网服务器；它会通过中继服务器路由游戏流量。\r\n- 使用结束后，如果你需要恢复正常网络行为，请将 DNS 改回原设置。",
+    "@howToNintendoBody":  {
+                               "description":  "Detailed steps for Nintendo Switch DNS setup"
+                           },
+    "howToFriendsTitle":  "好友模式",
+    "@howToFriendsTitle":  {
+                               "description":  "Title for the Friends-mode how-to modal"
+                           },
+    "howToFriendsSubtitle":  "邀请好友并通过局域网加入",
+    "@howToFriendsSubtitle":  {
+                                  "description":  "Short subtitle for Friends menu tile"
+                              },
+    "howToFriendsBody":  "好友模式 — 快速步骤：\r\n1. 如有需要，请在你的主机或平台上添加 NetherLink 好友账号（Relay 好友）。\r\n2. 在应用中启用好友模式并发送 Relay 配置（如果适用）。\r\n3. 在你的主机上打开 Minecraft → Friends，并搜索 LAN Worlds —— 你的服务器应当会显示为一个局域网世界。\r\n4. 选择它即可与你的好友一起加入服务器。\r\n注意：\r\n- 请确保你和你的好友拥有相同且允许好友在线显示的 NAT/设置。\r\n- 好友模式依赖平台的好友功能，可能需要接受好友请求。",
+    "@howToFriendsBody":  {
+                              "description":  "Detailed steps for Friends mode"
+                          },
+    "helpNetherlinkTitle":  "NetherLink 未显示",
+    "@helpNetherlinkTitle":  {
+                                 "description":  "Title for help topic when NetherLink isn\u0027t visible on console"
+                             },
+    "helpNetherlinkSubtitle":  "局域网发现问题排查",
+    "@helpNetherlinkSubtitle":  {
+                                    "description":  "Short subtitle for NetherLink does not appear tile"
+                                },
+    "helpNetherlinkBody":  "如果服务器没有出现在你的主机上，请尝试以下步骤：\r\n\r\n✅ 基本检查：\r\n1. 相同的 WiFi 网络 - 你的手机/平板和主机必须连接到同一个 WiFi\r\n2. 正确的服务器地址 - 再次检查 IP 和端口（默认：19132）\r\n3. 广播已激活 - 确认 NetherLink 显示 \\\"正在广播\\\" 状态\r\n\r\n🔄 快速修复：\r\n• 重启应用：停止广播，完全关闭 NetherLink，重新打开后再试一次\r\n• 重启主机：有时主机需要刷新才能检测到局域网游戏\r\n• 检查好友/LAN 标签页：服务器会显示在 \\\"好友\\\" 或 \\\"局域网游戏\\\" 下，而不是服务器列表中\r\n• 开始广播后等待 10-15 秒\r\n• 禁用 VPN：VPN 可能会阻止本地广播\r\n\r\n⚠️ 常见问题：\r\n\\\"No route found for user\\\" → 确保两台设备位于同一个 Wi‑Fi（避免使用访客网络）\r\n\\\"Unable to connect to NetherLink relay server\\\" → 检查你的网络 / 中继服务器状态\r\n\r\n📱 仍然有问题？请在 NetherLink 中启用调试模式并检查日志，或尝试其他服务器。",
+    "@helpNetherlinkBody":  {
+                                "description":  "Detailed troubleshooting text for NetherLink not appearing"
+                            },
+    "helpMultiplayerFailedTitle":  "多人连接失败",
+    "@helpMultiplayerFailedTitle":  {
+                                        "description":  "Title for help topic when multiplayer connection fails"
+                                    },
+    "helpMultiplayerFailedSubtitle":  "说明这为什么不是 NetherLink 错误",
+    "@helpMultiplayerFailedSubtitle":  {
+                                           "description":  "Short subtitle for multiplayer failed tile"
+                                       },
+    "helpMultiplayerFailedBody":  "⚠️ 这不是 NetherLink 的问题！\r\n\r\nNetherLink 已成功将你重定向到请求的服务器。\\\"多人连接失败\\\" 这条消息表示目标服务器当前无法访问。可能原因包括：\r\n\r\n• 目标 Minecraft 服务器离线或负载过高\r\n• 服务器需要更新的客户端版本或特定版本\r\n• Relay 与目标服务器之间存在网络问题\r\n\r\n请尝试连接到其他服务器，或联系该服务器的支持团队。如果多个服务器都出现此问题，请在 NetherLink 中启用调试模式并检查日志。",
+    "@helpMultiplayerFailedBody":  {
+                                       "description":  "Explanation shown when multiplayer connection failed appears"
+                                   },
+    "helpNintendoDnsTitle":  "Nintendo DNS 无法工作",
+    "@helpNintendoDnsTitle":  {
+                                  "description":  "Title for Nintendo DNS troubleshooting"
+                              },
+    "helpNintendoDnsSubtitle":  "常见 DNS / Relay 问题",
+    "@helpNintendoDnsSubtitle":  {
+                                     "description":  "Short subtitle for Nintendo DNS troubleshooting tile"
+                                 },
+    "helpNintendoDnsBody":  "如果 Nintendo DNS 模式无法工作，请检查以下内容：\r\n\r\n1. 确认你已从应用中发送 DNS 配置（发送 DNS 配置）。\r\n2. 确认你已在 Switch 上将 Relay IP 设置为主 DNS。\r\n3. 确保所选的 Relay 服务器（EU/US）在线且未过载。\r\n4. 某些网络（例如强制门户网络）会阻止自定义 DNS —— 请在其他网络上测试。\r\n\r\n如果问题仍然存在，请启用调试模式并检查日志，或尝试好友模式这一替代方案。",
+    "@helpNintendoDnsBody":  {
+                                 "description":  "Detailed placeholder for Nintendo DNS troubleshooting"
+                             },
+    "helpFriendsModeTitle":  "好友模式无法工作",
+    "@helpFriendsModeTitle":  {
+                                  "description":  "Title for Friends mode troubleshooting"
+                              },
+    "helpFriendsModeSubtitle":  "常见好友问题",
+    "@helpFriendsModeSubtitle":  {
+                                     "description":  "Short subtitle for Friends-mode troubleshooting tile"
+                                 },
+    "helpFriendsModeBody":  "好友模式故障排除提示：\r\n\r\n1. 确保 Relay 好友账号已在主机上添加/接受（如有需要）。\r\n2. 启用好友模式后，尝试重新启动游戏并刷新 Friends/LAN 标签页。\r\n\r\n如果服务器仍未显示给好友，请启用调试模式并检查日志以识别错误。",
+    "@helpFriendsModeBody":  {
+                                 "description":  "Detailed placeholder for Friends mode troubleshooting"
+                             },
+    "changeLanguageTitle":  "更改语言",
+    "@changeLanguageTitle":  {
+                                 "description":  "Title for the language selection dialog"
+                             },
+    "changeLanguage":  "语言",
+    "@changeLanguage":  {
+                            "description":  "Label for the language button in the bottom nav"
+                        },
+    "useSystemLanguage":  "使用系统语言",
+    "@useSystemLanguage":  {
+                               "description":  "Button that resets localization to the system/default locale"
+                           },
+    "couldNotOpenUrl":  "无法打开 URL",
+    "@couldNotOpenUrl":  {
+                             "description":  "Snackbar message when launching an external URL fails"
+                         }
+}
