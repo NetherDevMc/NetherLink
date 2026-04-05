@@ -14,13 +14,13 @@ import 'app_localizations_fr.dart';
 import 'app_localizations_hi.dart';
 import 'app_localizations_id.dart';
 import 'app_localizations_ja.dart';
+import 'app_localizations_nl.dart';
 import 'app_localizations_pt.dart';
 import 'app_localizations_ru.dart';
 import 'app_localizations_sw.dart';
 import 'app_localizations_tr.dart';
 import 'app_localizations_ur.dart';
 import 'app_localizations_zh.dart';
-import 'app_localizations_nl.dart';
 
 // ignore_for_file: type=lint
 
@@ -114,13 +114,13 @@ abstract class AppLocalizations {
     Locale('hi'),
     Locale('id'),
     Locale('ja'),
+    Locale('nl'),
     Locale('pt'),
     Locale('ru'),
     Locale('sw'),
     Locale('tr'),
     Locale('ur'),
     Locale('zh'),
-    Locale('nl')
   ];
 
   /// No description provided for @appName.
@@ -721,7 +721,7 @@ class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> 
   }
 
   @override
-  bool isSupported(Locale locale) => <String>['ar', 'bn', 'de', 'en', 'es', 'fr', 'hi', 'id', 'ja', 'pt', 'ru', 'sw', 'tr', 'ur', 'zh', 'nl'].contains(locale.languageCode);
+  bool isSupported(Locale locale) => <String>['ar', 'bn', 'de', 'en', 'es', 'fr', 'hi', 'id', 'ja', 'nl', 'pt', 'ru', 'sw', 'tr', 'ur', 'zh'].contains(locale.languageCode);
 
   @override
   bool shouldReload(_AppLocalizationsDelegate old) => false;
@@ -741,13 +741,13 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
     case 'hi': return AppLocalizationsHi();
     case 'id': return AppLocalizationsId();
     case 'ja': return AppLocalizationsJa();
+    case 'nl': return AppLocalizationsNl();
     case 'pt': return AppLocalizationsPt();
     case 'ru': return AppLocalizationsRu();
     case 'sw': return AppLocalizationsSw();
     case 'tr': return AppLocalizationsTr();
     case 'ur': return AppLocalizationsUr();
     case 'zh': return AppLocalizationsZh();
-    case 'nl': return AppLocalizationsNl();
   }
 
   throw FlutterError(
