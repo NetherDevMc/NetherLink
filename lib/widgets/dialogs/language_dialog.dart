@@ -2,6 +2,7 @@ import 'dart:math' as math;
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../../l10n/app_localizations.dart';
+import '../../services/locale_provider.dart';
 import '../buttons/themed_button.dart';
 
 class LanguageDialog {
@@ -89,9 +90,7 @@ class _LanguageDialogContentState extends State<_LanguageDialogContent> {
 
   Future<void> _loadAllNames() async {
     final locales = widget.supportedLocales;
-    final futures = locales
-        .map((locale) => _loadNameForLocale(locale))
-        .toList();
+    final futures = locales.map((locale) => _loadNameForLocale(locale)).toList();
     final results = await Future.wait(futures);
     if (_disposed) return;
     for (var i = 0; i < locales.length; i++) {
@@ -118,12 +117,10 @@ class _LanguageDialogContentState extends State<_LanguageDialogContent> {
       final dynamic dyn = locFor.language;
       final name = (dyn is String && dyn.trim().isNotEmpty) ? dyn : tag;
       _globalLanguageNameCache[tag] = name;
-
       return name;
     } catch (e) {
-      final fallback = tag;
-      _globalLanguageNameCache[tag] = fallback;
-      return fallback;
+      _globalLanguageNameCache[tag] = tag;
+      return tag;
     }
   }
 
@@ -197,7 +194,7 @@ class _LanguageDialogContentState extends State<_LanguageDialogContent> {
           const SizedBox(height: _headerBottomGap),
 
           if (_loading)
-            SizedBox(
+            const SizedBox(
               height: 120,
               child: Center(
                 child: CircularProgressIndicator(
@@ -239,10 +236,11 @@ class _LanguageDialogContentState extends State<_LanguageDialogContent> {
                         value: locale,
                         groupValue: widget.appLocaleNotifier.value,
                         activeColor: Colors.white,
-                        onChanged: (chosen) {
-                          if (chosen != null)
-                            widget.appLocaleNotifier.value = chosen;
-                          Navigator.of(context).pop();
+                        onChanged: (chosen) async {
+                          if (chosen != null) {
+                            await setLocale(chosen);
+                          }
+                          if (context.mounted) Navigator.of(context).pop();
                         },
                         title: Text(
                           displayName,
@@ -264,9 +262,10 @@ class _LanguageDialogContentState extends State<_LanguageDialogContent> {
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               ThemedButton(
-                onPressed: () {
+                onPressed: () async {
+                  await clearSavedLocale();
                   widget.appLocaleNotifier.value = null;
-                  Navigator.of(context).pop();
+                  if (context.mounted) Navigator.of(context).pop();
                 },
                 variant: ThemedButtonVariant.subtle,
                 child: Text(

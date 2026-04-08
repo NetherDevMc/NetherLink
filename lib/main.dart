@@ -4,7 +4,9 @@ import 'theme/app_theme.dart';
 import 'l10n/app_localizations.dart';
 import 'services/locale_provider.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await loadSavedLocale();
   runApp(const NetherLinkApp());
 }
 
