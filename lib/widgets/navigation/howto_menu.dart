@@ -91,8 +91,8 @@ class HowToMenu {
                     context,
                     faIcon: FontAwesomeIcons.java,
                     color: const Color(0xFFE76F00),
-                    title: 'Java Mode',
-                    subtitle: 'Connect Java Edition servers via NetherLink',
+                    title: loc.javaInfoTitle,
+                    subtitle: loc.howToJavaSubtitle,
                     onTap: () {
                       Navigator.of(ctx).pop();
                       if (onJava != null) {
