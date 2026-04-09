@@ -195,6 +195,60 @@ abstract class AppLocalizations {
   /// **'Created by {appCreator}.\n\nHow to use:\n1. Enter your Minecraft server address and port (default: 19132)\n   — or select a previously saved server from the dropdown\n2. (Optional) Choose a Relay Server (EU or US) closest to your location\n3. Click \"Start Broadcasting\" to begin\n4. On your console/device: Minecraft > Play > Friends\n5. You should see a LAN server called \"NetherLink\"\n6. Click it to join your external server via NetherLink\n\nNintendo Switch (DNS mode):\n1. Enable \"Nintendo Switch\" in the connection panel\n2. Select a Relay Server (EU or US)\n3. Click \"Send DNS Config\" — this sends your config to the relay\n   (it does NOT broadcast a LAN server)\n4. On your Switch, apply your NetherLink DNS setup and join\n   using the server entry you use for NetherLink\n\nNotes:\n- For LAN broadcasting, NetherLink and console must be on the same local network.\n- Tip: Choose the relay server closest to you for the best performance.'**
   String helpText(Object appCreator);
 
+  /// No description provided for @serverDetailsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Server Details'**
+  String get serverDetailsLabel;
+
+  /// No description provided for @start.
+  ///
+  /// In en, this message translates to:
+  /// **'Start'**
+  String get start;
+
+  /// No description provided for @labelJava.
+  ///
+  /// In en, this message translates to:
+  /// **'Java'**
+  String get labelJava;
+
+  /// No description provided for @startJavaMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Start Java Mode'**
+  String get startJavaMode;
+
+  /// No description provided for @javaInfoTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Java Mode'**
+  String get javaInfoTitle;
+
+  /// No description provided for @javaInfoText.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect to Java Edition servers'**
+  String get javaInfoText;
+
+  /// Title for the Java how-to modal
+  ///
+  /// In en, this message translates to:
+  /// **'Java Mode'**
+  String get howToJavaTitle;
+
+  /// Short subtitle for Java menu tile
+  ///
+  /// In en, this message translates to:
+  /// **'Connect to Java Edition servers via NetherLink'**
+  String get howToJavaSubtitle;
+
+  /// Detailed steps for Java mode how-to modal
+  ///
+  /// In en, this message translates to:
+  /// **'Java Mode — quick steps:\n1. In the app, select Java mode.\n2. Enter your Java Edition server address and port (default: 25565).\n3. Press \"Start Java Mode\" — NetherLink bridges the connection.\n4. Open Minecraft Bedrock and go to the Friends tab.\n5. Select the LAN server named \"NetherLink\" to join the Java server.\n\n⚠️ Important warnings:\n- A valid Java Edition account (Microsoft) is required.\n- Some servers use anti-cheat systems that may detect and ban your account.\n- Certain servers explicitly prohibit Bedrock clients — always check the server rules.\n- NetherLink is not responsible for any account bans, suspensions, or other account-related issues that may result from using this feature.\n- Use at your own risk.'**
+  String get howToJavaBody;
+
   /// Your language name in your own language
   ///
   /// In en, this message translates to:

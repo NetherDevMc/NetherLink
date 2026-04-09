@@ -47,6 +47,33 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
+  String get serverDetailsLabel => 'Server Details';
+
+  @override
+  String get start => 'Start';
+
+  @override
+  String get labelJava => 'Java';
+
+  @override
+  String get startJavaMode => 'Start Java Mode';
+
+  @override
+  String get javaInfoTitle => 'Java Mode';
+
+  @override
+  String get javaInfoText => 'Connect to Java Edition servers';
+
+  @override
+  String get howToJavaTitle => 'Java Mode';
+
+  @override
+  String get howToJavaSubtitle => 'Connect to Java Edition servers via NetherLink';
+
+  @override
+  String get howToJavaBody => 'Java Mode — quick steps:\n1. In the app, select Java mode.\n2. Enter your Java Edition server address and port (default: 25565).\n3. Press \"Start Java Mode\" — NetherLink bridges the connection.\n4. Open Minecraft Bedrock and go to the Friends tab.\n5. Select the LAN server named \"NetherLink\" to join the Java server.\n\n⚠️ Important warnings:\n- A valid Java Edition account (Microsoft) is required.\n- Some servers use anti-cheat systems that may detect and ban your account.\n- Certain servers explicitly prohibit Bedrock clients — always check the server rules.\n- NetherLink is not responsible for any account bans, suspensions, or other account-related issues that may result from using this feature.\n- Use at your own risk.';
+
+  @override
   String get language => 'Türkçe';
 
   @override
@@ -307,14 +334,14 @@ class AppLocalizationsTr extends AppLocalizations {
   String get helpFriendsModeBody => 'Arkadaş modu için sorun giderme ipuçları:\n\n1. Aktarıcı arkadaş hesabının konsolda eklendiğinden/kabul edildiğinden emin olun (gerekiyorsa).\n2. Arkadaş modunu etkinleştirdikten sonra oyunu yeniden başlatmayı ve Arkadaşlar/LAN sekmesini yenilemeyi deneyin.\n\nSunucu arkadaşlarınıza hâlâ görünmüyorsa hataları belirlemek için Hata Ayıklama Modunu etkinleştirin ve kayıtları kontrol edin.';
 
   @override
-  String get changeLanguageTitle => 'Dili değiştir';
+  String get changeLanguageTitle => 'Change language';
 
   @override
-  String get changeLanguage => 'Dil';
+  String get changeLanguage => 'Language';
 
   @override
-  String get useSystemLanguage => 'Sistem dilini kullan';
+  String get useSystemLanguage => 'Use system language';
 
   @override
-  String get couldNotOpenUrl => 'URL açılamadı';
+  String get couldNotOpenUrl => 'Could not open URL';
 }

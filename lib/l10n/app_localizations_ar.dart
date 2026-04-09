@@ -43,8 +43,35 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String helpText(Object appCreator) {
-    return 'تم الإنشاء بواسطة $appCreator.\n\nطريقة الاستخدام:\n1. أدخل عنوان خادم Minecraft والمنفذ الخاص بك (الافتراضي: 19132)\n   — أو اختر خادمًا محفوظًا مسبقًا من القائمة المنسدلة\n2. (اختياري) اختر خادم ترحيل (EU أو US) الأقرب إلى موقعك\n3. اضغط على \"بدء البث\" للبدء\n4. على جهازك/وحدة التحكم: Minecraft > لعب > الأصدقاء\n5. يجب أن ترى خادم شبكة محلية باسم \"NetherLink\"\n6. اضغط عليه للانضمام إلى خادمك الخارجي عبر NetherLink\n\nNintendo Switch (وضع DNS):\n1. فعّل \"Nintendo Switch\" في لوحة الاتصال\n2. اختر خادم ترحيل (EU أو US)\n3. اضغط على \"إرسال إعداد DNS\" — سيؤدي ذلك إلى إرسال إعداداتك إلى خادم الترحيل\n   (لن يقوم ببث خادم شبكة محلية)\n4. على جهاز Switch الخاص بك، طبّق إعدادات DNS الخاصة بـ NetherLink وانضم\n   باستخدام إدخال الخادم الذي تستخدمه مع NetherLink\n\nملاحظات:\n- لكي يعمل بث الشبكة المحلية، يجب أن يكون NetherLink ووحدة التحكم على نفس الشبكة المحلية.\n- نصيحة: اختر خادم الترحيل الأقرب إليك للحصول على أفضل أداء.';
+    return 'تم الإنشاء بواسطة $appCreator.\r\n\r\nطريقة الاستخدام:\r\n1. أدخل عنوان خادم Minecraft والمنفذ الخاص بك (الافتراضي: 19132)\r\n   — أو اختر خادمًا محفوظًا مسبقًا من القائمة المنسدلة\r\n2. (اختياري) اختر خادم ترحيل (EU أو US) الأقرب إلى موقعك\r\n3. اضغط على \\\"بدء البث\\\" للبدء\r\n4. على جهازك/وحدة التحكم: Minecraft > لعب > الأصدقاء\r\n5. يجب أن ترى خادم شبكة محلية باسم \\\"NetherLink\\\"\r\n6. اضغط عليه للانضمام إلى خادمك الخارجي عبر NetherLink\r\n\r\nNintendo Switch (وضع DNS):\r\n1. فعّل \\\"Nintendo Switch\\\" في لوحة الاتصال\r\n2. اختر خادم ترحيل (EU أو US)\r\n3. اضغط على \\\"إرسال إعداد DNS\\\" — سيؤدي ذلك إلى إرسال إعداداتك إلى خادم الترحيل\r\n   (لن يقوم ببث خادم شبكة محلية)\r\n4. على جهاز Switch الخاص بك، طبّق إعدادات DNS الخاصة بـ NetherLink وانضم\r\n   باستخدام إدخال الخادم الذي تستخدمه مع NetherLink\r\n\r\nملاحظات:\r\n- لكي يعمل بث الشبكة المحلية، يجب أن يكون NetherLink ووحدة التحكم على نفس الشبكة المحلية.\r\n- نصيحة: اختر خادم الترحيل الأقرب إليك للحصول على أفضل أداء.';
   }
+
+  @override
+  String get serverDetailsLabel => 'Server Details';
+
+  @override
+  String get start => 'Start';
+
+  @override
+  String get labelJava => 'Java';
+
+  @override
+  String get startJavaMode => 'Start Java Mode';
+
+  @override
+  String get javaInfoTitle => 'Java Mode';
+
+  @override
+  String get javaInfoText => 'Connect to Java Edition servers';
+
+  @override
+  String get howToJavaTitle => 'Java Mode';
+
+  @override
+  String get howToJavaSubtitle => 'Connect to Java Edition servers via NetherLink';
+
+  @override
+  String get howToJavaBody => 'Java Mode — quick steps:\n1. In the app, select Java mode.\n2. Enter your Java Edition server address and port (default: 25565).\n3. Press \"Start Java Mode\" — NetherLink bridges the connection.\n4. Open Minecraft Bedrock and go to the Friends tab.\n5. Select the LAN server named \"NetherLink\" to join the Java server.\n\n⚠️ Important warnings:\n- A valid Java Edition account (Microsoft) is required.\n- Some servers use anti-cheat systems that may detect and ban your account.\n- Certain servers explicitly prohibit Bedrock clients — always check the server rules.\n- NetherLink is not responsible for any account bans, suspensions, or other account-related issues that may result from using this feature.\n- Use at your own risk.';
 
   @override
   String get language => 'العربية';
@@ -162,12 +189,12 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String playInstructionsSwitch(Object relayName, Object relayIp) {
-    return 'المحدد: $relayName\n\nكيفية الاتصال:\n1. انتقل إلى إعدادات Switch الخاصة بك وغيّر DNS إلى: $relayIp\n2. افتح Minecraft واختر خادمًا من القائمة (مثل Cubecraft أو Hive).\n3. سيتم الآن توجيهك تلقائيًا إلى خادمك الخاص.';
+    return 'المحدد: $relayName\r\n\r\nكيفية الاتصال:\r\n1. انتقل إلى إعدادات Switch الخاصة بك وغيّر DNS إلى: $relayIp\r\n2. افتح Minecraft واختر خادمًا من القائمة (مثل Cubecraft أو Hive).\r\n3. سيتم الآن توجيهك تلقائيًا إلى خادمك الخاص.';
   }
 
   @override
   String playInstructionsFriends(Object friend) {
-    return 'كيفية الاتصال:\n1. على وحدة التحكم الخاصة بك، أضف $friend كصديق.\n2. افتح Minecraft وانتقل إلى تبويب Friends.\n3. ابحث عن خادمك ضمن LAN Worlds وحدده للانضمام.';
+    return 'كيفية الاتصال:\r\n1. على وحدة التحكم الخاصة بك، أضف $friend كصديق.\r\n2. افتح Minecraft وانتقل إلى تبويب Friends.\r\n3. ابحث عن خادمك ضمن LAN Worlds وحدده للانضمام.';
   }
 
   @override
@@ -250,7 +277,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get howToXboxSubtitle => 'العب عبر بث الشبكة المحلية أو الوكيل';
 
   @override
-  String get howToXboxBody => 'كيفية الاتصال (Xbox / PS4 / PS5):\n1. تأكد من أن الجهاز الذي يشغّل NetherLink ووحدة التحكم الخاصة بك على نفس الشبكة المحلية.\n2. في التطبيق، أدخل عنوان خادم Minecraft والمنفذ ثم اضغط على \"بدء البث\".\n3. على وحدة التحكم افتح Minecraft → لعب → وابحث عن عوالم الشبكة المحلية أو تبويب الأصدقاء ثم حدّث القائمة.\n4. اختر خادم الشبكة المحلية المسمى \"NetherLink\" للانضمام.\nملاحظات:\n- إذا لم يظهر الخادم، فتأكد من أن الجهازين على نفس الشبكة الفرعية وأن التطبيق ما يزال يبث.\n- قد تمنع بعض طرازات وحدات التحكم أو أجهزة التوجيه اكتشاف الشبكة المحلية؛ جرّب تغيير إعدادات التطبيق أو جهاز التوجيه عند الحاجة.';
+  String get howToXboxBody => 'كيفية الاتصال (Xbox / PS4 / PS5):\r\n1. تأكد من أن الجهاز الذي يشغّل NetherLink ووحدة التحكم الخاصة بك على نفس الشبكة المحلية.\r\n2. في التطبيق، أدخل عنوان خادم Minecraft والمنفذ ثم اضغط على \\\"بدء البث\\\".\r\n3. على وحدة التحكم افتح Minecraft → لعب → وابحث عن عوالم الشبكة المحلية أو تبويب الأصدقاء ثم حدّث القائمة.\r\n4. اختر خادم الشبكة المحلية المسمى \\\"NetherLink\\\" للانضمام.\r\nملاحظات:\r\n- إذا لم يظهر الخادم، فتأكد من أن الجهازين على نفس الشبكة الفرعية وأن التطبيق ما يزال يبث.\r\n- قد تمنع بعض طرازات وحدات التحكم أو أجهزة التوجيه اكتشاف الشبكة المحلية؛ جرّب تغيير إعدادات التطبيق أو جهاز التوجيه عند الحاجة.';
 
   @override
   String get howToNintendoTitle => 'Nintendo Switch (وضع DNS)';
@@ -259,7 +286,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get howToNintendoSubtitle => 'تعليمات DNS لخادم الترحيل على Switch';
 
   @override
-  String get howToNintendoBody => 'Nintendo Switch — وضع DNS (خطوة بخطوة):\n1. في التطبيق، فعّل وضع \"Nintendo\" واختر خادم ترحيل (EU أو US).\n2. اضغط على \"إرسال إعداد DNS\" لإرسال عنوان DNS IP إلى خادم الترحيل.\n3. على جهاز Nintendo Switch، انتقل إلى إعدادات النظام → الإنترنت → إعدادات الإنترنت → (شبكتك) → تغيير الإعدادات → DNS واضبط DNS الأساسي على عنوان IP الخاص بخادم الترحيل.\n4. افتح Minecraft وانضم إلى خادم عام؛ سيتم توجيهك إلى خادمك باستخدام DNS الخاص بخادم الترحيل.\nملاحظات:\n- وضع DNS لا يقوم ببث خادم شبكة محلية؛ بل يوجّه حركة مرور اللعبة عبر خادم الترحيل.\n- أعد DNS إلى وضعه السابق بعد الانتهاء إذا كنت بحاجة إلى سلوك شبكة طبيعي.';
+  String get howToNintendoBody => 'Nintendo Switch — وضع DNS (خطوة بخطوة):\r\n1. في التطبيق، فعّل وضع \\\"Nintendo\\\" واختر خادم ترحيل (EU أو US).\r\n2. اضغط على \\\"إرسال إعداد DNS\\\" لإرسال عنوان DNS IP إلى خادم الترحيل.\r\n3. على جهاز Nintendo Switch، انتقل إلى إعدادات النظام → الإنترنت → إعدادات الإنترنت → (شبكتك) → تغيير الإعدادات → DNS واضبط DNS الأساسي على عنوان IP الخاص بخادم الترحيل.\r\n4. افتح Minecraft وانضم إلى خادم عام؛ سيتم توجيهك إلى خادمك باستخدام DNS الخاص بخادم الترحيل.\r\nملاحظات:\r\n- وضع DNS لا يقوم ببث خادم شبكة محلية؛ بل يوجّه حركة مرور اللعبة عبر خادم الترحيل.\r\n- أعد DNS إلى وضعه السابق بعد الانتهاء إذا كنت بحاجة إلى سلوك شبكة طبيعي.';
 
   @override
   String get howToFriendsTitle => 'وضع الأصدقاء';
@@ -268,7 +295,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get howToFriendsSubtitle => 'ادعُ الأصدقاء وانضم عبر الشبكة المحلية';
 
   @override
-  String get howToFriendsBody => 'وضع الأصدقاء — خطوات سريعة:\n1. أضف حساب صديق NetherLink (صديق الترحيل) على وحدة التحكم أو المنصة إذا لزم الأمر.\n2. في التطبيق، فعّل وضع الأصدقاء وأرسل إعداد خادم الترحيل (إذا كان ذلك مطلوبًا).\n3. على وحدة التحكم، افتح Minecraft → الأصدقاء وابحث عن عوالم الشبكة المحلية — يجب أن يظهر خادمك هناك كعالم شبكة محلية.\n4. اختره للانضمام إلى خادمك مع الأصدقاء.\nملاحظات:\n- تأكد من أن لديك أنت وأصدقاؤك نفس إعدادات NAT/الإعدادات التي تسمح بظهور الأصدقاء.\n- يعتمد وضع الأصدقاء على ميزات الأصدقاء الخاصة بالمنصة وقد يتطلب قبول طلبات الصداقة.';
+  String get howToFriendsBody => 'وضع الأصدقاء — خطوات سريعة:\r\n1. أضف حساب صديق NetherLink (صديق الترحيل) على وحدة التحكم أو المنصة إذا لزم الأمر.\r\n2. في التطبيق، فعّل وضع الأصدقاء وأرسل إعداد خادم الترحيل (إذا كان ذلك مطلوبًا).\r\n3. على وحدة التحكم، افتح Minecraft → الأصدقاء وابحث عن عوالم الشبكة المحلية — يجب أن يظهر خادمك هناك كعالم شبكة محلية.\r\n4. اختره للانضمام إلى خادمك مع الأصدقاء.\r\nملاحظات:\r\n- تأكد من أن لديك أنت وأصدقاؤك نفس إعدادات NAT/الإعدادات التي تسمح بظهور الأصدقاء.\r\n- يعتمد وضع الأصدقاء على ميزات الأصدقاء الخاصة بالمنصة وقد يتطلب قبول طلبات الصداقة.';
 
   @override
   String get helpNetherlinkTitle => 'NetherLink لا يظهر';
@@ -277,7 +304,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get helpNetherlinkSubtitle => 'استكشاف مشكلات اكتشاف الشبكة المحلية وإصلاحها';
 
   @override
-  String get helpNetherlinkBody => 'إذا لم يظهر الخادم على وحدة التحكم الخاصة بك، فجرّب هذه الخطوات:\n\n✅ فحوصات أساسية:\n1. نفس شبكة WiFi - يجب أن يكون هاتفك/جهازك اللوحي ووحدة التحكم على نفس شبكة WiFi\n2. عنوان الخادم الصحيح - تحقق مرة أخرى من IP والمنفذ (الافتراضي: 19132)\n3. البث نشط - تأكد من أن NetherLink يعرض حالة \"جاري البث\"\n\n🔄 إصلاحات سريعة:\n• أعد تشغيل التطبيق: أوقف البث، أغلق NetherLink بالكامل، أعد فتحه ثم حاول مرة أخرى\n• أعد تشغيل وحدة التحكم: أحيانًا تحتاج وحدة التحكم إلى تحديث لاكتشاف ألعاب الشبكة المحلية\n• تحقق من تبويب الأصدقاء/الشبكة المحلية: يظهر الخادم ضمن \"الأصدقاء\" أو \"ألعاب الشبكة المحلية\" وليس في قائمة الخوادم\n• انتظر من 10 إلى 15 ثانية بعد بدء البث\n• عطّل VPN: يمكن أن تمنع شبكات VPN البث المحلي\n\n⚠️ مشكلات شائعة:\n\"No route found for user\" → تأكد من أن كلا الجهازين على نفس شبكة Wi‑Fi (وتجنب شبكات الضيوف)\n\"Unable to connect to NetherLink relay server\" → تحقق من الإنترنت / حالة خادم الترحيل\n\n📱 ما زلت تواجه مشاكل؟ فعّل وضع التصحيح في NetherLink وافحص السجلات، أو جرّب خادمًا مختلفًا.';
+  String get helpNetherlinkBody => 'إذا لم يظهر الخادم على وحدة التحكم الخاصة بك، فجرّب هذه الخطوات:\r\n\r\n✅ فحوصات أساسية:\r\n1. نفس شبكة WiFi - يجب أن يكون هاتفك/جهازك اللوحي ووحدة التحكم على نفس شبكة WiFi\r\n2. عنوان الخادم الصحيح - تحقق مرة أخرى من IP والمنفذ (الافتراضي: 19132)\r\n3. البث نشط - تأكد من أن NetherLink يعرض حالة \\\"جاري البث\\\"\r\n\r\n🔄 إصلاحات سريعة:\r\n• أعد تشغيل التطبيق: أوقف البث، أغلق NetherLink بالكامل، أعد فتحه ثم حاول مرة أخرى\r\n• أعد تشغيل وحدة التحكم: أحيانًا تحتاج وحدة التحكم إلى تحديث لاكتشاف ألعاب الشبكة المحلية\r\n• تحقق من تبويب الأصدقاء/الشبكة المحلية: يظهر الخادم ضمن \\\"الأصدقاء\\\" أو \\\"ألعاب الشبكة المحلية\\\" وليس في قائمة الخوادم\r\n• انتظر من 10 إلى 15 ثانية بعد بدء البث\r\n• عطّل VPN: يمكن أن تمنع شبكات VPN البث المحلي\r\n\r\n⚠️ مشكلات شائعة:\r\n\\\"No route found for user\\\" → تأكد من أن كلا الجهازين على نفس شبكة Wi‑Fi (وتجنب شبكات الضيوف)\r\n\\\"Unable to connect to NetherLink relay server\\\" → تحقق من الإنترنت / حالة خادم الترحيل\r\n\r\n📱 ما زلت تواجه مشاكل؟ فعّل وضع التصحيح في NetherLink وافحص السجلات، أو جرّب خادمًا مختلفًا.';
 
   @override
   String get helpMultiplayerFailedTitle => 'فشل اتصال اللعب الجماعي';
@@ -286,7 +313,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get helpMultiplayerFailedSubtitle => 'شرح لماذا لا يعد هذا خطأ في NetherLink';
 
   @override
-  String get helpMultiplayerFailedBody => '⚠️ هذه ليست مشكلة في NetherLink!\n\nلقد قام NetherLink بإعادتك بنجاح إلى الخادم المطلوب. تشير رسالة \"فشل اتصال اللعب الجماعي\" إلى أن الخادم الهدف غير متاح حاليًا. الأسباب المحتملة:\n\n• خادم Minecraft الهدف غير متصل أو مثقل بالتحميل\n• يتطلب الخادم إصدار عميل محدثًا أو إصدارًا معينًا\n• توجد مشكلات في الشبكة بين Relay والخادم الهدف\n\nحاول الاتصال بخادم مختلف أو تواصل مع دعم الخادم. إذا استمرت المشكلة على عدة خوادم، فعّل وضع التصحيح في NetherLink وافحص السجلات.';
+  String get helpMultiplayerFailedBody => '⚠️ هذه ليست مشكلة في NetherLink!\r\n\r\nلقد قام NetherLink بإعادتك بنجاح إلى الخادم المطلوب. تشير رسالة \\\"فشل اتصال اللعب الجماعي\\\" إلى أن الخادم الهدف غير متاح حاليًا. الأسباب المحتملة:\r\n\r\n• خادم Minecraft الهدف غير متصل أو مثقل بالتحميل\r\n• يتطلب الخادم إصدار عميل محدثًا أو إصدارًا معينًا\r\n• توجد مشكلات في الشبكة بين Relay والخادم الهدف\r\n\r\nحاول الاتصال بخادم مختلف أو تواصل مع دعم الخادم. إذا استمرت المشكلة على عدة خوادم، فعّل وضع التصحيح في NetherLink وافحص السجلات.';
 
   @override
   String get helpNintendoDnsTitle => 'DNS الخاص بـ Nintendo لا يعمل';
@@ -295,7 +322,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get helpNintendoDnsSubtitle => 'مشكلات DNS / خادم الترحيل الشائعة';
 
   @override
-  String get helpNintendoDnsBody => 'إذا لم يعمل وضع DNS الخاص بـ Nintendo، فتحقق مما يلي:\n\n1. تأكد من أنك أرسلت إعداد DNS من التطبيق (إرسال إعداد DNS).\n2. تحقق من أنك طبّقت عنوان IP الخاص بخادم الترحيل كـ DNS أساسي على Switch.\n3. تأكد من أن خادم الترحيل المحدد (EU/US) متصل وغير مثقل بالتحميل.\n4. بعض الشبكات (مثل البوابات المقيدة) تمنع DNS المخصص — جرّب على شبكة مختلفة.\n\nإذا استمرت المشكلات، فعّل وضع التصحيح وافحص السجلات أو جرّب البديل وهو وضع الأصدقاء.';
+  String get helpNintendoDnsBody => 'إذا لم يعمل وضع DNS الخاص بـ Nintendo، فتحقق مما يلي:\r\n\r\n1. تأكد من أنك أرسلت إعداد DNS من التطبيق (إرسال إعداد DNS).\r\n2. تحقق من أنك طبّقت عنوان IP الخاص بخادم الترحيل كـ DNS أساسي على Switch.\r\n3. تأكد من أن خادم الترحيل المحدد (EU/US) متصل وغير مثقل بالتحميل.\r\n4. بعض الشبكات (مثل البوابات المقيدة) تمنع DNS المخصص — جرّب على شبكة مختلفة.\r\n\r\nإذا استمرت المشكلات، فعّل وضع التصحيح وافحص السجلات أو جرّب البديل وهو وضع الأصدقاء.';
 
   @override
   String get helpFriendsModeTitle => 'وضع الأصدقاء لا يعمل';
@@ -304,7 +331,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get helpFriendsModeSubtitle => 'مشكلات الأصدقاء الشائعة';
 
   @override
-  String get helpFriendsModeBody => 'نصائح استكشاف أخطاء وضع الأصدقاء وإصلاحها:\n\n1. تأكد من إضافة/قبول حساب صديق Relay على وحدة التحكم (إذا لزم الأمر).\n2. جرّب إعادة تشغيل اللعبة وتحديث تبويب Friends/LAN بعد تفعيل وضع الأصدقاء.\n\nإذا كان الخادم لا يزال لا يظهر للأصدقاء، ففعّل وضع التصحيح وافحص السجلات لتحديد الأخطاء.';
+  String get helpFriendsModeBody => 'نصائح استكشاف أخطاء وضع الأصدقاء وإصلاحها:\r\n\r\n1. تأكد من إضافة/قبول حساب صديق Relay على وحدة التحكم (إذا لزم الأمر).\r\n2. جرّب إعادة تشغيل اللعبة وتحديث تبويب Friends/LAN بعد تفعيل وضع الأصدقاء.\r\n\r\nإذا كان الخادم لا يزال لا يظهر للأصدقاء، ففعّل وضع التصحيح وافحص السجلات لتحديد الأخطاء.';
 
   @override
   String get changeLanguageTitle => 'تغيير اللغة';

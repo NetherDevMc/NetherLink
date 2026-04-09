@@ -43,8 +43,35 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String helpText(Object appCreator) {
-    return 'Dibuat oleh $appCreator.\n\nCara menggunakan:\n1. Masukkan alamat dan port server Minecraft Anda (default: 19132)\n   — atau pilih server yang sebelumnya disimpan dari menu dropdown\n2. (Opsional) Pilih Server Relay (EU atau US) yang paling dekat dengan lokasi Anda\n3. Klik "Mulai Siaran" untuk memulai\n4. Di konsol/perangkat Anda: Minecraft > Play > Friends\n5. Anda akan melihat server LAN bernama "NetherLink"\n6. Klik server tersebut untuk bergabung ke server eksternal Anda melalui NetherLink\n\nNintendo Switch (mode DNS):\n1. Aktifkan "Nintendo Switch" di panel koneksi\n2. Pilih Server Relay (EU atau US)\n3. Klik "Send DNS Config" — ini mengirim konfigurasi Anda ke relay\n   (ini TIDAK menyiarkan server LAN)\n4. Di Switch Anda, terapkan pengaturan DNS NetherLink lalu bergabung\n   menggunakan entri server yang Anda pakai untuk NetherLink\n\nCatatan:\n- Untuk siaran LAN, NetherLink dan konsol harus berada di jaringan lokal yang sama.\n- Tips: Pilih server relay yang paling dekat dengan Anda untuk performa terbaik.';
+    return 'Dibuat oleh $appCreator.\r\n\r\nCara menggunakan:\r\n1. Masukkan alamat dan port server Minecraft Anda (default: 19132)\r\n   — atau pilih server yang sebelumnya disimpan dari menu dropdown\r\n2. (Opsional) Pilih Server Relay (EU atau US) yang paling dekat dengan lokasi Anda\r\n3. Klik \"Mulai Siaran\" untuk memulai\r\n4. Di konsol/perangkat Anda: Minecraft > Play > Friends\r\n5. Anda akan melihat server LAN bernama \"NetherLink\"\r\n6. Klik server tersebut untuk bergabung ke server eksternal Anda melalui NetherLink\r\n\r\nNintendo Switch (mode DNS):\r\n1. Aktifkan \"Nintendo Switch\" di panel koneksi\r\n2. Pilih Server Relay (EU atau US)\r\n3. Klik \"Send DNS Config\" — ini mengirim konfigurasi Anda ke relay\r\n   (ini TIDAK menyiarkan server LAN)\r\n4. Di Switch Anda, terapkan pengaturan DNS NetherLink lalu bergabung\r\n   menggunakan entri server yang Anda pakai untuk NetherLink\r\n\r\nCatatan:\r\n- Untuk siaran LAN, NetherLink dan konsol harus berada di jaringan lokal yang sama.\r\n- Tips: Pilih server relay yang paling dekat dengan Anda untuk performa terbaik.';
   }
+
+  @override
+  String get serverDetailsLabel => 'Server Details';
+
+  @override
+  String get start => 'Start';
+
+  @override
+  String get labelJava => 'Java';
+
+  @override
+  String get startJavaMode => 'Start Java Mode';
+
+  @override
+  String get javaInfoTitle => 'Java Mode';
+
+  @override
+  String get javaInfoText => 'Connect to Java Edition servers';
+
+  @override
+  String get howToJavaTitle => 'Java Mode';
+
+  @override
+  String get howToJavaSubtitle => 'Connect to Java Edition servers via NetherLink';
+
+  @override
+  String get howToJavaBody => 'Java Mode — quick steps:\n1. In the app, select Java mode.\n2. Enter your Java Edition server address and port (default: 25565).\n3. Press \"Start Java Mode\" — NetherLink bridges the connection.\n4. Open Minecraft Bedrock and go to the Friends tab.\n5. Select the LAN server named \"NetherLink\" to join the Java server.\n\n⚠️ Important warnings:\n- A valid Java Edition account (Microsoft) is required.\n- Some servers use anti-cheat systems that may detect and ban your account.\n- Certain servers explicitly prohibit Bedrock clients — always check the server rules.\n- NetherLink is not responsible for any account bans, suspensions, or other account-related issues that may result from using this feature.\n- Use at your own risk.';
 
   @override
   String get language => 'Indonesia';
@@ -162,12 +189,12 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String playInstructionsSwitch(Object relayName, Object relayIp) {
-    return 'Dipilih: $relayName\n\nCara terhubung:\n1. Buka Pengaturan Switch Anda dan ubah DNS menjadi: $relayIp\n2. Buka Minecraft dan pilih server dari daftar (seperti Cubecraft atau Hive).\n3. Sekarang Anda akan otomatis dikirim ke server Anda sendiri.';
+    return 'Dipilih: $relayName\r\n\r\nCara terhubung:\r\n1. Buka Pengaturan Switch Anda dan ubah DNS menjadi: $relayIp\r\n2. Buka Minecraft dan pilih server dari daftar (seperti Cubecraft atau Hive).\r\n3. Sekarang Anda akan otomatis dikirim ke server Anda sendiri.';
   }
 
   @override
   String playInstructionsFriends(Object friend) {
-    return 'Cara terhubung:\n1. Di konsol Anda, tambahkan $friend sebagai teman.\n2. Buka Minecraft dan masuk ke tab Friends.\n3. Cari server Anda di LAN Worlds lalu pilih untuk bergabung.';
+    return 'Cara terhubung:\r\n1. Di konsol Anda, tambahkan $friend sebagai teman.\r\n2. Buka Minecraft dan masuk ke tab Friends.\r\n3. Cari server Anda di LAN Worlds lalu pilih untuk bergabung.';
   }
 
   @override
@@ -250,7 +277,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get howToXboxSubtitle => 'Main melalui siaran LAN atau proxy';
 
   @override
-  String get howToXboxBody => 'Cara terhubung (Xbox / PS4 / PS5):\n1. Pastikan perangkat yang menjalankan NetherLink dan konsol Anda berada di jaringan lokal yang sama.\n2. Di aplikasi, masukkan alamat dan port server Minecraft Anda lalu tekan "Mulai Siaran".\n3. Di konsol, buka Minecraft → Play → cari LAN Worlds atau tab Friends lalu segarkan daftar.\n4. Pilih server LAN bernama "NetherLink" untuk bergabung.\nCatatan:\n- Jika server tidak muncul, pastikan kedua perangkat berada di subnet yang sama dan aplikasi masih menyiarkan.\n- Beberapa model konsol atau router dapat memblokir penemuan LAN; coba ubah pengaturan aplikasi atau router jika perlu.';
+  String get howToXboxBody => 'Cara terhubung (Xbox / PS4 / PS5):\r\n1. Pastikan perangkat yang menjalankan NetherLink dan konsol Anda berada di jaringan lokal yang sama.\r\n2. Di aplikasi, masukkan alamat dan port server Minecraft Anda lalu tekan \"Mulai Siaran\".\r\n3. Di konsol, buka Minecraft → Play → cari LAN Worlds atau tab Friends lalu segarkan daftar.\r\n4. Pilih server LAN bernama \"NetherLink\" untuk bergabung.\r\nCatatan:\r\n- Jika server tidak muncul, pastikan kedua perangkat berada di subnet yang sama dan aplikasi masih menyiarkan.\r\n- Beberapa model konsol atau router dapat memblokir penemuan LAN; coba ubah pengaturan aplikasi atau router jika perlu.';
 
   @override
   String get howToNintendoTitle => 'Nintendo Switch (mode DNS)';
@@ -259,7 +286,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get howToNintendoSubtitle => 'Petunjuk relay DNS untuk Switch';
 
   @override
-  String get howToNintendoBody => 'Nintendo Switch — mode DNS (langkah demi langkah):\n1. Di aplikasi, aktifkan mode "Nintendo" dan pilih Server Relay (EU atau US).\n2. Ketuk "Send DNS Config" untuk mengirim IP DNS ke relay.\n3. Di Nintendo Switch Anda buka System Settings → Internet → Internet Settings → (jaringan Anda) → Change Settings → DNS lalu atur Primary DNS ke IP relay.\n4. Buka Minecraft dan gabung ke server publik; Anda akan diarahkan ke server Anda menggunakan DNS relay.\nCatatan:\n- Mode DNS tidak menyiarkan server LAN; mode ini mengarahkan lalu lintas game melalui relay.\n- Kembalikan DNS Anda setelah selesai jika Anda memerlukan perilaku jaringan normal.';
+  String get howToNintendoBody => 'Nintendo Switch — mode DNS (langkah demi langkah):\r\n1. Di aplikasi, aktifkan mode \"Nintendo\" dan pilih Server Relay (EU atau US).\r\n2. Ketuk \"Send DNS Config\" untuk mengirim IP DNS ke relay.\r\n3. Di Nintendo Switch Anda buka System Settings → Internet → Internet Settings → (jaringan Anda) → Change Settings → DNS lalu atur Primary DNS ke IP relay.\r\n4. Buka Minecraft dan gabung ke server publik; Anda akan diarahkan ke server Anda menggunakan DNS relay.\r\nCatatan:\r\n- Mode DNS tidak menyiarkan server LAN; mode ini mengarahkan lalu lintas game melalui relay.\r\n- Kembalikan DNS Anda setelah selesai jika Anda memerlukan perilaku jaringan normal.';
 
   @override
   String get howToFriendsTitle => 'Mode Teman';
@@ -268,7 +295,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get howToFriendsSubtitle => 'Undang teman dan gabung melalui LAN';
 
   @override
-  String get howToFriendsBody => 'Mode Teman — langkah cepat:\n1. Tambahkan akun teman NetherLink di konsol atau platform Anda jika diperlukan.\n2. Di aplikasi, aktifkan mode Teman dan kirim konfigurasi relay (jika berlaku).\n3. Di konsol, buka Minecraft → Friends dan cari LAN Worlds — server Anda seharusnya muncul di sana sebagai dunia LAN.\n4. Pilih server tersebut untuk bergabung ke server Anda bersama teman.\nCatatan:\n- Pastikan Anda dan teman Anda memiliki NAT/pengaturan yang sama yang memungkinkan kehadiran teman.\n- Mode Teman bergantung pada fitur pertemanan platform dan mungkin memerlukan penerimaan permintaan pertemanan.';
+  String get howToFriendsBody => 'Mode Teman — langkah cepat:\r\n1. Tambahkan akun teman NetherLink di konsol atau platform Anda jika diperlukan.\r\n2. Di aplikasi, aktifkan mode Teman dan kirim konfigurasi relay (jika berlaku).\r\n3. Di konsol, buka Minecraft → Friends dan cari LAN Worlds — server Anda seharusnya muncul di sana sebagai dunia LAN.\r\n4. Pilih server tersebut untuk bergabung ke server Anda bersama teman.\r\nCatatan:\r\n- Pastikan Anda dan teman Anda memiliki NAT/pengaturan yang sama yang memungkinkan kehadiran teman.\r\n- Mode Teman bergantung pada fitur pertemanan platform dan mungkin memerlukan penerimaan permintaan pertemanan.';
 
   @override
   String get helpNetherlinkTitle => 'NetherLink tidak muncul';
@@ -277,7 +304,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get helpNetherlinkSubtitle => 'Pemecahan masalah penemuan LAN';
 
   @override
-  String get helpNetherlinkBody => 'Jika server tidak muncul di konsol Anda, coba langkah-langkah berikut:\n\n✅ Pemeriksaan Dasar:\n1. Jaringan WiFi yang Sama - Ponsel/tablet dan konsol Anda HARUS berada di WiFi yang sama\n2. Alamat Server yang Benar - Periksa kembali IP dan port (default: 19132)\n3. Siaran Aktif - Pastikan NetherLink menampilkan status "Menyiarkan"\n\n🔄 Perbaikan Cepat:\n• Mulai ulang aplikasi: hentikan siaran, tutup NetherLink sepenuhnya, buka lagi, lalu coba kembali\n• Mulai ulang konsol Anda: terkadang konsol perlu disegarkan untuk mendeteksi game LAN\n• Periksa tab Friends/LAN: server muncul di bawah "Friends" atau "LAN Games", BUKAN di daftar server\n• Tunggu 10-15 detik setelah memulai siaran\n• Nonaktifkan VPN: VPN dapat memblokir siaran lokal\n\n⚠️ Masalah Umum:\n"No route found for user" → Pastikan kedua perangkat berada di Wi‑Fi yang sama (hindari jaringan tamu)\n"Unable to connect to NetherLink relay server" → Periksa internet / status relay Anda\n\n📱 Masih bermasalah? Aktifkan Mode Debug di NetherLink dan periksa log, atau coba server lain.';
+  String get helpNetherlinkBody => 'Jika server tidak muncul di konsol Anda, coba langkah-langkah berikut:\r\n\r\n✅ Pemeriksaan Dasar:\r\n1. Jaringan WiFi yang Sama - Ponsel/tablet dan konsol Anda HARUS berada di WiFi yang sama\r\n2. Alamat Server yang Benar - Periksa kembali IP dan port (default: 19132)\r\n3. Siaran Aktif - Pastikan NetherLink menampilkan status \"Menyiarkan\"\r\n\r\n🔄 Perbaikan Cepat:\r\n• Mulai ulang aplikasi: hentikan siaran, tutup NetherLink sepenuhnya, buka lagi, lalu coba kembali\r\n• Mulai ulang konsol Anda: terkadang konsol perlu disegarkan untuk mendeteksi game LAN\r\n• Periksa tab Friends/LAN: server muncul di bawah \"Friends\" atau \"LAN Games\", BUKAN di daftar server\r\n• Tunggu 10-15 detik setelah memulai siaran\r\n• Nonaktifkan VPN: VPN dapat memblokir siaran lokal\r\n\r\n⚠️ Masalah Umum:\r\n\"No route found for user\" → Pastikan kedua perangkat berada di Wi‑Fi yang sama (hindari jaringan tamu)\r\n\"Unable to connect to NetherLink relay server\" → Periksa internet / status relay Anda\r\n\r\n📱 Masih bermasalah? Aktifkan Mode Debug di NetherLink dan periksa log, atau coba server lain.';
 
   @override
   String get helpMultiplayerFailedTitle => 'Koneksi Multiplayer Gagal';
@@ -286,7 +313,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get helpMultiplayerFailedSubtitle => 'Penjelasan mengapa ini bukan kesalahan NetherLink';
 
   @override
-  String get helpMultiplayerFailedBody => '⚠️ Ini bukan masalah pada NetherLink!\n\nNetherLink berhasil mengarahkan Anda ke server yang diminta. Pesan "Multiplayer Connection Failed" menunjukkan bahwa server tujuan saat ini tidak dapat dijangkau. Kemungkinan alasan:\n\n• Server Minecraft tujuan sedang offline atau kelebihan beban\n• Server memerlukan versi klien yang diperbarui atau edisi tertentu\n• Masalah jaringan antara relay dan server tujuan\n\nCoba hubungkan ke server lain atau hubungi dukungan server tersebut. Jika masalah tetap terjadi pada beberapa server, aktifkan Mode Debug di NetherLink dan periksa log.';
+  String get helpMultiplayerFailedBody => '⚠️ Ini bukan masalah pada NetherLink!\r\n\r\nNetherLink berhasil mengarahkan Anda ke server yang diminta. Pesan \"Multiplayer Connection Failed\" menunjukkan bahwa server tujuan saat ini tidak dapat dijangkau. Kemungkinan alasan:\r\n\r\n• Server Minecraft tujuan sedang offline atau kelebihan beban\r\n• Server memerlukan versi klien yang diperbarui atau edisi tertentu\r\n• Masalah jaringan antara relay dan server tujuan\r\n\r\nCoba hubungkan ke server lain atau hubungi dukungan server tersebut. Jika masalah tetap terjadi pada beberapa server, aktifkan Mode Debug di NetherLink dan periksa log.';
 
   @override
   String get helpNintendoDnsTitle => 'DNS Nintendo tidak berfungsi';
@@ -295,7 +322,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get helpNintendoDnsSubtitle => 'Masalah DNS / relay umum';
 
   @override
-  String get helpNintendoDnsBody => 'Jika mode DNS Nintendo tidak berfungsi, periksa hal berikut:\n\n1. Pastikan Anda mengirim konfigurasi DNS dari aplikasi (Send DNS Config).\n2. Pastikan Anda menerapkan IP relay sebagai DNS Utama di Switch.\n3. Pastikan server relay yang dipilih (EU/US) sedang online dan tidak kelebihan beban.\n4. Beberapa jaringan (misalnya captive portal) mencegah DNS kustom — uji di jaringan lain.\n\nJika masalah berlanjut, aktifkan Mode Debug dan periksa log atau coba alternatif mode Teman.';
+  String get helpNintendoDnsBody => 'Jika mode DNS Nintendo tidak berfungsi, periksa hal berikut:\r\n\r\n1. Pastikan Anda mengirim konfigurasi DNS dari aplikasi (Send DNS Config).\r\n2. Pastikan Anda menerapkan IP relay sebagai DNS Utama di Switch.\r\n3. Pastikan server relay yang dipilih (EU/US) sedang online dan tidak kelebihan beban.\r\n4. Beberapa jaringan (misalnya captive portal) mencegah DNS kustom — uji di jaringan lain.\r\n\r\nJika masalah berlanjut, aktifkan Mode Debug dan periksa log atau coba alternatif mode Teman.';
 
   @override
   String get helpFriendsModeTitle => 'Mode Teman tidak berfungsi';
@@ -304,7 +331,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get helpFriendsModeSubtitle => 'Masalah pertemanan umum';
 
   @override
-  String get helpFriendsModeBody => 'Tips pemecahan masalah mode Teman:\n\n1. Pastikan akun teman relay sudah ditambahkan/diterima di konsol (jika diperlukan).\n2. Coba mulai ulang game dan segarkan tab Friends/LAN setelah mengaktifkan mode Teman.\n\nJika server masih tidak muncul untuk teman, aktifkan Mode Debug dan periksa log untuk mengidentifikasi kesalahan.';
+  String get helpFriendsModeBody => 'Tips pemecahan masalah mode Teman:\r\n\r\n1. Pastikan akun teman relay sudah ditambahkan/diterima di konsol (jika diperlukan).\r\n2. Coba mulai ulang game dan segarkan tab Friends/LAN setelah mengaktifkan mode Teman.\r\n\r\nJika server masih tidak muncul untuk teman, aktifkan Mode Debug dan periksa log untuk mengidentifikasi kesalahan.';
 
   @override
   String get changeLanguageTitle => 'Ganti bahasa';

@@ -1,5 +1,5 @@
 {
-    "@@locale":  "zn",
+    "@@locale": "zh",
     "appName":  "NetherLink",
     "console":  "控制台",
     "consoleOutput":  "控制台输出",
@@ -146,7 +146,7 @@
     "@noLogsToCopy":  {
                           "description":  "Shown when user tries to copy logs but none exist"
                       },
-    "copiedLogs":  "已将 {count} 条日志复制到剪贴板",
+    "copiedLogs": "{count}টি লগ এন্ট্রি ক্লিপবোর্ডে কপি করা হয়েছে",
     "@copiedLogs":  {
                         "description":  "Shown after copying logs to clipboard",
                         "placeholders":  {

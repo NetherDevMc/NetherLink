@@ -1,14 +1,15 @@
 import 'dart:ui';
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../l10n/app_localizations.dart';
 import '../../theme/app_theme.dart';
 import '../../util/user_servers.dart';
 import '../../util/featured_servers.dart';
 import '../../services/featured_servers_service.dart';
 import 'featured_servers_banner.dart';
-import '../components/relay_selector.dart';
 
-enum PanelMode { lan, nintendo, friends }
+enum PanelMode { lan, nintendo, friends, java }
 
 class ConnectionPanel extends StatefulWidget {
   const ConnectionPanel({
@@ -50,11 +51,51 @@ class _ConnectionPanelState extends State<ConnectionPanel>
   Future<List<FeaturedServer>>? _featuredServersFuture;
   PanelMode _mode = PanelMode.lan;
 
+  static const _modes = [
+    _ModeConfig(
+      mode: PanelMode.lan,
+      icon: FontAwesomeIcons.xbox,
+      color: Color(0xFF107C10),
+      label: 'Xbox / PS4-5',
+    ),
+    _ModeConfig(
+      mode: PanelMode.nintendo,
+      icon: FontAwesomeIcons.gamepad,
+      color: Color(0xFFE4000F),
+      label: 'Nintendo',
+    ),
+    _ModeConfig(
+      mode: PanelMode.friends,
+      icon: FontAwesomeIcons.userGroup,
+      color: Color(0xFF7C3AED),
+      label: 'Friends',
+    ),
+    _ModeConfig(
+      mode: PanelMode.java,
+      icon: FontAwesomeIcons.java,
+      color: Color(0xFFE76F00),
+      label: 'Java',
+    ),
+  ];
+
   @override
   void initState() {
     super.initState();
     _featuredServersFuture = FeaturedServersService.fetchFeaturedServers();
     _mode = widget.nintendoDnsMode ? PanelMode.nintendo : PanelMode.lan;
+  }
+
+  String _modeLabel(PanelMode mode, AppLocalizations loc) {
+    switch (mode) {
+      case PanelMode.lan:
+        return loc.labelXbox;
+      case PanelMode.nintendo:
+        return loc.labelNintendo;
+      case PanelMode.friends:
+        return loc.labelFriends;
+      case PanelMode.java:
+        return loc.labelJava;
+    }
   }
 
   @override
@@ -88,7 +129,8 @@ class _ConnectionPanelState extends State<ConnectionPanel>
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Text(
-                                  loc.selectedFeaturedServer(server.name)),
+                                loc.selectedFeaturedServer(server.name),
+                              ),
                               duration: const Duration(seconds: 2),
                               backgroundColor: AppTheme.primaryAccent,
                             ),
@@ -106,7 +148,6 @@ class _ConnectionPanelState extends State<ConnectionPanel>
     );
   }
 
-  // Card wrapper removed: return plain content (no ClipRRect / BackdropFilter / decoration)
   Widget _buildGlassCard(bool broadcasting, AppLocalizations loc) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -116,68 +157,49 @@ class _ConnectionPanelState extends State<ConnectionPanel>
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              _buildSectionHeader(loc.serverDetailsLabel),
+              const SizedBox(height: 10),
               _buildServerPickerRow(broadcasting, loc),
               const SizedBox(height: 10),
               _buildAddressFields(broadcasting, loc),
             ],
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          child: Container(
-            height: 1,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  Colors.transparent,
-                  Colors.white.withOpacity(0.08),
-                  Colors.white.withOpacity(0.08),
-                  Colors.transparent,
-                ],
-              ),
-            ),
-          ),
-        ),
+        _buildDivider(opacity: 0.08),
         Padding(
           padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              _buildRelaySection(broadcasting),
-              const SizedBox(height: 10),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Container(
-                    height: 1,
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          Colors.transparent,
-                          Colors.white.withOpacity(0.06),
-                          Colors.white.withOpacity(0.06),
-                          Colors.transparent,
-                        ],
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  _buildSectionHeader(loc.modeLabel),
-                ],
-              ),
               const SizedBox(height: 8),
-              _buildModeToggleRow(broadcasting, loc),
-              if (_mode == PanelMode.nintendo ||
-                  _mode == PanelMode.friends) ...[
-                const SizedBox(height: 10),
-                _buildInfoBox(loc),
-              ],
+              _buildSectionHeader(loc.modeLabel),
+              const SizedBox(height: 10),
+              _buildModeGrid(broadcasting, loc),
               const SizedBox(height: 14),
               _buildActionButton(broadcasting, loc),
             ],
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildDivider({double opacity = 0.08}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 16),
+      child: Container(
+        height: 1,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Colors.transparent,
+              Colors.white.withOpacity(opacity),
+              Colors.white.withOpacity(opacity),
+              Colors.transparent,
+            ],
+          ),
+        ),
+      ),
     );
   }
 
@@ -191,6 +213,175 @@ class _ConnectionPanelState extends State<ConnectionPanel>
         letterSpacing: 1.2,
       ),
     );
+  }
+
+  Widget _buildModeGrid(bool broadcasting, AppLocalizations loc) {
+    final rows = [
+      [_modes[0], _modes[1]],
+      [_modes[2], _modes[3]],
+    ];
+
+    return Column(
+      children: rows.map((row) {
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 8),
+          child: Row(
+            children: row.map((cfg) {
+              final isSelected = cfg.mode == _mode;
+              final color = cfg.color;
+
+              return Expanded(
+                child: Padding(
+                  padding: EdgeInsets.only(
+                    right: cfg == row.first ? 4 : 0,
+                    left: cfg == row.last ? 4 : 0,
+                  ),
+                  child: GestureDetector(
+                    onTap: broadcasting || isSelected
+                        ? null
+                        : () {
+                            setState(() => _mode = cfg.mode);
+                            widget.onNintendoDnsModeChanged(
+                              cfg.mode == PanelMode.nintendo ||
+                                  cfg.mode == PanelMode.friends,
+                            );
+                          },
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 220),
+                      curve: Curves.easeInOut,
+                      height: 80,
+                      decoration: BoxDecoration(
+                        color: isSelected
+                            ? color.withOpacity(0.15)
+                            : Colors.white.withOpacity(0.04),
+                        borderRadius: BorderRadius.circular(14),
+                        border: Border.all(
+                          color: isSelected
+                              ? color.withOpacity(0.55)
+                              : Colors.white.withOpacity(0.08),
+                          width: isSelected ? 1.5 : 1.0,
+                        ),
+                        boxShadow: isSelected
+                            ? [
+                                BoxShadow(
+                                  color: color.withOpacity(0.18),
+                                  blurRadius: 14,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ]
+                            : null,
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          FaIcon(
+                            cfg.icon,
+                            size: 22,
+                            color: isSelected
+                                ? Colors.white
+                                : Colors.white.withOpacity(
+                                    broadcasting ? 0.2 : 0.45,
+                                  ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            _modeLabel(cfg.mode, loc),
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: isSelected
+                                  ? FontWeight.w700
+                                  : FontWeight.w500,
+                              color: isSelected
+                                  ? Colors.white
+                                  : Colors.white.withOpacity(
+                                      broadcasting ? 0.2 : 0.65,
+                                    ),
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildActionButton(bool broadcasting, AppLocalizations loc) {
+    if (broadcasting) {
+      return _glassButton(
+        onTap: widget.onStopBroadcast,
+        color: AppTheme.error,
+        icon: Icons.stop_rounded,
+        label: loc.stopBroadcasting,
+      );
+    }
+
+    final cfg = _modes.firstWhere((c) => c.mode == _mode);
+
+    switch (_mode) {
+      case PanelMode.lan:
+        return Container(
+          height: 52,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(14),
+            gradient: LinearGradient(
+              colors: [
+                AppTheme.primaryAccent,
+                AppTheme.primaryAccent.withBlue(255),
+              ],
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: AppTheme.primaryAccent.withOpacity(0.45),
+                blurRadius: 16,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(14),
+              onTap: () => widget.onStartBroadcast(PanelMode.lan),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(
+                    Icons.play_arrow_rounded,
+                    color: Colors.white,
+                    size: 22,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    loc.startBroadcasting,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 0.3,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      default:
+        return _glassButton(
+          onTap: () => widget.onStartBroadcast(_mode),
+          color: cfg.color,
+          icon: Icons.play_arrow_rounded,
+          label: '${loc.start} ${_modeLabel(_mode, loc)}',
+        );
+    }
   }
 
   Widget _buildServerPickerRow(bool broadcasting, AppLocalizations loc) {
@@ -385,240 +576,6 @@ class _ConnectionPanelState extends State<ConnectionPanel>
     );
   }
 
-  Widget _buildActionButton(bool broadcasting, AppLocalizations loc) {
-    if (broadcasting) {
-      return _glassButton(
-        onTap: widget.onStopBroadcast,
-        color: AppTheme.error,
-        icon: Icons.stop_rounded,
-        label: loc.stopBroadcasting,
-      );
-    }
-
-    if (_mode == PanelMode.nintendo) {
-      return _glassButton(
-        onTap: () => widget.onStartBroadcast(PanelMode.nintendo),
-        color: Colors.purpleAccent,
-        icon: Icons.wifi_tethering_rounded,
-        label: loc.startNintendoMode,
-      );
-    }
-    if (_mode == PanelMode.friends) {
-      return _glassButton(
-        onTap: () => widget.onStartBroadcast(PanelMode.friends),
-        color: Colors.purpleAccent,
-        icon: Icons.person_add_alt_1_rounded,
-        label: loc.startFriendsMode,
-      );
-    }
-    return Container(
-      height: 52,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(14),
-        gradient: LinearGradient(
-          colors: [
-            AppTheme.primaryAccent,
-            AppTheme.primaryAccent.withBlue(255),
-          ],
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: AppTheme.primaryAccent.withOpacity(0.45),
-            blurRadius: 16,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(14),
-          onTap: () => widget.onStartBroadcast(PanelMode.lan),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Icons.play_arrow_rounded, color: Colors.white, size: 22),
-              const SizedBox(width: 8),
-              Text(
-                loc.startBroadcasting,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 15,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 0.3,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildModeToggleRow(bool broadcasting, AppLocalizations loc) {
-    return Row(
-      children: [
-        Expanded(
-          child: _modeButton(
-            label: loc.labelXbox,
-            selected: _mode == PanelMode.lan,
-            onTap: broadcasting
-                ? null
-                : () {
-                    setState(() => _mode = PanelMode.lan);
-                    widget.onNintendoDnsModeChanged(false);
-                  },
-          ),
-        ),
-        const SizedBox(width: 8),
-        Expanded(
-          child: _modeButton(
-            label: loc.labelNintendo,
-            selected: _mode == PanelMode.nintendo,
-            onTap: broadcasting
-                ? null
-                : () {
-                    setState(() => _mode = PanelMode.nintendo);
-                    widget.onNintendoDnsModeChanged(true);
-                  },
-          ),
-        ),
-        const SizedBox(width: 8),
-        Expanded(
-          child: _modeButton(
-            label: loc.labelFriends,
-            selected: _mode == PanelMode.friends,
-            onTap: broadcasting
-                ? null
-                : () {
-                    setState(() => _mode = PanelMode.friends);
-                    widget.onNintendoDnsModeChanged(true);
-                  },
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _modeButton({
-    required String label,
-    required bool selected,
-    VoidCallback? onTap,
-  }) {
-    return GestureDetector(
-      onTap: selected || onTap == null ? null : onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 150),
-        height: 38,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
-          color: selected
-              ? AppTheme.primaryAccent.withOpacity(0.21)
-              : Colors.white.withOpacity(0.08),
-          border: Border.all(
-            color: selected
-                ? AppTheme.primaryAccent
-                : Colors.white.withOpacity(0.10),
-            width: selected ? 2 : 1.2,
-          ),
-        ),
-        child: Center(
-          child: Text(
-            label,
-            style: TextStyle(
-              color: selected
-                  ? AppTheme.primaryAccent
-                  : Colors.white.withOpacity(0.9),
-              fontWeight: FontWeight.w600,
-              fontSize: 14,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildInfoBox(AppLocalizations loc) {
-    if (_mode == PanelMode.nintendo) {
-      return _explanationBox(
-        icon: Icons.sports_esports_rounded,
-        title: loc.nintendoInfoTitle,
-        text: loc.nintendoInfoText,
-      );
-    } else if (_mode == PanelMode.friends) {
-      return _explanationBox(
-        icon: Icons.person_add_alt_1_rounded,
-        title: loc.friendModeTitle,
-        text: loc.friendModeText,
-      );
-    }
-    return const SizedBox.shrink();
-  }
-
-  Widget _explanationBox({
-    required IconData icon,
-    required String title,
-    required String text,
-  }) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.08),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.white.withOpacity(0.14)),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(icon, color: AppTheme.primaryAccent, size: 22),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 14,
-                    color: Colors.white,
-                  ),
-                ),
-                const SizedBox(height: 3),
-                Text(
-                  text,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: Colors.white70,
-                    height: 1.35,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildRelaySection(bool broadcasting) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        ClipRRect(
-          borderRadius: BorderRadius.circular(12),
-          child: RelaySelector(
-            selectedIp: widget.selectedRelayIp,
-            onChanged: (ip) {
-              if (!broadcasting) widget.onRelayChanged(ip);
-            },
-          ),
-        ),
-        const SizedBox(height: 10),
-      ],
-    );
-  }
-
   Widget _glassButton({
     required VoidCallback onTap,
     required Color color,
@@ -629,8 +586,8 @@ class _ConnectionPanelState extends State<ConnectionPanel>
       height: 52,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(14),
-        color: color.withOpacity(0.15),
-        border: Border.all(color: color.withOpacity(0.4)),
+        color: color.withOpacity(0.25),
+        border: Border.all(color: color.withOpacity(0.5)),
         boxShadow: [
           BoxShadow(
             color: color.withOpacity(0.2),
@@ -647,12 +604,12 @@ class _ConnectionPanelState extends State<ConnectionPanel>
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(icon, color: color, size: 20),
+              Icon(icon, color: Colors.white, size: 20),
               const SizedBox(width: 8),
               Text(
                 label,
-                style: TextStyle(
-                  color: color,
+                style: const TextStyle(
+                  color: Colors.white,
                   fontSize: 15,
                   fontWeight: FontWeight.w700,
                   letterSpacing: 0.2,
@@ -721,4 +678,17 @@ class _ConnectionPanelState extends State<ConnectionPanel>
       ),
     );
   }
+}
+
+class _ModeConfig {
+  final PanelMode mode;
+  final FaIconData icon;
+  final Color color;
+  final String label;
+  const _ModeConfig({
+    required this.mode,
+    required this.icon,
+    required this.color,
+    required this.label,
+  });
 }

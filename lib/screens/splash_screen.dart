@@ -1,7 +1,10 @@
 import 'dart:ui';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
-import '../../theme/app_theme.dart';
+import '../theme/app_theme.dart';
+import '../services/region_detector.dart';
+import '../constants/app_constants.dart';
 import 'home_screen.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -24,6 +27,8 @@ class _SplashScreenState extends State<SplashScreen>
   late Animation<double> _pulseAnimation;
   late Animation<double> _bgAnimation;
   late Animation<double> _shimmerAnimation;
+
+  String? _detectedRelayIp;
 
   @override
   void initState() {
@@ -71,23 +76,34 @@ class _SplashScreenState extends State<SplashScreen>
     _startSequence();
   }
 
-  void _startSequence() async {
+  Future<void> _startSequence() async {
     _fadeController.forward();
     await Future.delayed(const Duration(milliseconds: 200));
     _scaleController.forward();
 
-    await Future.delayed(const Duration(milliseconds: 2800));
+    await Future.wait([
+      _detectRelay(),
+      Future.delayed(const Duration(milliseconds: 2800)),
+    ]);
 
     if (mounted) {
       Navigator.of(context).pushReplacement(
         PageRouteBuilder(
-          pageBuilder: (_, animation, __) => const HomeScreen(),
+          pageBuilder: (_, animation, __) =>
+              HomeScreen(initialRelayIp: _detectedRelayIp),
           transitionsBuilder: (_, animation, __, child) =>
               FadeTransition(opacity: animation, child: child),
           transitionDuration: const Duration(milliseconds: 600),
         ),
       );
     }
+  }
+
+  Future<void> _detectRelay() async {
+    debugPrint('📡 Detecting best relay via ping...');
+    final bestIp = await RegionDetector.detectBestRelayIp();
+    debugPrint('🏆 Best relay detected: $bestIp');
+    _detectedRelayIp = bestIp ?? AppConstants.relayServers[0]['ip'];
   }
 
   @override
@@ -167,7 +183,6 @@ class _SplashScreenState extends State<SplashScreen>
                 );
               },
             ),
-
             Positioned.fill(
               child: CustomPaint(
                 painter: _GlassGridPainter(
@@ -175,7 +190,6 @@ class _SplashScreenState extends State<SplashScreen>
                 ),
               ),
             ),
-
             Center(
               child: FadeTransition(
                 opacity: _fadeAnimation,
@@ -222,7 +236,6 @@ class _SplashScreenState extends State<SplashScreen>
                 ),
               ),
             ),
-
             Container(
               width: 128,
               height: 128,
@@ -234,7 +247,6 @@ class _SplashScreenState extends State<SplashScreen>
                 ),
               ),
             ),
-
             ClipOval(
               child: BackdropFilter(
                 filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
@@ -266,7 +278,6 @@ class _SplashScreenState extends State<SplashScreen>
                 ),
               ),
             ),
-
             AnimatedBuilder(
               animation: _shimmerAnimation,
               builder: (context, _) {

@@ -136,6 +136,7 @@ class BroadcastManager {
     String remoteHost,
     int remotePort, {
     String? relayIp,
+    bool isJava = false,
   }) async {
     final List<String> relayIps = relayIp != null && relayIp.isNotEmpty
         ? [
@@ -145,7 +146,8 @@ class BroadcastManager {
                 .where((ip) => ip != relayIp),
           ]
         : AppConstants.relayServers.map((e) => e['ip'] as String).toList();
-    const int RELAY_CLIENT_PORT = 19132;
+
+    final int relayClientPort = isJava ? 19134 : 19132;
     const int RELAY_CONFIG_PORT = 19133;
 
     for (int i = 0; i < relayIps.length; i++) {
@@ -168,9 +170,10 @@ class BroadcastManager {
 
         logger.info('Connecting to NetherLink servers');
         logger.info('NetherLink will forward to $remoteHost:$remotePort');
+        if (isJava) logger.info('Java mode: using relay port $relayClientPort');
 
         socketHandler.setRemoteIp(relayAddress);
-        socketHandler.setRemotePort(RELAY_CLIENT_PORT);
+        socketHandler.setRemotePort(relayClientPort);
 
         await stopBroadcast();
 

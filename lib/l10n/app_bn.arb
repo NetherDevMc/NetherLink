@@ -146,7 +146,7 @@
     "@noLogsToCopy":  {
                           "description":  "Shown when user tries to copy logs but none exist"
                       },
-    "copiedLogs":  "{countট}ি লগ এন্ট্রি ক্লিপবোর্ডে কপি করা হয়েছে",
+    "copiedLogs":  "{count}টি লগ এন্ট্রি ক্লিপবোর্ডে কপি করা হয়েছে",
     "@copiedLogs":  {
                         "description":  "Shown after copying logs to clipboard",
                         "placeholders":  {

@@ -1,9 +1,9 @@
 import 'dart:math' as math;
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../l10n/app_localizations.dart';
 import '../../services/locale_provider.dart';
-import '../buttons/themed_button.dart';
 
 class LanguageDialog {
   static Future<void> show(
@@ -12,9 +12,6 @@ class LanguageDialog {
     bool barrierDismissible = true,
   }) {
     final loc = AppLocalizations.of(context)!;
-
-    const Color dialogPurple = Color.fromARGB(255, 20, 13, 32);
-    const Color dialogPurpleDark = Color.fromARGB(255, 19, 14, 38);
 
     return showDialog(
       context: context,
@@ -30,8 +27,6 @@ class LanguageDialog {
               title: loc.changeLanguageTitle,
               supportedLocales: AppLocalizations.supportedLocales,
               appLocaleNotifier: appLocaleNotifier,
-              dialogPurple: dialogPurple,
-              dialogPurpleDark: dialogPurpleDark,
               loc: loc,
             ),
           ),
@@ -45,31 +40,20 @@ class _LanguageDialogContent extends StatefulWidget {
   final String title;
   final List<Locale> supportedLocales;
   final ValueNotifier<Locale?> appLocaleNotifier;
-  final Color dialogPurple;
-  final Color dialogPurpleDark;
   final AppLocalizations loc;
 
   const _LanguageDialogContent({
-    Key? key,
     required this.title,
     required this.supportedLocales,
     required this.appLocaleNotifier,
-    required this.dialogPurple,
-    required this.dialogPurpleDark,
     required this.loc,
-  }) : super(key: key);
+  });
 
   @override
   State<_LanguageDialogContent> createState() => _LanguageDialogContentState();
 }
 
 class _LanguageDialogContentState extends State<_LanguageDialogContent> {
-  static const double _horizontalPadding = 18.0;
-  static const double _headerBottomGap = 12.0;
-  static const double _actionsTopGap = 14.0;
-  static const double _titleFontSize = 18.5;
-  static const double _bodyFontSize = 15.0;
-
   static final Map<String, String> _globalLanguageNameCache = {};
 
   final Map<String, String> _names = {};
@@ -90,35 +74,30 @@ class _LanguageDialogContentState extends State<_LanguageDialogContent> {
 
   Future<void> _loadAllNames() async {
     final locales = widget.supportedLocales;
-    final futures = locales.map((locale) => _loadNameForLocale(locale)).toList();
-    final results = await Future.wait(futures);
+    final results = await Future.wait(
+      locales.map((l) => _loadNameForLocale(l)),
+    );
     if (_disposed) return;
     for (var i = 0; i < locales.length; i++) {
-      _names[_localeTag(locales[i])] = results[i];
+      _names[_tag(locales[i])] = results[i];
     }
-    if (mounted) {
-      setState(() {
-        _loading = false;
-      });
-    }
+    if (mounted) setState(() => _loading = false);
   }
 
-  String _localeTag(Locale locale) => locale.toLanguageTag();
+  String _tag(Locale locale) => locale.toLanguageTag();
 
   Future<String> _loadNameForLocale(Locale locale) async {
-    final tag = _localeTag(locale);
-
+    final tag = _tag(locale);
     if (_globalLanguageNameCache.containsKey(tag)) {
       return _globalLanguageNameCache[tag]!;
     }
-
     try {
       final locFor = await AppLocalizations.delegate.load(locale);
       final dynamic dyn = locFor.language;
       final name = (dyn is String && dyn.trim().isNotEmpty) ? dyn : tag;
       _globalLanguageNameCache[tag] = name;
       return name;
-    } catch (e) {
+    } catch (_) {
       _globalLanguageNameCache[tag] = tag;
       return tag;
     }
@@ -127,164 +106,275 @@ class _LanguageDialogContentState extends State<_LanguageDialogContent> {
   @override
   Widget build(BuildContext context) {
     final screenW = MediaQuery.of(context).size.width;
-    final maxDialogWidth = math.min(760.0, screenW - 40.0);
+    final maxWidth = math.min(480.0, screenW - 40.0);
     final maxHeight = MediaQuery.of(context).size.height * 0.78;
 
     return Container(
-      padding: const EdgeInsets.all(_horizontalPadding),
       constraints: BoxConstraints(
-        maxWidth: maxDialogWidth,
+        maxWidth: maxWidth,
         maxHeight: maxHeight,
-        minWidth: 220.0,
+        minWidth: 220,
       ),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            widget.dialogPurple.withOpacity(0.98),
-            widget.dialogPurpleDark.withOpacity(0.98),
-          ],
-        ),
+        color: const Color(0xFF13102A),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: widget.dialogPurpleDark.withOpacity(0.24)),
+        border: Border.all(color: Colors.white.withOpacity(0.08)),
         boxShadow: [
           BoxShadow(
-            color: widget.dialogPurpleDark.withOpacity(0.20),
-            blurRadius: 28,
-            offset: const Offset(0, 10),
+            color: Colors.black.withOpacity(0.4),
+            blurRadius: 32,
+            offset: const Offset(0, 12),
           ),
         ],
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  widget.title,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: _titleFontSize,
-                    fontWeight: FontWeight.w800,
-                    height: 1.1,
-                  ),
-                ),
-              ),
-              Material(
-                color: Colors.white12,
-                shape: const CircleBorder(),
-                child: InkWell(
-                  customBorder: const CircleBorder(),
-                  onTap: () => Navigator.of(context).pop(),
-                  child: Padding(
-                    padding: const EdgeInsets.all(6.0),
-                    child: Icon(
-                      Icons.close,
-                      color: Colors.white.withOpacity(0.95),
-                      size: 20,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-
-          const SizedBox(height: _headerBottomGap),
-
+          _buildHeader(context),
+          Container(height: 1, color: Colors.white.withOpacity(0.08)),
           if (_loading)
             const SizedBox(
               height: 120,
               child: Center(
                 child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white70),
+                  valueColor: AlwaysStoppedAnimation(Colors.white38),
+                  strokeWidth: 2,
                 ),
               ),
             )
           else
-            Flexible(
-              child: DefaultTextStyle(
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: _bodyFontSize,
-                  height: 1.6,
-                ),
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(
-                    maxHeight: MediaQuery.of(context).size.height * 0.48,
-                    minHeight: 0,
-                  ),
-                  child: ListView.separated(
-                    shrinkWrap: true,
-                    itemCount: widget.supportedLocales.length,
-                    separatorBuilder: (_, __) =>
-                        const Divider(height: 1, color: Colors.white12),
-                    itemBuilder: (context, idx) {
-                      final locale = widget.supportedLocales[idx];
-                      final tag = _localeTag(locale);
-                      final displayName =
-                          _names[tag] ?? _globalLanguageNameCache[tag] ?? tag;
+            Flexible(child: _buildList(context)),
+          Container(height: 1, color: Colors.white.withOpacity(0.08)),
+          _buildFooter(context),
+        ],
+      ),
+    );
+  }
 
-                      final currentCode =
-                          widget.appLocaleNotifier.value?.languageCode ??
-                          WidgetsBinding.instance.window.locale.languageCode;
-
-                      final isSelected = currentCode == locale.languageCode;
-
-                      return RadioListTile<Locale>(
-                        value: locale,
-                        groupValue: widget.appLocaleNotifier.value,
-                        activeColor: Colors.white,
-                        onChanged: (chosen) async {
-                          if (chosen != null) {
-                            await setLocale(chosen);
-                          }
-                          if (context.mounted) Navigator.of(context).pop();
-                        },
-                        title: Text(
-                          displayName,
-                          style: const TextStyle(color: Colors.white),
-                        ),
-                        secondary: isSelected
-                            ? const Icon(Icons.check, color: Colors.white)
-                            : null,
-                      );
-                    },
-                  ),
-                ),
+  Widget _buildHeader(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 18, 16, 16),
+      child: Row(
+        children: [
+          Container(
+            width: 36,
+            height: 36,
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.08),
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: Colors.white.withOpacity(0.12)),
+            ),
+            child: Center(
+              child: FaIcon(
+                FontAwesomeIcons.language,
+                color: Colors.white.withOpacity(0.8),
+                size: 16,
               ),
             ),
-
-          const SizedBox(height: _actionsTopGap),
-
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              ThemedButton(
-                onPressed: () async {
-                  await clearSavedLocale();
-                  widget.appLocaleNotifier.value = null;
-                  if (context.mounted) Navigator.of(context).pop();
-                },
-                variant: ThemedButtonVariant.subtle,
-                child: Text(
-                  widget.loc.useSystemLanguage,
-                  style: const TextStyle(fontWeight: FontWeight.w700),
-                ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              widget.title,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
               ),
+            ),
+          ),
+          GestureDetector(
+            onTap: () => Navigator.of(context).pop(),
+            child: Icon(
+              Icons.close_rounded,
+              color: Colors.white.withOpacity(0.4),
+              size: 20,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildList(BuildContext context) {
+    return ListView.builder(
+      shrinkWrap: true,
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      itemCount: widget.supportedLocales.length,
+      itemBuilder: (context, idx) {
+        final locale = widget.supportedLocales[idx];
+        final tag = _tag(locale);
+        final displayName = _names[tag] ?? _globalLanguageNameCache[tag] ?? tag;
+
+        final currentCode =
+            widget.appLocaleNotifier.value?.languageCode ??
+            WidgetsBinding.instance.platformDispatcher.locale.languageCode;
+        final isSelected = currentCode == locale.languageCode;
+
+        return _LanguageTile(
+          displayName: displayName,
+          isSelected: isSelected,
+          onTap: () async {
+            await setLocale(locale);
+            if (context.mounted) Navigator.of(context).pop();
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildFooter(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+      child: Row(
+        children: [
+          Expanded(
+            child: _footerButton(
+              context,
+              icon: FontAwesomeIcons.rotateLeft,
+              label: widget.loc.useSystemLanguage,
+              color: Colors.white.withOpacity(0.6),
+              onTap: () async {
+                await clearSavedLocale();
+                widget.appLocaleNotifier.value = null;
+                if (context.mounted) Navigator.of(context).pop();
+              },
+            ),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: _footerButton(
+              context,
+              icon: FontAwesomeIcons.xmark,
+              label: widget.loc.cancel,
+              color: Colors.white,
+              filled: true,
+              onTap: () => Navigator.of(context).pop(),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _footerButton(
+    BuildContext context, {
+    required FaIconData icon,
+    required String label,
+    required Color color,
+    required VoidCallback onTap,
+    bool filled = false,
+  }) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(10),
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 11),
+          decoration: BoxDecoration(
+            color: filled
+                ? Colors.white.withOpacity(0.10)
+                : Colors.white.withOpacity(0.04),
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(
+              color: Colors.white.withOpacity(filled ? 0.18 : 0.08),
+            ),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              FaIcon(icon, size: 12, color: color),
               const SizedBox(width: 8),
-              ThemedButton(
-                onPressed: () => Navigator.of(context).pop(),
-                variant: ThemedButtonVariant.primary,
-                child: Text(
-                  widget.loc.cancel,
-                  style: const TextStyle(fontWeight: FontWeight.w800),
+              Text(
+                label,
+                style: TextStyle(
+                  color: color,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
             ],
           ),
-        ],
+        ),
+      ),
+    );
+  }
+}
+
+class _LanguageTile extends StatelessWidget {
+  final String displayName;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const _LanguageTile({
+    required this.displayName,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: isSelected ? null : onTap,
+        child: Container(
+          margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
+          decoration: BoxDecoration(
+            color: isSelected
+                ? Colors.white.withOpacity(0.08)
+                : Colors.transparent,
+            borderRadius: BorderRadius.circular(10),
+            border: isSelected
+                ? Border.all(color: Colors.white.withOpacity(0.15))
+                : null,
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  displayName,
+                  style: TextStyle(
+                    color: isSelected
+                        ? Colors.white
+                        : Colors.white.withOpacity(0.7),
+                    fontSize: 14,
+                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+                  ),
+                ),
+              ),
+              if (isSelected)
+                Container(
+                  width: 20,
+                  height: 20,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.15),
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.white.withOpacity(0.4)),
+                  ),
+                  child: const Center(
+                    child: Icon(
+                      Icons.check_rounded,
+                      size: 12,
+                      color: Colors.white,
+                    ),
+                  ),
+                )
+              else
+                Container(
+                  width: 20,
+                  height: 20,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.white.withOpacity(0.15)),
+                  ),
+                ),
+            ],
+          ),
+        ),
       ),
     );
   }

@@ -4,7 +4,7 @@ import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
 
-/// The translations for Bengali (`bn`).
+/// The translations for Bengali Bangla (`bn`).
 class AppLocalizationsBn extends AppLocalizations {
   AppLocalizationsBn([String locale = 'bn']) : super(locale);
 
@@ -43,8 +43,35 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String helpText(Object appCreator) {
-    return '$appCreator দ্বারা তৈরি।\n\nব্যবহারের নিয়ম:\n1. আপনার Minecraft সার্ভারের ঠিকানা এবং পোর্ট লিখুন (ডিফল্ট: 19132)\n   — অথবা ড্রপডাউন থেকে আগে সংরক্ষিত কোনো সার্ভার বেছে নিন\n2. (ঐচ্ছিক) আপনার অবস্থানের নিকটতম Relay Server (EU বা US) বেছে নিন\n3. শুরু করতে \"সম্প্রচার শুরু করুন\" এ ক্লিক করুন\n4. আপনার কনসোল/ডিভাইসে: Minecraft > Play > Friends\n5. আপনি \"NetherLink\" নামের একটি LAN সার্ভার দেখতে পাবেন\n6. NetherLink এর মাধ্যমে আপনার বাহ্যিক সার্ভারে যোগ দিতে সেটিতে ক্লিক করুন\n\nNintendo Switch (DNS মোড):\n1. সংযোগ প্যানেলে \"Nintendo Switch\" সক্রিয় করুন\n2. একটি Relay Server (EU বা US) নির্বাচন করুন\n3. \"DNS কনফিগ পাঠান\" এ ক্লিক করুন — এটি আপনার কনফিগ relay-এ পাঠাবে\n   (এটি কোনো LAN সার্ভার সম্প্রচার করে না)\n4. আপনার Switch-এ NetherLink DNS সেটআপ প্রয়োগ করুন এবং যোগ দিন\n   NetherLink এর জন্য যে server entry ব্যবহার করেন তা ব্যবহার করে\n\nনোট:\n- LAN সম্প্রচারের জন্য NetherLink এবং কনসোলকে একই লোকাল নেটওয়ার্কে থাকতে হবে।\n- পরামর্শ: সর্বোত্তম পারফরম্যান্সের জন্য আপনার নিকটতম relay server বেছে নিন।';
+    return '$appCreator দ্বারা তৈরি।\r\n\r\nব্যবহারের নিয়ম:\r\n1. আপনার Minecraft সার্ভারের ঠিকানা এবং পোর্ট লিখুন (ডিফল্ট: 19132)\r\n   — অথবা ড্রপডাউন থেকে আগে সংরক্ষিত কোনো সার্ভার বেছে নিন\r\n2. (ঐচ্ছিক) আপনার অবস্থানের নিকটতম Relay Server (EU বা US) বেছে নিন\r\n3. শুরু করতে \\\"সম্প্রচার শুরু করুন\\\" এ ক্লিক করুন\r\n4. আপনার কনসোল/ডিভাইসে: Minecraft > Play > Friends\r\n5. আপনি \\\"NetherLink\\\" নামের একটি LAN সার্ভার দেখতে পাবেন\r\n6. NetherLink এর মাধ্যমে আপনার বাহ্যিক সার্ভারে যোগ দিতে সেটিতে ক্লিক করুন\r\n\r\nNintendo Switch (DNS মোড):\r\n1. সংযোগ প্যানেলে \\\"Nintendo Switch\\\" সক্রিয় করুন\r\n2. একটি Relay Server (EU বা US) নির্বাচন করুন\r\n3. \\\"DNS কনফিগ পাঠান\\\" এ ক্লিক করুন — এটি আপনার কনফিগ relay-এ পাঠাবে\r\n   (এটি কোনো LAN সার্ভার সম্প্রচার করে না)\r\n4. আপনার Switch-এ NetherLink DNS সেটআপ প্রয়োগ করুন এবং যোগ দিন\r\n   NetherLink এর জন্য যে server entry ব্যবহার করেন তা ব্যবহার করে\r\n\r\nনোট:\r\n- LAN সম্প্রচারের জন্য NetherLink এবং কনসোলকে একই লোকাল নেটওয়ার্কে থাকতে হবে।\r\n- পরামর্শ: সর্বোত্তম পারফরম্যান্সের জন্য আপনার নিকটতম relay server বেছে নিন।';
   }
+
+  @override
+  String get serverDetailsLabel => 'Server Details';
+
+  @override
+  String get start => 'Start';
+
+  @override
+  String get labelJava => 'Java';
+
+  @override
+  String get startJavaMode => 'Start Java Mode';
+
+  @override
+  String get javaInfoTitle => 'Java Mode';
+
+  @override
+  String get javaInfoText => 'Connect to Java Edition servers';
+
+  @override
+  String get howToJavaTitle => 'Java Mode';
+
+  @override
+  String get howToJavaSubtitle => 'Connect to Java Edition servers via NetherLink';
+
+  @override
+  String get howToJavaBody => 'Java Mode — quick steps:\n1. In the app, select Java mode.\n2. Enter your Java Edition server address and port (default: 25565).\n3. Press \"Start Java Mode\" — NetherLink bridges the connection.\n4. Open Minecraft Bedrock and go to the Friends tab.\n5. Select the LAN server named \"NetherLink\" to join the Java server.\n\n⚠️ Important warnings:\n- A valid Java Edition account (Microsoft) is required.\n- Some servers use anti-cheat systems that may detect and ban your account.\n- Certain servers explicitly prohibit Bedrock clients — always check the server rules.\n- NetherLink is not responsible for any account bans, suspensions, or other account-related issues that may result from using this feature.\n- Use at your own risk.';
 
   @override
   String get language => 'বাংলা';
@@ -162,12 +189,12 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String playInstructionsSwitch(Object relayName, Object relayIp) {
-    return 'নির্বাচিত: $relayName\n\nকীভাবে সংযোগ করবেন:\n1. আপনার Switch Settings-এ যান এবং DNS পরিবর্তন করে এটি দিন: $relayIp\n2. Minecraft খুলুন এবং তালিকা থেকে একটি সার্ভার নির্বাচন করুন (যেমন Cubecraft বা Hive)।\n3. এখন আপনাকে স্বয়ংক্রিয়ভাবে আপনার নিজের সার্ভারে পাঠানো হবে।';
+    return 'নির্বাচিত: $relayName\r\n\r\nকীভাবে সংযোগ করবেন:\r\n1. আপনার Switch Settings-এ যান এবং DNS পরিবর্তন করে এটি দিন: $relayIp\r\n2. Minecraft খুলুন এবং তালিকা থেকে একটি সার্ভার নির্বাচন করুন (যেমন Cubecraft বা Hive)।\r\n3. এখন আপনাকে স্বয়ংক্রিয়ভাবে আপনার নিজের সার্ভারে পাঠানো হবে।';
   }
 
   @override
   String playInstructionsFriends(Object friend) {
-    return 'কীভাবে সংযোগ করবেন:\n1. আপনার কনসোলে $friend-কে বন্ধু হিসেবে যোগ করুন।\n2. Minecraft খুলে Friends ট্যাবে যান।\n3. LAN Worlds-এর নিচে আপনার সার্ভার খুঁজে সেটি নির্বাচন করে যোগ দিন।';
+    return 'কীভাবে সংযোগ করবেন:\r\n1. আপনার কনসোলে $friend-কে বন্ধু হিসেবে যোগ করুন।\r\n2. Minecraft খুলে Friends ট্যাবে যান।\r\n3. LAN Worlds-এর নিচে আপনার সার্ভার খুঁজে সেটি নির্বাচন করে যোগ দিন।';
   }
 
   @override
@@ -250,7 +277,7 @@ class AppLocalizationsBn extends AppLocalizations {
   String get howToXboxSubtitle => 'LAN সম্প্রচার বা প্রক্সির মাধ্যমে খেলুন';
 
   @override
-  String get howToXboxBody => 'কীভাবে সংযোগ করবেন (Xbox / PS4 / PS5):\n1. নিশ্চিত করুন যে NetherLink চালানো আপনার ডিভাইস এবং আপনার কনসোল একই লোকাল নেটওয়ার্কে আছে।\n2. অ্যাপে আপনার Minecraft server address এবং port লিখে \"সম্প্রচার শুরু করুন\" চাপুন।\n3. কনসোলে Minecraft → Play খুলুন → LAN Worlds অথবা Friends ট্যাব খুঁজুন এবং তালিকাটি রিফ্রেশ করুন।\n4. যোগ দিতে \"NetherLink\" নামের LAN server নির্বাচন করুন।\nনোট:\n- সার্ভার না দেখালে নিশ্চিত করুন যে দুই ডিভাইস একই subnet-এ আছে এবং অ্যাপ এখনও সম্প্রচার করছে।\n- কিছু কনসোল মডেল বা রাউটার LAN discovery ব্লক করতে পারে; প্রয়োজন হলে অ্যাপ বা রাউটারের সেটিংস পরিবর্তন করে দেখুন।';
+  String get howToXboxBody => 'কীভাবে সংযোগ করবেন (Xbox / PS4 / PS5):\r\n1. নিশ্চিত করুন যে NetherLink চালানো আপনার ডিভাইস এবং আপনার কনসোল একই লোকাল নেটওয়ার্কে আছে।\r\n2. অ্যাপে আপনার Minecraft server address এবং port লিখে \\\"সম্প্রচার শুরু করুন\\\" চাপুন।\r\n3. কনসোলে Minecraft → Play খুলুন → LAN Worlds অথবা Friends ট্যাব খুঁজুন এবং তালিকাটি রিফ্রেশ করুন।\r\n4. যোগ দিতে \\\"NetherLink\\\" নামের LAN server নির্বাচন করুন।\r\nনোট:\r\n- সার্ভার না দেখালে নিশ্চিত করুন যে দুই ডিভাইস একই subnet-এ আছে এবং অ্যাপ এখনও সম্প্রচার করছে।\r\n- কিছু কনসোল মডেল বা রাউটার LAN discovery ব্লক করতে পারে; প্রয়োজন হলে অ্যাপ বা রাউটারের সেটিংস পরিবর্তন করে দেখুন।';
 
   @override
   String get howToNintendoTitle => 'Nintendo Switch (DNS মোড)';
@@ -259,7 +286,7 @@ class AppLocalizationsBn extends AppLocalizations {
   String get howToNintendoSubtitle => 'Switch-এর জন্য DNS রিলে নির্দেশনা';
 
   @override
-  String get howToNintendoBody => 'Nintendo Switch — DNS মোড (ধাপে ধাপে):\n1. অ্যাপে \"Nintendo\" মোড চালু করুন এবং একটি রিলে সার্ভার (EU বা US) নির্বাচন করুন।\n2. DNS IP রিলেতে পাঠাতে \"DNS কনফিগ পাঠান\" এ ট্যাপ করুন।\n3. আপনার Nintendo Switch-এ System Settings → Internet → Internet Settings → (your network) → Change Settings → DNS এ যান এবং Primary DNS হিসেবে রিলে IP সেট করুন।\n4. Minecraft খুলে একটি public server-এ যোগ দিন; রিলে DNS ব্যবহার করে আপনাকে আপনার সার্ভারে পুনর্নির্দেশ করা হবে।\nনোট:\n- DNS মোড কোনো LAN server সম্প্রচার করে না; এটি রিলের মাধ্যমে game traffic রাউট করে।\n- স্বাভাবিক নেটওয়ার্ক আচরণ দরকার হলে কাজ শেষে DNS আগের অবস্থায় ফিরিয়ে দিন।';
+  String get howToNintendoBody => 'Nintendo Switch — DNS মোড (ধাপে ধাপে):\r\n1. অ্যাপে \\\"Nintendo\\\" মোড চালু করুন এবং একটি রিলে সার্ভার (EU বা US) নির্বাচন করুন।\r\n2. DNS IP রিলেতে পাঠাতে \\\"DNS কনফিগ পাঠান\\\" এ ট্যাপ করুন।\r\n3. আপনার Nintendo Switch-এ System Settings → Internet → Internet Settings → (your network) → Change Settings → DNS এ যান এবং Primary DNS হিসেবে রিলে IP সেট করুন।\r\n4. Minecraft খুলে একটি public server-এ যোগ দিন; রিলে DNS ব্যবহার করে আপনাকে আপনার সার্ভারে পুনর্নির্দেশ করা হবে।\r\nনোট:\r\n- DNS মোড কোনো LAN server সম্প্রচার করে না; এটি রিলের মাধ্যমে game traffic রাউট করে।\r\n- স্বাভাবিক নেটওয়ার্ক আচরণ দরকার হলে কাজ শেষে DNS আগের অবস্থায় ফিরিয়ে দিন।';
 
   @override
   String get howToFriendsTitle => 'বন্ধু মোড';
@@ -268,7 +295,7 @@ class AppLocalizationsBn extends AppLocalizations {
   String get howToFriendsSubtitle => 'বন্ধুদের আমন্ত্রণ করুন এবং LAN দিয়ে যোগ দিন';
 
   @override
-  String get howToFriendsBody => 'বন্ধু মোড — দ্রুত ধাপসমূহ:\n1. প্রয়োজন হলে আপনার কনসোল বা প্ল্যাটফর্মে NetherLink friend account (relay friend) যোগ করুন।\n2. অ্যাপে বন্ধু মোড চালু করুন এবং relay configuration পাঠান (যদি প্রযোজ্য হয়)।\n3. আপনার কনসোলে Minecraft → Friends খুলে LAN Worlds খুঁজুন — আপনার সার্ভার সেখানে একটি LAN world হিসেবে দেখা উচিত।\n4. বন্ধুদের সঙ্গে আপনার সার্ভারে যোগ দিতে সেটি নির্বাচন করুন।\nনোট:\n- নিশ্চিত করুন যে আপনার এবং আপনার বন্ধুদের NAT/settings একই এবং friend presence অনুমোদন করে।\n- বন্ধু মোড প্ল্যাটফর্মের friend features-এর ওপর নির্ভরশীল এবং friend request গ্রহণ করতে হতে পারে।';
+  String get howToFriendsBody => 'বন্ধু মোড — দ্রুত ধাপসমূহ:\r\n1. প্রয়োজন হলে আপনার কনসোল বা প্ল্যাটফর্মে NetherLink friend account (relay friend) যোগ করুন।\r\n2. অ্যাপে বন্ধু মোড চালু করুন এবং relay configuration পাঠান (যদি প্রযোজ্য হয়)।\r\n3. আপনার কনসোলে Minecraft → Friends খুলে LAN Worlds খুঁজুন — আপনার সার্ভার সেখানে একটি LAN world হিসেবে দেখা উচিত।\r\n4. বন্ধুদের সঙ্গে আপনার সার্ভারে যোগ দিতে সেটি নির্বাচন করুন।\r\nনোট:\r\n- নিশ্চিত করুন যে আপনার এবং আপনার বন্ধুদের NAT/settings একই এবং friend presence অনুমোদন করে।\r\n- বন্ধু মোড প্ল্যাটফর্মের friend features-এর ওপর নির্ভরশীল এবং friend request গ্রহণ করতে হতে পারে।';
 
   @override
   String get helpNetherlinkTitle => 'NetherLink দেখা যাচ্ছে না';
@@ -277,7 +304,7 @@ class AppLocalizationsBn extends AppLocalizations {
   String get helpNetherlinkSubtitle => 'LAN শনাক্তকরণ সমস্যার সমাধান';
 
   @override
-  String get helpNetherlinkBody => 'যদি আপনার কনসোলে সার্ভারটি না দেখা যায়, তাহলে এই ধাপগুলো চেষ্টা করুন:\n\n✅ প্রাথমিক পরীক্ষা:\n1. একই WiFi নেটওয়ার্ক - আপনার ফোন/ট্যাবলেট এবং কনসোল অবশ্যই একই WiFi-তে থাকতে হবে\n2. সঠিক সার্ভার ঠিকানা - IP এবং port আবার পরীক্ষা করুন (ডিফল্ট: 19132)\n3. সম্প্রচার সক্রিয় - NetherLink \"Broadcasting\" স্ট্যাটাস দেখাচ্ছে কি না নিশ্চিত করুন\n\n🔄 দ্রুত সমাধান:\n• অ্যাপ রিস্টার্ট করুন: সম্প্রচার বন্ধ করুন, NetherLink পুরোপুরি বন্ধ করুন, আবার খুলে চেষ্টা করুন\n• কনসোল রিস্টার্ট করুন: কখনও কখনও LAN game শনাক্ত করতে কনসোলকে রিফ্রেশ করতে হয়\n• Friends/LAN ট্যাব পরীক্ষা করুন: সার্ভারটি \"Friends\" বা \"LAN Games\" এর নিচে দেখা যায়, server list-এ নয়\n• সম্প্রচার শুরু করার পর 10-15 সেকেন্ড অপেক্ষা করুন\n• VPN বন্ধ করুন: VPN লোকাল সম্প্রচার ব্লক করতে পারে\n\n⚠️ সাধারণ সমস্যা:\n\"No route found for user\" → নিশ্চিত করুন যে দুই ডিভাইস একই Wi‑Fi-তে আছে (Guest network এড়িয়ে চলুন)\n\"Unable to connect to NetherLink relay server\" → আপনার ইন্টারনেট / relay status পরীক্ষা করুন\n\n📱 এখনও সমস্যা হচ্ছে? NetherLink-এ Debug Mode চালু করে logs পরীক্ষা করুন, অথবা অন্য কোনো সার্ভার চেষ্টা করুন।';
+  String get helpNetherlinkBody => 'যদি আপনার কনসোলে সার্ভারটি না দেখা যায়, তাহলে এই ধাপগুলো চেষ্টা করুন:\r\n\r\n✅ প্রাথমিক পরীক্ষা:\r\n1. একই WiFi নেটওয়ার্ক - আপনার ফোন/ট্যাবলেট এবং কনসোল অবশ্যই একই WiFi-তে থাকতে হবে\r\n2. সঠিক সার্ভার ঠিকানা - IP এবং port আবার পরীক্ষা করুন (ডিফল্ট: 19132)\r\n3. সম্প্রচার সক্রিয় - NetherLink \\\"Broadcasting\\\" স্ট্যাটাস দেখাচ্ছে কি না নিশ্চিত করুন\r\n\r\n🔄 দ্রুত সমাধান:\r\n• অ্যাপ রিস্টার্ট করুন: সম্প্রচার বন্ধ করুন, NetherLink পুরোপুরি বন্ধ করুন, আবার খুলে চেষ্টা করুন\r\n• কনসোল রিস্টার্ট করুন: কখনও কখনও LAN game শনাক্ত করতে কনসোলকে রিফ্রেশ করতে হয়\r\n• Friends/LAN ট্যাব পরীক্ষা করুন: সার্ভারটি \\\"Friends\\\" বা \\\"LAN Games\\\" এর নিচে দেখা যায়, server list-এ নয়\r\n• সম্প্রচার শুরু করার পর 10-15 সেকেন্ড অপেক্ষা করুন\r\n• VPN বন্ধ করুন: VPN লোকাল সম্প্রচার ব্লক করতে পারে\r\n\r\n⚠️ সাধারণ সমস্যা:\r\n\\\"No route found for user\\\" → নিশ্চিত করুন যে দুই ডিভাইস একই Wi‑Fi-তে আছে (Guest network এড়িয়ে চলুন)\r\n\\\"Unable to connect to NetherLink relay server\\\" → আপনার ইন্টারনেট / relay status পরীক্ষা করুন\r\n\r\n📱 এখনও সমস্যা হচ্ছে? NetherLink-এ Debug Mode চালু করে logs পরীক্ষা করুন, অথবা অন্য কোনো সার্ভার চেষ্টা করুন।';
 
   @override
   String get helpMultiplayerFailedTitle => 'মাল্টিপ্লেয়ার সংযোগ ব্যর্থ';
@@ -286,7 +313,7 @@ class AppLocalizationsBn extends AppLocalizations {
   String get helpMultiplayerFailedSubtitle => 'কেন এটি NetherLink-এর ত্রুটি নয় তার ব্যাখ্যা';
 
   @override
-  String get helpMultiplayerFailedBody => '⚠️ এটি NetherLink-এর কোনো সমস্যা নয়!\n\nNetherLink আপনাকে সফলভাবে অনুরোধকৃত সার্ভারে পুনর্নির্দেশ করেছে। \"Multiplayer Connection Failed\" বার্তাটি বোঝায় যে লক্ষ্য সার্ভারটি বর্তমানে অপ্রাপ্য। সম্ভাব্য কারণ:\n\n• লক্ষ্য Minecraft server অফলাইন বা অতিরিক্ত লোডে আছে\n• সার্ভারের জন্য আপডেটেড client version বা নির্দিষ্ট edition প্রয়োজন\n• relay এবং লক্ষ্য সার্ভারের মধ্যে নেটওয়ার্ক সমস্যা\n\nঅন্য কোনো সার্ভারে সংযোগ করার চেষ্টা করুন অথবা সার্ভারের support-এর সাথে যোগাযোগ করুন। যদি একাধিক সার্ভারে একই সমস্যা থাকে, NetherLink-এ Debug Mode চালু করে logs পরীক্ষা করুন।';
+  String get helpMultiplayerFailedBody => '⚠️ এটি NetherLink-এর কোনো সমস্যা নয়!\r\n\r\nNetherLink আপনাকে সফলভাবে অনুরোধকৃত সার্ভারে পুনর্নির্দেশ করেছে। \\\"Multiplayer Connection Failed\\\" বার্তাটি বোঝায় যে লক্ষ্য সার্ভারটি বর্তমানে অপ্রাপ্য। সম্ভাব্য কারণ:\r\n\r\n• লক্ষ্য Minecraft server অফলাইন বা অতিরিক্ত লোডে আছে\r\n• সার্ভারের জন্য আপডেটেড client version বা নির্দিষ্ট edition প্রয়োজন\r\n• relay এবং লক্ষ্য সার্ভারের মধ্যে নেটওয়ার্ক সমস্যা\r\n\r\nঅন্য কোনো সার্ভারে সংযোগ করার চেষ্টা করুন অথবা সার্ভারের support-এর সাথে যোগাযোগ করুন। যদি একাধিক সার্ভারে একই সমস্যা থাকে, NetherLink-এ Debug Mode চালু করে logs পরীক্ষা করুন।';
 
   @override
   String get helpNintendoDnsTitle => 'Nintendo DNS কাজ করছে না';
@@ -295,7 +322,7 @@ class AppLocalizationsBn extends AppLocalizations {
   String get helpNintendoDnsSubtitle => 'সাধারণ DNS / relay সমস্যা';
 
   @override
-  String get helpNintendoDnsBody => 'যদি Nintendo DNS মোড কাজ না করে, তাহলে নিচের বিষয়গুলো পরীক্ষা করুন:\n\n1. নিশ্চিত করুন যে আপনি অ্যাপ থেকে DNS config পাঠিয়েছেন (DNS কনফিগ পাঠান)।\n2. নিশ্চিত করুন যে আপনি Switch-এ relay IP-কে Primary DNS হিসেবে প্রয়োগ করেছেন।\n3. নিশ্চিত করুন যে নির্বাচিত relay server (EU/US) অনলাইনে আছে এবং অতিরিক্ত লোডে নেই।\n4. কিছু নেটওয়ার্ক (যেমন captive portal) custom DNS প্রতিরোধ করে — অন্য নেটওয়ার্কে পরীক্ষা করুন।\n\nযদি সমস্যা থেকে যায়, Debug Mode চালু করে logs পরীক্ষা করুন বা Friends-mode বিকল্পটি চেষ্টা করুন।';
+  String get helpNintendoDnsBody => 'যদি Nintendo DNS মোড কাজ না করে, তাহলে নিচের বিষয়গুলো পরীক্ষা করুন:\r\n\r\n1. নিশ্চিত করুন যে আপনি অ্যাপ থেকে DNS config পাঠিয়েছেন (DNS কনফিগ পাঠান)।\r\n2. নিশ্চিত করুন যে আপনি Switch-এ relay IP-কে Primary DNS হিসেবে প্রয়োগ করেছেন।\r\n3. নিশ্চিত করুন যে নির্বাচিত relay server (EU/US) অনলাইনে আছে এবং অতিরিক্ত লোডে নেই।\r\n4. কিছু নেটওয়ার্ক (যেমন captive portal) custom DNS প্রতিরোধ করে — অন্য নেটওয়ার্কে পরীক্ষা করুন।\r\n\r\nযদি সমস্যা থেকে যায়, Debug Mode চালু করে logs পরীক্ষা করুন বা Friends-mode বিকল্পটি চেষ্টা করুন।';
 
   @override
   String get helpFriendsModeTitle => 'বন্ধু মোড কাজ করছে না';
@@ -304,7 +331,7 @@ class AppLocalizationsBn extends AppLocalizations {
   String get helpFriendsModeSubtitle => 'সাধারণ বন্ধু সংক্রান্ত সমস্যা';
 
   @override
-  String get helpFriendsModeBody => 'বন্ধু মোড সমস্যা সমাধানের টিপস:\n\n1. নিশ্চিত করুন যে relay friend account কনসোলে যোগ/গ্রহণ করা হয়েছে (যদি প্রয়োজন হয়)।\n2. বন্ধু মোড চালু করার পর গেমটি রিস্টার্ট করে Friends/LAN ট্যাব রিফ্রেশ করার চেষ্টা করুন।\n\nযদি সার্ভারটি এখনও বন্ধুদের কাছে না দেখা যায়, তবে Debug Mode চালু করে logs পরীক্ষা করুন যাতে ত্রুটি শনাক্ত করা যায়।';
+  String get helpFriendsModeBody => 'বন্ধু মোড সমস্যা সমাধানের টিপস:\r\n\r\n1. নিশ্চিত করুন যে relay friend account কনসোলে যোগ/গ্রহণ করা হয়েছে (যদি প্রয়োজন হয়)।\r\n2. বন্ধু মোড চালু করার পর গেমটি রিস্টার্ট করে Friends/LAN ট্যাব রিফ্রেশ করার চেষ্টা করুন।\r\n\r\nযদি সার্ভারটি এখনও বন্ধুদের কাছে না দেখা যায়, তবে Debug Mode চালু করে logs পরীক্ষা করুন যাতে ত্রুটি শনাক্ত করা যায়।';
 
   @override
   String get changeLanguageTitle => 'ভাষা পরিবর্তন করুন';

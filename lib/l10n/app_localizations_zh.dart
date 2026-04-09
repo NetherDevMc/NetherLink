@@ -43,8 +43,35 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String helpText(Object appCreator) {
-    return '由 $appCreator 创建。\n\n使用方法：\n1. 输入你的 Minecraft 服务器地址和端口（默认：19132）\n   — 或从下拉菜单中选择之前保存的服务器\n2. （可选）选择离你位置最近的中继服务器（EU 或 US）\n3. 点击 \"开始广播\" 以开始\n4. 在你的主机/设备上：Minecraft > 游玩 > 好友\n5. 你应该会看到一个名为 \"NetherLink\" 的局域网服务器\n6. 点击它即可通过 NetherLink 加入你的外部服务器\n\nNintendo Switch（DNS 模式）：\n1. 在连接面板中启用 \"Nintendo Switch\"\n2. 选择一个中继服务器（EU 或 US）\n3. 点击 \"发送 DNS 配置\" — 这会将你的配置发送到中继服务器\n   （它不会广播局域网服务器）\n4. 在你的 Switch 上应用 NetherLink DNS 设置并加入\n   使用你为 NetherLink 所使用的服务器条目\n\n注意：\n- 进行局域网广播时，NetherLink 和主机必须位于同一局域网中。\n- 提示：选择离你最近的中继服务器以获得最佳性能。';
+    return '由 $appCreator 创建。\r\n\r\n使用方法：\r\n1. 输入你的 Minecraft 服务器地址和端口（默认：19132）\r\n   — 或从下拉菜单中选择之前保存的服务器\r\n2. （可选）选择离你位置最近的中继服务器（EU 或 US）\r\n3. 点击 \\\"开始广播\\\" 以开始\r\n4. 在你的主机/设备上：Minecraft > 游玩 > 好友\r\n5. 你应该会看到一个名为 \\\"NetherLink\\\" 的局域网服务器\r\n6. 点击它即可通过 NetherLink 加入你的外部服务器\r\n\r\nNintendo Switch（DNS 模式）：\r\n1. 在连接面板中启用 \\\"Nintendo Switch\\\"\r\n2. 选择一个中继服务器（EU 或 US）\r\n3. 点击 \\\"发送 DNS 配置\\\" — 这会将你的配置发送到中继服务器\r\n   （它不会广播局域网服务器）\r\n4. 在你的 Switch 上应用 NetherLink DNS 设置并加入\r\n   使用你为 NetherLink 所使用的服务器条目\r\n\r\n注意：\r\n- 进行局域网广播时，NetherLink 和主机必须位于同一局域网中。\r\n- 提示：选择离你最近的中继服务器以获得最佳性能。';
   }
+
+  @override
+  String get serverDetailsLabel => 'Server Details';
+
+  @override
+  String get start => 'Start';
+
+  @override
+  String get labelJava => 'Java';
+
+  @override
+  String get startJavaMode => 'Start Java Mode';
+
+  @override
+  String get javaInfoTitle => 'Java Mode';
+
+  @override
+  String get javaInfoText => 'Connect to Java Edition servers';
+
+  @override
+  String get howToJavaTitle => 'Java Mode';
+
+  @override
+  String get howToJavaSubtitle => 'Connect to Java Edition servers via NetherLink';
+
+  @override
+  String get howToJavaBody => 'Java Mode — quick steps:\n1. In the app, select Java mode.\n2. Enter your Java Edition server address and port (default: 25565).\n3. Press \"Start Java Mode\" — NetherLink bridges the connection.\n4. Open Minecraft Bedrock and go to the Friends tab.\n5. Select the LAN server named \"NetherLink\" to join the Java server.\n\n⚠️ Important warnings:\n- A valid Java Edition account (Microsoft) is required.\n- Some servers use anti-cheat systems that may detect and ban your account.\n- Certain servers explicitly prohibit Bedrock clients — always check the server rules.\n- NetherLink is not responsible for any account bans, suspensions, or other account-related issues that may result from using this feature.\n- Use at your own risk.';
 
   @override
   String get language => '简体中文';
@@ -139,7 +166,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String copiedLogs(Object count) {
-    return '已将 $count 条日志复制到剪贴板';
+    return '$countটি লগ এন্ট্রি ক্লিপবোর্ডে কপি করা হয়েছে';
   }
 
   @override
@@ -162,12 +189,12 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String playInstructionsSwitch(Object relayName, Object relayIp) {
-    return '已选择：$relayName\n\n连接方法：\n1. 前往你的 Switch 设置，将 DNS 更改为：$relayIp\n2. 打开 Minecraft，并从列表中选择一个服务器（例如 Cubecraft 或 Hive）。\n3. 现在你将自动被发送到你自己的服务器。';
+    return '已选择：$relayName\r\n\r\n连接方法：\r\n1. 前往你的 Switch 设置，将 DNS 更改为：$relayIp\r\n2. 打开 Minecraft，并从列表中选择一个服务器（例如 Cubecraft 或 Hive）。\r\n3. 现在你将自动被发送到你自己的服务器。';
   }
 
   @override
   String playInstructionsFriends(Object friend) {
-    return '连接方法：\n1. 在你的主机上，将 $friend 添加为好友。\n2. 打开 Minecraft 并前往 Friends 标签页。\n3. 在 LAN Worlds 下找到你的服务器并选择加入。';
+    return '连接方法：\r\n1. 在你的主机上，将 $friend 添加为好友。\r\n2. 打开 Minecraft 并前往 Friends 标签页。\r\n3. 在 LAN Worlds 下找到你的服务器并选择加入。';
   }
 
   @override
@@ -250,7 +277,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get howToXboxSubtitle => '通过局域网广播或代理游玩';
 
   @override
-  String get howToXboxBody => '连接方法（Xbox / PS4 / PS5）：\n1. 确保运行 NetherLink 的设备和你的主机位于同一本地网络中。\n2. 在应用中输入你的 Minecraft 服务器地址和端口，然后按下 \"开始广播\"。\n3. 在主机上打开 Minecraft → Play → 查找 LAN Worlds 或 Friends 标签页，并刷新列表。\n4. 选择名为 \"NetherLink\" 的局域网服务器以加入。\n注意：\n- 如果服务器没有出现，请确认两台设备位于同一子网，并且应用仍在广播。\n- 某些主机型号或路由器可能会阻止局域网发现；如有需要，请尝试切换应用或路由器设置。';
+  String get howToXboxBody => '连接方法（Xbox / PS4 / PS5）：\r\n1. 确保运行 NetherLink 的设备和你的主机位于同一本地网络中。\r\n2. 在应用中输入你的 Minecraft 服务器地址和端口，然后按下 \\\"开始广播\\\"。\r\n3. 在主机上打开 Minecraft → Play → 查找 LAN Worlds 或 Friends 标签页，并刷新列表。\r\n4. 选择名为 \\\"NetherLink\\\" 的局域网服务器以加入。\r\n注意：\r\n- 如果服务器没有出现，请确认两台设备位于同一子网，并且应用仍在广播。\r\n- 某些主机型号或路由器可能会阻止局域网发现；如有需要，请尝试切换应用或路由器设置。';
 
   @override
   String get howToNintendoTitle => 'Nintendo Switch（DNS 模式）';
@@ -259,7 +286,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get howToNintendoSubtitle => '适用于 Switch 的 DNS 中继说明';
 
   @override
-  String get howToNintendoBody => 'Nintendo Switch — DNS 模式（分步说明）：\n1. 在应用中启用 \"Nintendo\" 模式，并选择一个中继服务器（EU 或 US）。\n2. 点击 \"发送 DNS 配置\"，将 DNS IP 发送到中继服务器。\n3. 在你的 Nintendo Switch 上前往系统设置 → 网络 → 互联网设置 → （你的网络）→ 更改设置 → DNS，并将主 DNS 设置为中继服务器 IP。\n4. 打开 Minecraft 并加入一个公共服务器；你将通过中继 DNS 被重定向到你的服务器。\n注意：\n- DNS 模式不会广播局域网服务器；它会通过中继服务器路由游戏流量。\n- 使用结束后，如果你需要恢复正常网络行为，请将 DNS 改回原设置。';
+  String get howToNintendoBody => 'Nintendo Switch — DNS 模式（分步说明）：\r\n1. 在应用中启用 \\\"Nintendo\\\" 模式，并选择一个中继服务器（EU 或 US）。\r\n2. 点击 \\\"发送 DNS 配置\\\"，将 DNS IP 发送到中继服务器。\r\n3. 在你的 Nintendo Switch 上前往系统设置 → 网络 → 互联网设置 → （你的网络）→ 更改设置 → DNS，并将主 DNS 设置为中继服务器 IP。\r\n4. 打开 Minecraft 并加入一个公共服务器；你将通过中继 DNS 被重定向到你的服务器。\r\n注意：\r\n- DNS 模式不会广播局域网服务器；它会通过中继服务器路由游戏流量。\r\n- 使用结束后，如果你需要恢复正常网络行为，请将 DNS 改回原设置。';
 
   @override
   String get howToFriendsTitle => '好友模式';
@@ -268,7 +295,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get howToFriendsSubtitle => '邀请好友并通过局域网加入';
 
   @override
-  String get howToFriendsBody => '好友模式 — 快速步骤：\n1. 如有需要，请在你的主机或平台上添加 NetherLink 好友账号（Relay 好友）。\n2. 在应用中启用好友模式并发送 Relay 配置（如果适用）。\n3. 在你的主机上打开 Minecraft → Friends，并搜索 LAN Worlds —— 你的服务器应当会显示为一个局域网世界。\n4. 选择它即可与你的好友一起加入服务器。\n注意：\n- 请确保你和你的好友拥有相同且允许好友在线显示的 NAT/设置。\n- 好友模式依赖平台的好友功能，可能需要接受好友请求。';
+  String get howToFriendsBody => '好友模式 — 快速步骤：\r\n1. 如有需要，请在你的主机或平台上添加 NetherLink 好友账号（Relay 好友）。\r\n2. 在应用中启用好友模式并发送 Relay 配置（如果适用）。\r\n3. 在你的主机上打开 Minecraft → Friends，并搜索 LAN Worlds —— 你的服务器应当会显示为一个局域网世界。\r\n4. 选择它即可与你的好友一起加入服务器。\r\n注意：\r\n- 请确保你和你的好友拥有相同且允许好友在线显示的 NAT/设置。\r\n- 好友模式依赖平台的好友功能，可能需要接受好友请求。';
 
   @override
   String get helpNetherlinkTitle => 'NetherLink 未显示';
@@ -277,7 +304,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get helpNetherlinkSubtitle => '局域网发现问题排查';
 
   @override
-  String get helpNetherlinkBody => '如果服务器没有出现在你的主机上，请尝试以下步骤：\n\n✅ 基本检查：\n1. 相同的 WiFi 网络 - 你的手机/平板和主机必须连接到同一个 WiFi\n2. 正确的服务器地址 - 再次检查 IP 和端口（默认：19132）\n3. 广播已激活 - 确认 NetherLink 显示 \"正在广播\" 状态\n\n🔄 快速修复：\n• 重启应用：停止广播，完全关闭 NetherLink，重新打开后再试一次\n• 重启主机：有时主机需要刷新才能检测到局域网游戏\n• 检查好友/LAN 标签页：服务器会显示在 \"好友\" 或 \"局域网游戏\" 下，而不是服务器列表中\n• 开始广播后等待 10-15 秒\n• 禁用 VPN：VPN 可能会阻止本地广播\n\n⚠️ 常见问题：\n\"No route found for user\" → 确保两台设备位于同一个 Wi‑Fi（避免使用访客网络）\n\"Unable to connect to NetherLink relay server\" → 检查你的网络 / 中继服务器状态\n\n📱 仍然有问题？请在 NetherLink 中启用调试模式并检查日志，或尝试其他服务器。';
+  String get helpNetherlinkBody => '如果服务器没有出现在你的主机上，请尝试以下步骤：\r\n\r\n✅ 基本检查：\r\n1. 相同的 WiFi 网络 - 你的手机/平板和主机必须连接到同一个 WiFi\r\n2. 正确的服务器地址 - 再次检查 IP 和端口（默认：19132）\r\n3. 广播已激活 - 确认 NetherLink 显示 \\\"正在广播\\\" 状态\r\n\r\n🔄 快速修复：\r\n• 重启应用：停止广播，完全关闭 NetherLink，重新打开后再试一次\r\n• 重启主机：有时主机需要刷新才能检测到局域网游戏\r\n• 检查好友/LAN 标签页：服务器会显示在 \\\"好友\\\" 或 \\\"局域网游戏\\\" 下，而不是服务器列表中\r\n• 开始广播后等待 10-15 秒\r\n• 禁用 VPN：VPN 可能会阻止本地广播\r\n\r\n⚠️ 常见问题：\r\n\\\"No route found for user\\\" → 确保两台设备位于同一个 Wi‑Fi（避免使用访客网络）\r\n\\\"Unable to connect to NetherLink relay server\\\" → 检查你的网络 / 中继服务器状态\r\n\r\n📱 仍然有问题？请在 NetherLink 中启用调试模式并检查日志，或尝试其他服务器。';
 
   @override
   String get helpMultiplayerFailedTitle => '多人连接失败';
@@ -286,7 +313,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get helpMultiplayerFailedSubtitle => '说明这为什么不是 NetherLink 错误';
 
   @override
-  String get helpMultiplayerFailedBody => '⚠️ 这不是 NetherLink 的问题！\n\nNetherLink 已成功将你重定向到请求的服务器。\"多人连接失败\" 这条消息表示目标服务器当前无法访问。可能原因包括：\n\n• 目标 Minecraft 服务器离线或负载过高\n• 服务器需要更新的客户端版本或特定版本\n• Relay 与目标服务器之间存在网络问题\n\n请尝试连接到其他服务器，或联系该服务器的支持团队。如果多个服务器都出现此问题，请在 NetherLink 中启用调试模式并检查日志。';
+  String get helpMultiplayerFailedBody => '⚠️ 这不是 NetherLink 的问题！\r\n\r\nNetherLink 已成功将你重定向到请求的服务器。\\\"多人连接失败\\\" 这条消息表示目标服务器当前无法访问。可能原因包括：\r\n\r\n• 目标 Minecraft 服务器离线或负载过高\r\n• 服务器需要更新的客户端版本或特定版本\r\n• Relay 与目标服务器之间存在网络问题\r\n\r\n请尝试连接到其他服务器，或联系该服务器的支持团队。如果多个服务器都出现此问题，请在 NetherLink 中启用调试模式并检查日志。';
 
   @override
   String get helpNintendoDnsTitle => 'Nintendo DNS 无法工作';
@@ -295,7 +322,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get helpNintendoDnsSubtitle => '常见 DNS / Relay 问题';
 
   @override
-  String get helpNintendoDnsBody => '如果 Nintendo DNS 模式无法工作，请检查以下内容：\n\n1. 确认你已从应用中发送 DNS 配置（发送 DNS 配置）。\n2. 确认你已在 Switch 上将 Relay IP 设置为主 DNS。\n3. 确保所选的 Relay 服务器（EU/US）在线且未过载。\n4. 某些网络（例如强制门户网络）会阻止自定义 DNS —— 请在其他网络上测试。\n\n如果问题仍然存在，请启用调试模式并检查日志，或尝试好友模式这一替代方案。';
+  String get helpNintendoDnsBody => '如果 Nintendo DNS 模式无法工作，请检查以下内容：\r\n\r\n1. 确认你已从应用中发送 DNS 配置（发送 DNS 配置）。\r\n2. 确认你已在 Switch 上将 Relay IP 设置为主 DNS。\r\n3. 确保所选的 Relay 服务器（EU/US）在线且未过载。\r\n4. 某些网络（例如强制门户网络）会阻止自定义 DNS —— 请在其他网络上测试。\r\n\r\n如果问题仍然存在，请启用调试模式并检查日志，或尝试好友模式这一替代方案。';
 
   @override
   String get helpFriendsModeTitle => '好友模式无法工作';
@@ -304,7 +331,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get helpFriendsModeSubtitle => '常见好友问题';
 
   @override
-  String get helpFriendsModeBody => '好友模式故障排除提示：\n\n1. 确保 Relay 好友账号已在主机上添加/接受（如有需要）。\n2. 启用好友模式后，尝试重新启动游戏并刷新 Friends/LAN 标签页。\n\n如果服务器仍未显示给好友，请启用调试模式并检查日志以识别错误。';
+  String get helpFriendsModeBody => '好友模式故障排除提示：\r\n\r\n1. 确保 Relay 好友账号已在主机上添加/接受（如有需要）。\r\n2. 启用好友模式后，尝试重新启动游戏并刷新 Friends/LAN 标签页。\r\n\r\n如果服务器仍未显示给好友，请启用调试模式并检查日志以识别错误。';
 
   @override
   String get changeLanguageTitle => '更改语言';

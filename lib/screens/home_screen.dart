@@ -10,7 +10,6 @@ import '../network/broadcast_manager.dart';
 import '../util/Logger.dart';
 import '../util/user_servers.dart';
 import '../util/user_servers_storage.dart';
-import '../util/relay_preference_storage.dart';
 import '../constants/app_constants.dart';
 import '../theme/app_theme.dart';
 import '../widgets/connection/connection_panel.dart';
@@ -24,12 +23,13 @@ import '../widgets/navigation/help_menu.dart';
 import '../services/navigation_controller.dart';
 import '../services/locale_provider.dart';
 
-import '../widgets/dialogs/info_dialog.dart';
 import '../widgets/dialogs/howto_dialogs.dart';
 import '../widgets/dialogs/help_dialogs.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  final String? initialRelayIp;
+
+  const HomeScreen({super.key, this.initialRelayIp});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -66,13 +66,17 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     [],
   );
 
-  String? _selectedRelayIp = AppConstants.relayServers[0]['ip'];
+  late String? _selectedRelayIp;
 
   late final NavigationController navigationController;
 
   @override
   void initState() {
     super.initState();
+
+    _selectedRelayIp =
+        widget.initialRelayIp ?? AppConstants.relayServers[0]['ip'];
+
     _bgController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 6),
@@ -84,7 +88,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
     _initializeComponents();
     _loadUserServers();
-    _loadRelayServerPreference();
     _fetchNotification();
 
     navigationController = NavigationController(
@@ -94,25 +97,33 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       logsNotifier: _logsNotifier,
       logsScrollController: _scroll_controller,
       debugEnabledNotifier: _debugEnabledNotifier,
-      toggleDebugCallback: () async {
-        _toggleDebugMode();
-      },
-      copyLogsCallback: () async {
-        await _copyLogsToClipboard();
-      },
-      clearLogsCallback: () {
-        _clearLogs();
-      },
-      showDnsInfoModalCallback: (ctx, {required bool isFriendsMode}) async {
-        await _showDnsInfoModal(isFriendsMode: isFriendsMode);
-      },
+      toggleDebugCallback: () async => _toggleDebugMode(),
+      copyLogsCallback: () async => await _copyLogsToClipboard(),
+      clearLogsCallback: () => _clearLogs(),
       showXboxHelpCallback: _showXboxHelp,
       showHowToMenuCallback: (ctx) {
+        final meta = _getRelayMeta(_selectedRelayIp);
+        final relayName = meta['name'] ?? '-';
+        final relayIp = meta['ip'] ?? '-';
+        final friendName = relayName == 'EU Server'
+            ? 'NetherLinkEU'
+            : relayName == 'US Server'
+            ? 'NetherLinkUS'
+            : '-';
+
         HowToMenu.show(
           ctx,
           onXbox: _showXboxHelp,
-          onNintendo: () => _showDnsInfoModal(isFriendsMode: false),
-          onFriends: () => _showDnsInfoModal(isFriendsMode: true),
+          onNintendo: () => HowToDialogs.showNintendoInstructions(
+            context,
+            relayName: relayName,
+            relayIp: relayIp,
+          ),
+          onFriends: () => HowToDialogs.showFriendsInstructions(
+            context,
+            friendName: friendName,
+          ),
+          onJava: () => HowToDialogs.showJavaInstructions(context),
         );
       },
       showHelpMenuCallback: (ctx) {
@@ -138,32 +149,18 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     _broadcastingNotifier.dispose();
     _debugEnabledNotifier.dispose();
     navigationController.consoleOpen.dispose();
-    _user_servers_dispose();
     _stopBroadcast();
     super.dispose();
   }
-
-  void _user_servers_dispose() {}
 
   Future<void> _fetchNotification() async {
     final notice = await NotificationService.fetchNotice();
     if (mounted && notice != null) {
       setState(() => _currentNotice = notice);
-
       _noticeTimer?.cancel();
       _noticeTimer = Timer(const Duration(seconds: 20), () {
-        if (mounted) {
-          setState(() => _currentNotice = null);
-        }
+        if (mounted) setState(() => _currentNotice = null);
       });
-    }
-  }
-
-  Future<void> _loadRelayServerPreference() async {
-    final savedIp = await RelayPreferenceStorage.loadSelectedRelayIp();
-    if (savedIp != null &&
-        AppConstants.relayServers.any((e) => e['ip'] == savedIp)) {
-      setState(() => _selectedRelayIp = savedIp);
     }
   }
 
@@ -173,19 +170,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       logCallback: _log,
     );
     socketHandler = SocketHandler(logger: logger);
-    _broadcast_manager_init();
-  }
-
-  void _broadcast_manager_init() {
     _broadcastManager = BroadcastManager(
-      socketHandler: sockethandler_get(),
+      socketHandler: socketHandler,
       logger: logger,
     );
     _broadcastManager.onAutoDisconnect = _handleAutoDisconnect;
     _broadcastManager.onRelayError = _handleRelayError;
   }
-
-  SocketHandler sockethandler_get() => socketHandler;
 
   void _handleAutoDisconnect() {
     if (!mounted) return;
@@ -268,17 +259,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     _logsNotifier.value = currentLogs;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_scroll_controller.hasClients && mounted) {
-        _scroll_controller_scrollToEnd();
+        _scroll_controller.animateTo(
+          _scroll_controller.position.maxScrollExtent,
+          duration: AppConstants.animationDuration,
+          curve: Curves.fastOutSlowIn,
+        );
       }
     });
-  }
-
-  void _scroll_controller_scrollToEnd() {
-    _scroll_controller.animateTo(
-      _scroll_controller.position.maxScrollExtent,
-      duration: AppConstants.animationDuration,
-      curve: Curves.fastOutSlowIn,
-    );
   }
 
   Future<void> _copyLogsToClipboard() async {
@@ -350,7 +337,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   Future<void> _startBroadcast(PanelMode mode) async {
     final loc = AppLocalizations.of(context)!;
     final remoteHost = _ipController.text.trim();
-    final remotePortParsed = int.tryParse(_port_controller_get().text);
+    final remotePortParsed = int.tryParse(_portController.text);
 
     if (remoteHost.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -384,7 +371,27 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             duration: const Duration(seconds: 2),
           ),
         );
-        await _showDnsInfoModal(isFriendsMode: mode == PanelMode.friends);
+        final meta = _getRelayMeta(_selectedRelayIp);
+        final relayName = meta['name'] ?? '-';
+        final relayIp = meta['ip'] ?? '-';
+        final friendName = relayName == 'EU Server'
+            ? 'NetherLinkEU'
+            : relayName == 'US Server'
+            ? 'NetherLinkUS'
+            : '-';
+
+        if (mode == PanelMode.nintendo) {
+          await HowToDialogs.showNintendoInstructions(
+            context,
+            relayName: relayName,
+            relayIp: relayIp,
+          );
+        } else {
+          await HowToDialogs.showFriendsInstructions(
+            context,
+            friendName: friendName,
+          );
+        }
       }
       return;
     }
@@ -400,8 +407,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       remoteHost,
       remotePortParsed,
       relayIp: _selectedRelayIp,
+      isJava: mode == PanelMode.java,
     );
-    _broadcastingNotifier.value = _broadcast_manager_isBroadcasting();
+    _broadcastingNotifier.value = _broadcastManager.isBroadcasting;
 
     if (_broadcastManager.isBroadcasting && success) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -420,13 +428,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     }
   }
 
-  bool _broadcast_manager_isBroadcasting() => _broadcastManager.isBroadcasting;
-
   Future<void> _stopBroadcast() async {
-    await _broadcast_manager_stop();
-  }
-
-  Future<void> _broadcast_manager_stop() async {
     await _broadcastManager.stopBroadcast();
     _broadcastingNotifier.value = false;
     ScaffoldMessenger.of(context).showSnackBar(
@@ -440,8 +442,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   void _onUserServerSelected(UserServer server) {
     setState(() {
-      _ip_controller_set_text(server.address);
-      _port_controller_set_text(server.port.toString());
+      _ipController.text = server.address;
+      _portController.text = server.port.toString();
     });
     logger.info('Selected saved server: ${server.name}');
     final loc = AppLocalizations.of(context)!;
@@ -453,9 +455,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       ),
     );
   }
-
-  void _ip_controller_set_text(String text) => _ipController.text = text;
-  void _port_controller_set_text(String text) => _portController.text = text;
 
   Future<void> _showManageServersDialog() async {
     await showDialog(
@@ -469,50 +468,16 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     HowToDialogs.showXboxInstructions(context);
   }
 
-  Future<void> _showDnsInfoModal({required bool isFriendsMode}) async {
-    final loc = AppLocalizations.of(context)!;
-    final meta = _getRelayMeta(_selectedRelayIp);
-    final relayName = meta['name'] ?? '-';
-    final relayIp = meta['ip'] ?? '-';
-
-    String friend = '';
-    if (relayName == "EU Server") {
-      friend = 'NetherLinkEU';
-    } else if (relayName == "US Server") {
-      friend = 'NetherLinkUS';
-    }
-
-    final title = isFriendsMode
-        ? loc.playWithFriendsTitle
-        : loc.playOnSwitchTitle;
-    final content = isFriendsMode
-        ? loc.playInstructionsFriends(friend)
-        : loc.playInstructionsSwitch(relayName, relayIp);
-
-    await InfoDialog.show(
-      context,
-      title: title,
-      content: content,
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: Text(
-            loc.iUnderstand,
-            style: TextStyle(
-              color: AppTheme.primaryAccent,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
-      ],
-    );
+  void _onRelayChanged(String? ip) {
+    setState(() => _selectedRelayIp = ip);
+    logger.info('Relay manually changed to: $ip');
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      extendBody: true,
-      backgroundColor: const Color.fromARGB(0, 92, 24, 24),
+      extendBody: false,
+      backgroundColor: Colors.transparent,
       body: AnimatedBuilder(
         animation: _bgAnimation,
         builder: (context, child) {
@@ -587,20 +552,19 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 child: Padding(
                   padding: const EdgeInsets.all(16),
                   child: LayoutBuilder(
-                    builder: (context, constraints) {
-                      return _buildMobileLayout();
-                    },
+                    builder: (context, constraints) => _buildMobileLayout(),
                   ),
                 ),
               ),
-              const SizedBox(height: 8),
+              BottomGlassSimpleNavBar(
+                navigationController: navigationController,
+                dark: true,
+                selectedRelayIp: _selectedRelayIp,
+                onRelayChanged: _onRelayChanged,
+              ),
             ],
           ),
         ),
-      ),
-      bottomNavigationBar: BottomGlassSimpleNavBar(
-        navigationController: navigationController,
-        dark: true,
       ),
     );
   }
@@ -640,8 +604,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   Widget _buildConnectionPanel(List<UserServer> userServers) {
     return ConnectionPanel(
-      ipController: _ip_controller_get(),
-      portController: _port_controller_get(),
+      ipController: _ipController,
+      portController: _portController,
       broadcastingNotifier: _broadcastingNotifier,
       onStartBroadcast: (mode) => _startBroadcast(mode),
       onStopBroadcast: _stopBroadcast,
@@ -649,18 +613,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       onServerSelected: _onUserServerSelected,
       onManageServers: _showManageServersDialog,
       selectedRelayIp: _selectedRelayIp,
-      onRelayChanged: (ip) {
-        setState(() => _selectedRelayIp = ip);
-        RelayPreferenceStorage.saveSelectedRelayIp(ip);
-      },
+      onRelayChanged: _onRelayChanged,
       nintendoDnsMode: _nintendoDnsMode,
       onNintendoDnsModeChanged: (value) =>
           setState(() => _nintendoDnsMode = value),
     );
   }
-
-  TextEditingController _port_controller_get() => _portController;
-  TextEditingController _ip_controller_get() => _ipController;
 
   Widget _buildMobileLayout() {
     return SingleChildScrollView(
@@ -670,7 +628,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         mainAxisSize: MainAxisSize.min,
         children: [
           ValueListenableBuilder<List<UserServer>>(
-            valueListenable: _user_servers_notifier_get(),
+            valueListenable: _userServersNotifier,
             builder: (context, userServers, _) =>
                 _buildConnectionPanel(userServers),
           ),
@@ -678,7 +636,4 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       ),
     );
   }
-
-  ValueNotifier<List<UserServer>> _user_servers_notifier_get() =>
-      _userServersNotifier;
 }
