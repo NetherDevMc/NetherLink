@@ -89,7 +89,7 @@ class _BottomGlassSimpleNavBarState extends State<BottomGlassSimpleNavBar> {
               ),
               _NavButton(
                 icon: FontAwesomeIcons.ellipsis,
-                label: 'More',
+                label: loc.more,
                 onTap: () => _showMoreModal(context),
                 iconColor: iconColor,
                 labelColor: labelColor,

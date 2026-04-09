@@ -33,6 +33,9 @@ class AppLocalizationsBn extends AppLocalizations {
   String get joinUs => 'আমাদের সঙ্গে যোগ দিন';
 
   @override
+  String get more => 'More';
+
+  @override
   String get website => 'ওয়েবসাইট';
 
   @override

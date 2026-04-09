@@ -33,6 +33,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get joinUs => 'انضم إلينا';
 
   @override
+  String get more => 'More';
+
+  @override
   String get website => 'الموقع الإلكتروني';
 
   @override

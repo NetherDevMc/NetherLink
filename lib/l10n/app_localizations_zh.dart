@@ -33,6 +33,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get joinUs => '加入我们';
 
   @override
+  String get more => 'More';
+
+  @override
   String get website => '网站';
 
   @override

@@ -33,6 +33,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get joinUs => 'Bize Katılın';
 
   @override
+  String get more => 'More';
+
+  @override
   String get website => 'Websitesi';
 
   @override
