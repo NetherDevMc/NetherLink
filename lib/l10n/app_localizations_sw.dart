@@ -33,6 +33,9 @@ class AppLocalizationsSw extends AppLocalizations {
   String get joinUs => 'Jiunge Nasi';
 
   @override
+  String get more => 'More';
+
+  @override
   String get website => 'Tovuti';
 
   @override

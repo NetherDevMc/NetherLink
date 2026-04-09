@@ -33,6 +33,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get joinUs => 'Join Us';
 
   @override
+  String get more => 'More';
+
+  @override
   String get website => 'Website';
 
   @override

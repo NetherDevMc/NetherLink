@@ -33,6 +33,9 @@ class AppLocalizationsPt extends AppLocalizations {
   String get joinUs => 'Junte-se a nós';
 
   @override
+  String get more => 'More';
+
+  @override
   String get website => 'Site';
 
   @override

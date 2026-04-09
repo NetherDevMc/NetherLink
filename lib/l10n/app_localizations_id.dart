@@ -33,6 +33,9 @@ class AppLocalizationsId extends AppLocalizations {
   String get joinUs => 'Gabung dengan Kami';
 
   @override
+  String get more => 'More';
+
+  @override
   String get website => 'Situs Web';
 
   @override

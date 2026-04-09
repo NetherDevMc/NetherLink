@@ -33,6 +33,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get joinUs => 'Únete';
 
   @override
+  String get more => 'More';
+
+  @override
   String get website => 'Sitio web';
 
   @override

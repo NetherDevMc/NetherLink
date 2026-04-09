@@ -33,6 +33,9 @@ class AppLocalizationsUr extends AppLocalizations {
   String get joinUs => 'ہمارے ساتھ شامل ہوں';
 
   @override
+  String get more => 'More';
+
+  @override
   String get website => 'ویب سائٹ';
 
   @override

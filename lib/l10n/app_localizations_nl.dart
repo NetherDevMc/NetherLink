@@ -33,6 +33,9 @@ class AppLocalizationsNl extends AppLocalizations {
   String get joinUs => 'Word lid';
 
   @override
+  String get more => 'More';
+
+  @override
   String get website => 'Website';
 
   @override

@@ -33,6 +33,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get joinUs => '参加する';
 
   @override
+  String get more => 'More';
+
+  @override
   String get website => 'ウェブサイト';
 
   @override

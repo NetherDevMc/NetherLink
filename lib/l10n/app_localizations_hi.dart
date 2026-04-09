@@ -33,6 +33,9 @@ class AppLocalizationsHi extends AppLocalizations {
   String get joinUs => 'हमसे जुड़ें';
 
   @override
+  String get more => 'More';
+
+  @override
   String get website => 'वेबसाइट';
 
   @override

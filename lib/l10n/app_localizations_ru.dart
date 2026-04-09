@@ -33,6 +33,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get joinUs => 'Присоединяйтесь';
 
   @override
+  String get more => 'More';
+
+  @override
   String get website => 'Сайт';
 
   @override
