@@ -20,6 +20,25 @@
                                                           }
                                        }
                   },
+    "more":  "مزید",
+    "serverDetailsLabel":  "سرور کی تفصیلات",
+    "start":  "شروع کریں",
+    "labelJava":  "Java",
+    "startJavaMode":  "جاوا موڈ شروع کریں",
+    "javaInfoTitle":  "جاوا موڈ",
+    "javaInfoText":  "Java Edition سرورز سے منسلک ہوں",
+    "howToJavaTitle":  "جاوا موڈ",
+    "@howToJavaTitle":  {
+                            "description":  "Title for the Java how-to modal"
+                        },
+    "howToJavaSubtitle":  "NetherLink کے ذریعے Java Edition سرورز سے منسلک ہوں",
+    "@howToJavaSubtitle":  {
+                               "description":  "Short subtitle for Java menu tile"
+                           },
+    "howToJavaBody":  "جاوا موڈ — فوری مراحل:\n1. ایپ میں جاوا موڈ منتخب کریں۔\n2. اپنے Java Edition سرور کا پتہ اور پورٹ درج کریں (ڈیفالٹ: 25565)۔\n3. \"جاوا موڈ شروع کریں\" دبائیں — NetherLink کنکشن کو جوڑ دے گا۔\n4. Minecraft Bedrock کھولیں اور Friends ٹیب پر جائیں۔\n5. Java سرور میں شامل ہونے کے لیے \"NetherLink\" نام کا LAN سرور منتخب کریں۔\n\n⚠️ اہم انتباہات:\n- ایک درست Java Edition اکاؤنٹ (Microsoft) درکار ہے۔\n- کچھ سرور anti-cheat سسٹمز استعمال کرتے ہیں جو آپ کے اکاؤنٹ کا پتا لگا کر اسے بین کر سکتے ہیں۔\n- کچھ سرور Bedrock کلائنٹس کو واضح طور پر منع کرتے ہیں — ہمیشہ سرور کے قواعد چیک کریں۔\n- اس خصوصیت کے استعمال سے پیدا ہونے والی کسی بھی پابندی، معطلی یا اکاؤنٹ سے متعلق دیگر مسائل کے لیے NetherLink ذمہ دار نہیں ہے۔\n- اسے اپنے ذمہ استعمال کریں۔",
+    "@howToJavaBody":  {
+                           "description":  "Detailed steps for Java mode how-to modal"
+                       },
     "language":  "اردو",
     "@language":  {
                       "description":  "Your language name in your own language"
@@ -185,7 +204,7 @@
                                                                      }
                                                       }
                                  },
-    "nldServerLabel":  "NETHERLINK SERVER",
+    "nldServerLabel":  "نیدرلنک سرور",
     "@nldServerLabel":  {
                             "description":  "Label text above the relay selector"
                         },
@@ -229,7 +248,7 @@
                                                    }
                               },
     "relayUnableConnect":  "کسی بھی NetherLink relay سرور سے جڑنا ممکن نہیں۔ بعد میں دوبارہ کوشش کریں یا اپنا انٹرنیٹ چیک کریں۔",
-    "howToXboxTitle":  "Xbox / PS4-5 (LAN / Proxy)",
+    "howToXboxTitle":  "Xbox / PS4-5 (LAN / پراکسی)",
     "@howToXboxTitle":  {
                             "description":  "Title for the Xbox / PS4-5 how-to modal"
                         },
@@ -241,7 +260,7 @@
     "@howToXboxBody":  {
                            "description":  "Detailed steps for Xbox/PS4-5 how-to modal"
                        },
-    "howToNintendoTitle":  "Nintendo Switch (DNS mode)",
+    "howToNintendoTitle":  "Nintendo Switch (DNS موڈ)",
     "@howToNintendoTitle":  {
                                 "description":  "Title for the Nintendo how-to modal"
                             },

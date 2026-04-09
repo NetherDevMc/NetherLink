@@ -10,7 +10,7 @@
     "joinUs":  "Mach mit",
     "website":  "Webseite",
     "howToUseMenu":  "Verwendung",
-    "support":  "Support",
+    "support":  "Hilfe",
     "helpText":  "Erstellt von {appCreator}.\r\n\r\nSo wird es verwendet:\r\n1. Gib die Adresse und den Port deines Minecraft-Servers ein (Standard: 19132)\r\n   — oder wähle einen zuvor gespeicherten Server aus dem Dropdown-Menü\r\n2. (Optional) Wähle einen Relay-Server (EU oder US) in deiner Nähe\r\n3. Klicke auf \\\"Übertragung starten\\\", um zu beginnen\r\n4. Auf deiner Konsole/deinem Gerät: Minecraft \u003e Spielen \u003e Freunde\r\n5. Du solltest einen LAN-Server mit dem Namen \\\"NetherLink\\\" sehen\r\n6. Klicke darauf, um deinem externen Server über NetherLink beizutreten\r\n\r\nNintendo Switch (DNS-Modus):\r\n1. Aktiviere \\\"Nintendo Switch\\\" im Verbindungsbereich\r\n2. Wähle einen Relay-Server (EU oder US)\r\n3. Klicke auf \\\"DNS-Konfiguration senden\\\" — dadurch wird deine Konfiguration an das Relay gesendet\r\n   (es wird KEIN LAN-Server ausgestrahlt)\r\n4. Wende auf deiner Switch deine NetherLink-DNS-Einstellungen an und tritt bei\r\n   über den Servereintrag bei, den du für NetherLink verwendest\r\n\r\nHinweise:\r\n- Für LAN-Übertragung müssen NetherLink und die Konsole im selben lokalen Netzwerk sein.\r\n- Tipp: Wähle den Relay-Server, der dir am nächsten ist, für die beste Leistung.",
     "@helpText":  {
                       "description":  "Detailed help / instructions shown in the help dialog",
@@ -20,6 +20,25 @@
                                                           }
                                        }
                   },
+    "more":  "Mehr",
+    "serverDetailsLabel":  "Serverdetails",
+    "start":  "Starten",
+    "labelJava":  "Java",
+    "startJavaMode":  "Java-Modus starten",
+    "javaInfoTitle":  "Java-Modus",
+    "javaInfoText":  "Mit Java-Edition-Servern verbinden",
+    "howToJavaTitle":  "Java-Modus",
+    "@howToJavaTitle":  {
+                            "description":  "Title for the Java how-to modal"
+                        },
+    "howToJavaSubtitle":  "Über NetherLink mit Java-Edition-Servern verbinden",
+    "@howToJavaSubtitle":  {
+                               "description":  "Short subtitle for Java menu tile"
+                           },
+    "howToJavaBody":  "Java-Modus — Kurzanleitung:\n1. Wähle in der App den Java-Modus aus.\n2. Gib die Adresse und den Port deines Java-Edition-Servers ein (Standard: 25565).\n3. Drücke auf \"Java-Modus starten\" — NetherLink überbrückt die Verbindung.\n4. Öffne Minecraft Bedrock und gehe zum Freunde-Tab.\n5. Wähle den LAN-Server namens \"NetherLink\", um dem Java-Server beizutreten.\n\n⚠️ Wichtige Warnungen:\n- Ein gültiges Java-Edition-Konto (Microsoft) ist erforderlich.\n- Einige Server verwenden Anti-Cheat-Systeme, die dein Konto erkennen und sperren können.\n- Manche Server verbieten Bedrock-Clients ausdrücklich — prüfe immer die Serverregeln.\n- NetherLink ist nicht verantwortlich für Sperren, Einschränkungen oder andere kontobezogene Probleme, die durch die Nutzung dieser Funktion entstehen.\n- Nutzung auf eigenes Risiko.",
+    "@howToJavaBody":  {
+                           "description":  "Detailed steps for Java mode how-to modal"
+                       },
     "language":  "Deutsch",
     "@language":  {
                       "description":  "Your language name in your own language"
@@ -229,7 +248,7 @@
                                                    }
                               },
     "relayUnableConnect":  "Verbindung zu KEINEM NetherLink-Relay-Server möglich. Versuche es später erneut oder überprüfe dein Internet.",
-    "howToXboxTitle":  "Xbox / PS4-5 (LAN / Proxy)",
+    "howToXboxTitle":  "Xbox / PS4-5 (LAN / Proxy-Modus)",
     "@howToXboxTitle":  {
                             "description":  "Title for the Xbox / PS4-5 how-to modal"
                         },

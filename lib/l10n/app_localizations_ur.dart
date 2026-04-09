@@ -33,7 +33,7 @@ class AppLocalizationsUr extends AppLocalizations {
   String get joinUs => 'ہمارے ساتھ شامل ہوں';
 
   @override
-  String get more => 'More';
+  String get more => 'مزید';
 
   @override
   String get website => 'ویب سائٹ';
@@ -50,31 +50,31 @@ class AppLocalizationsUr extends AppLocalizations {
   }
 
   @override
-  String get serverDetailsLabel => 'Server Details';
+  String get serverDetailsLabel => 'سرور کی تفصیلات';
 
   @override
-  String get start => 'Start';
+  String get start => 'شروع کریں';
 
   @override
   String get labelJava => 'Java';
 
   @override
-  String get startJavaMode => 'Start Java Mode';
+  String get startJavaMode => 'جاوا موڈ شروع کریں';
 
   @override
-  String get javaInfoTitle => 'Java Mode';
+  String get javaInfoTitle => 'جاوا موڈ';
 
   @override
-  String get javaInfoText => 'Connect to Java Edition servers';
+  String get javaInfoText => 'Java Edition سرورز سے منسلک ہوں';
 
   @override
-  String get howToJavaTitle => 'Java Mode';
+  String get howToJavaTitle => 'جاوا موڈ';
 
   @override
-  String get howToJavaSubtitle => 'Connect to Java Edition servers via NetherLink';
+  String get howToJavaSubtitle => 'NetherLink کے ذریعے Java Edition سرورز سے منسلک ہوں';
 
   @override
-  String get howToJavaBody => 'Java Mode — quick steps:\n1. In the app, select Java mode.\n2. Enter your Java Edition server address and port (default: 25565).\n3. Press \"Start Java Mode\" — NetherLink bridges the connection.\n4. Open Minecraft Bedrock and go to the Friends tab.\n5. Select the LAN server named \"NetherLink\" to join the Java server.\n\n⚠️ Important warnings:\n- A valid Java Edition account (Microsoft) is required.\n- Some servers use anti-cheat systems that may detect and ban your account.\n- Certain servers explicitly prohibit Bedrock clients — always check the server rules.\n- NetherLink is not responsible for any account bans, suspensions, or other account-related issues that may result from using this feature.\n- Use at your own risk.';
+  String get howToJavaBody => 'جاوا موڈ — فوری مراحل:\n1. ایپ میں جاوا موڈ منتخب کریں۔\n2. اپنے Java Edition سرور کا پتہ اور پورٹ درج کریں (ڈیفالٹ: 25565)۔\n3. \"جاوا موڈ شروع کریں\" دبائیں — NetherLink کنکشن کو جوڑ دے گا۔\n4. Minecraft Bedrock کھولیں اور Friends ٹیب پر جائیں۔\n5. Java سرور میں شامل ہونے کے لیے \"NetherLink\" نام کا LAN سرور منتخب کریں۔\n\n⚠️ اہم انتباہات:\n- ایک درست Java Edition اکاؤنٹ (Microsoft) درکار ہے۔\n- کچھ سرور anti-cheat سسٹمز استعمال کرتے ہیں جو آپ کے اکاؤنٹ کا پتا لگا کر اسے بین کر سکتے ہیں۔\n- کچھ سرور Bedrock کلائنٹس کو واضح طور پر منع کرتے ہیں — ہمیشہ سرور کے قواعد چیک کریں۔\n- اس خصوصیت کے استعمال سے پیدا ہونے والی کسی بھی پابندی، معطلی یا اکاؤنٹ سے متعلق دیگر مسائل کے لیے NetherLink ذمہ دار نہیں ہے۔\n- اسے اپنے ذمہ استعمال کریں۔';
 
   @override
   String get language => 'اردو';
@@ -201,7 +201,7 @@ class AppLocalizationsUr extends AppLocalizations {
   }
 
   @override
-  String get nldServerLabel => 'NETHERLINK SERVER';
+  String get nldServerLabel => 'نیدرلنک سرور';
 
   @override
   String selectRelayLabel(Object name) {
@@ -274,7 +274,7 @@ class AppLocalizationsUr extends AppLocalizations {
   String get relayUnableConnect => 'کسی بھی NetherLink relay سرور سے جڑنا ممکن نہیں۔ بعد میں دوبارہ کوشش کریں یا اپنا انٹرنیٹ چیک کریں۔';
 
   @override
-  String get howToXboxTitle => 'Xbox / PS4-5 (LAN / Proxy)';
+  String get howToXboxTitle => 'Xbox / PS4-5 (LAN / پراکسی)';
 
   @override
   String get howToXboxSubtitle => 'LAN براڈکاسٹ یا پراکسی کے ذریعے کھیلیں';
@@ -283,7 +283,7 @@ class AppLocalizationsUr extends AppLocalizations {
   String get howToXboxBody => 'جڑنے کا طریقہ (Xbox / PS4 / PS5):\r\n1. یقینی بنائیں کہ NetherLink چلانے والی آپ کی ڈیوائس اور آپ کا کنسول ایک ہی مقامی نیٹ ورک پر ہیں۔\r\n2. ایپ میں اپنا Minecraft سرور ایڈریس اور پورٹ درج کریں اور \"براڈکاسٹنگ شروع کریں\" دبائیں۔\r\n3. کنسول پر Minecraft → Play کھولیں → LAN Worlds یا Friends ٹیب تلاش کریں اور فہرست تازہ کریں۔\r\n4. شامل ہونے کے لیے \"NetherLink\" نامی LAN سرور منتخب کریں۔\r\nنوٹس:\r\n- اگر سرور ظاہر نہ ہو تو تصدیق کریں کہ دونوں ڈیوائسز ایک ہی subnet پر ہیں اور ایپ اب بھی براڈکاسٹ کر رہی ہے۔\r\n- کچھ کنسول ماڈلز یا routers LAN دریافت کو بلاک کر سکتے ہیں؛ ضرورت ہو تو ایپ یا router settings تبدیل کر کے دیکھیں۔';
 
   @override
-  String get howToNintendoTitle => 'Nintendo Switch (DNS mode)';
+  String get howToNintendoTitle => 'Nintendo Switch (DNS موڈ)';
 
   @override
   String get howToNintendoSubtitle => 'Switch کے لیے DNS ریلے ہدایات';

@@ -33,7 +33,7 @@ class AppLocalizationsNl extends AppLocalizations {
   String get joinUs => 'Word lid';
 
   @override
-  String get more => 'More';
+  String get more => 'Meer';
 
   @override
   String get website => 'Website';
@@ -50,31 +50,31 @@ class AppLocalizationsNl extends AppLocalizations {
   }
 
   @override
-  String get serverDetailsLabel => 'Server Details';
+  String get serverDetailsLabel => 'Serverdetails';
 
   @override
-  String get start => 'Start';
+  String get start => 'Starten';
 
   @override
   String get labelJava => 'Java';
 
   @override
-  String get startJavaMode => 'Start Java Mode';
+  String get startJavaMode => 'Java-modus starten';
 
   @override
-  String get javaInfoTitle => 'Java Mode';
+  String get javaInfoTitle => 'Java-modus';
 
   @override
-  String get javaInfoText => 'Connect to Java Edition servers';
+  String get javaInfoText => 'Verbinden met Java Edition-servers';
 
   @override
-  String get howToJavaTitle => 'Java Mode';
+  String get howToJavaTitle => 'Java-modus';
 
   @override
-  String get howToJavaSubtitle => 'Connect to Java Edition servers via NetherLink';
+  String get howToJavaSubtitle => 'Verbinden met Java Edition-servers via NetherLink';
 
   @override
-  String get howToJavaBody => 'Java Mode — quick steps:\n1. In the app, select Java mode.\n2. Enter your Java Edition server address and port (default: 25565).\n3. Press \"Start Java Mode\" — NetherLink bridges the connection.\n4. Open Minecraft Bedrock and go to the Friends tab.\n5. Select the LAN server named \"NetherLink\" to join the Java server.\n\n⚠️ Important warnings:\n- A valid Java Edition account (Microsoft) is required.\n- Some servers use anti-cheat systems that may detect and ban your account.\n- Certain servers explicitly prohibit Bedrock clients — always check the server rules.\n- NetherLink is not responsible for any account bans, suspensions, or other account-related issues that may result from using this feature.\n- Use at your own risk.';
+  String get howToJavaBody => 'Java-modus — snelle stappen:\n1. Selecteer in de app de Java-modus.\n2. Voer het adres en de poort van je Java Edition-server in (standaard: 25565).\n3. Druk op \"Java-modus starten\" — NetherLink overbrugt de verbinding.\n4. Open Minecraft Bedrock en ga naar het tabblad Vrienden.\n5. Selecteer de LAN-server met de naam \"NetherLink\" om deel te nemen aan de Java-server.\n\n⚠️ Belangrijke waarschuwingen:\n- Een geldig Java Edition-account (Microsoft) is vereist.\n- Sommige servers gebruiken anti-cheat-systemen die je account kunnen detecteren en verbannen.\n- Sommige servers verbieden Bedrock-clients expliciet — controleer altijd de serverregels.\n- NetherLink is niet verantwoordelijk voor accountverboden, schorsingen of andere accountgerelateerde problemen die uit het gebruik van deze functie kunnen voortkomen.\n- Gebruik op eigen risico.';
 
   @override
   String get language => 'Nederlands';
@@ -201,7 +201,7 @@ class AppLocalizationsNl extends AppLocalizations {
   }
 
   @override
-  String get nldServerLabel => 'NETHERLINK SERVER';
+  String get nldServerLabel => 'NETHERLINK-SERVER';
 
   @override
   String selectRelayLabel(Object name) {
@@ -215,7 +215,7 @@ class AppLocalizationsNl extends AppLocalizations {
   String get savedServers => 'Opgeslagen servers';
 
   @override
-  String get serverAddressHint => 'Server Address';
+  String get serverAddressHint => 'Serveradres';
 
   @override
   String get portHint => 'Poort';
@@ -274,7 +274,7 @@ class AppLocalizationsNl extends AppLocalizations {
   String get relayUnableConnect => 'Kan geen verbinding maken met geen enkele NetherLink relay server. Probeer het later opnieuw of controleer je internet.';
 
   @override
-  String get howToXboxTitle => 'Xbox / PS4-5 (LAN / Proxy)';
+  String get howToXboxTitle => 'Xbox / PS4-5 (LAN / proxyverbinding)';
 
   @override
   String get howToXboxSubtitle => 'Spelen via LAN of proxy';
@@ -337,14 +337,14 @@ class AppLocalizationsNl extends AppLocalizations {
   String get helpFriendsModeBody => 'Vrienden-modus probleemoplossingstips:\n\n1. Zorg ervoor dat de relay account is toegevoegd/geaccepteerd in de console (indien nodig).\n2. Zorg ervoor dat zowel jij als je vrienden zichtbaarheid / NAT instellingen hebben die aanwezigheid toestaan.\n3. Probeer het spel opnieuw te starten en het tabblad Vrienden/LAN te verversen na het inschakelen van Vrienden-modus.\n\nAls de server nog steeds niet bij vrienden verschijnt, schakel dan Debugmodus in en controleer de logs om fouten te identificeren.';
 
   @override
-  String get changeLanguageTitle => 'Change language';
+  String get changeLanguageTitle => 'Taal wijzigen';
 
   @override
-  String get changeLanguage => 'Language';
+  String get changeLanguage => 'Taal';
 
   @override
-  String get useSystemLanguage => 'Use system language';
+  String get useSystemLanguage => 'Systeemtaal gebruiken';
 
   @override
-  String get couldNotOpenUrl => 'Could not open URL';
+  String get couldNotOpenUrl => 'Kon URL niet openen';
 }

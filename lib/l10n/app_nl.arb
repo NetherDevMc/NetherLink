@@ -19,6 +19,25 @@
     }
   },
 
+  "more": "Meer",
+  "serverDetailsLabel": "Serverdetails",
+  "start": "Starten",
+  "labelJava": "Java",
+  "startJavaMode": "Java-modus starten",
+  "javaInfoTitle": "Java-modus",
+  "javaInfoText": "Verbinden met Java Edition-servers",
+  "howToJavaTitle": "Java-modus",
+  "@howToJavaTitle": {
+    "description": "Title for the Java how-to modal"
+  },
+  "howToJavaSubtitle": "Verbinden met Java Edition-servers via NetherLink",
+  "@howToJavaSubtitle": {
+    "description": "Short subtitle for Java menu tile"
+  },
+  "howToJavaBody": "Java-modus — snelle stappen:\n1. Selecteer in de app de Java-modus.\n2. Voer het adres en de poort van je Java Edition-server in (standaard: 25565).\n3. Druk op \"Java-modus starten\" — NetherLink overbrugt de verbinding.\n4. Open Minecraft Bedrock en ga naar het tabblad Vrienden.\n5. Selecteer de LAN-server met de naam \"NetherLink\" om deel te nemen aan de Java-server.\n\n⚠️ Belangrijke waarschuwingen:\n- Een geldig Java Edition-account (Microsoft) is vereist.\n- Sommige servers gebruiken anti-cheat-systemen die je account kunnen detecteren en verbannen.\n- Sommige servers verbieden Bedrock-clients expliciet — controleer altijd de serverregels.\n- NetherLink is niet verantwoordelijk voor accountverboden, schorsingen of andere accountgerelateerde problemen die uit het gebruik van deze functie kunnen voortkomen.\n- Gebruik op eigen risico.",
+  "@howToJavaBody": {
+    "description": "Detailed steps for Java mode how-to modal"
+  },
   "language": "Nederlands",
   "@language": { "description": "Your language name in your own language" },
 
@@ -171,7 +190,7 @@
       "friend": {}
     }
   },
-  "nldServerLabel": "NETHERLINK SERVER",
+  "nldServerLabel": "NETHERLINK-SERVER",
   "@nldServerLabel": {
     "description": "Label text above the relay selector"
   },
@@ -184,7 +203,7 @@
   },
   "noSavedServers": "Geen opgeslagen servers",
   "savedServers": "Opgeslagen servers",
-  "serverAddressHint": "Server Address",
+  "serverAddressHint": "Serveradres",
   "portHint": "Poort",
   "manageServers": "Beheer servers",
   "manageServersTooltip": "Beheer servers",
@@ -211,7 +230,7 @@
     }
   },
   "relayUnableConnect": "Kan geen verbinding maken met geen enkele NetherLink relay server. Probeer het later opnieuw of controleer je internet.",
-  "howToXboxTitle": "Xbox / PS4-5 (LAN / Proxy)",
+  "howToXboxTitle": "Xbox / PS4-5 (LAN / proxyverbinding)",
   "@howToXboxTitle": {
     "description": "Title for the Xbox / PS4-5 how-to modal"
   },
@@ -294,5 +313,21 @@
   "helpFriendsModeBody": "Vrienden-modus probleemoplossingstips:\n\n1. Zorg ervoor dat de relay account is toegevoegd/geaccepteerd in de console (indien nodig).\n2. Zorg ervoor dat zowel jij als je vrienden zichtbaarheid / NAT instellingen hebben die aanwezigheid toestaan.\n3. Probeer het spel opnieuw te starten en het tabblad Vrienden/LAN te verversen na het inschakelen van Vrienden-modus.\n\nAls de server nog steeds niet bij vrienden verschijnt, schakel dan Debugmodus in en controleer de logs om fouten te identificeren.",
   "@helpFriendsModeBody": {
     "description": "Detailed placeholder for Friends mode troubleshooting"
+  },
+  "changeLanguageTitle": "Taal wijzigen",
+  "@changeLanguageTitle": {
+    "description": "Title for the language selection dialog"
+  },
+  "changeLanguage": "Taal",
+  "@changeLanguage": {
+    "description": "Label for the language button in the bottom nav"
+  },
+  "useSystemLanguage": "Systeemtaal gebruiken",
+  "@useSystemLanguage": {
+    "description": "Button that resets localization to the system/default locale"
+  },
+  "couldNotOpenUrl": "Kon URL niet openen",
+  "@couldNotOpenUrl": {
+    "description": "Snackbar message when launching an external URL fails"
   }
 }
