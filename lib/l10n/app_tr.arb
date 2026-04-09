@@ -18,6 +18,25 @@
       "appCreator": {}
     }
   },
+  "more": "Daha Fazla",
+  "serverDetailsLabel": "Sunucu Detayları",
+  "start": "Başlat",
+  "labelJava": "Java",
+  "startJavaMode": "Java Modunu Başlat",
+  "javaInfoTitle": "Java Modu",
+  "javaInfoText": "Java Edition sunucularına bağlanın",
+  "howToJavaTitle": "Java Modu",
+  "@howToJavaTitle": {
+    "description": "Title for the Java how-to modal"
+  },
+  "howToJavaSubtitle": "NetherLink üzerinden Java Edition sunucularına bağlanın",
+  "@howToJavaSubtitle": {
+    "description": "Short subtitle for Java menu tile"
+  },
+  "howToJavaBody": "Java Modu — hızlı adımlar:\n1. Uygulamada Java modunu seçin.\n2. Java Edition sunucu adresinizi ve portunuzu girin (varsayılan: 25565).\n3. \"Java Modunu Başlat\" düğmesine basın — NetherLink bağlantıyı köprüleyecektir.\n4. Minecraft Bedrock'u açın ve Arkadaşlar sekmesine gidin.\n5. Java sunucusuna katılmak için \"NetherLink\" adlı LAN sunucusunu seçin.\n\n⚠️ Önemli uyarılar:\n- Geçerli bir Java Edition hesabı (Microsoft) gereklidir.\n- Bazı sunucular hesabınızı tespit edip yasaklayabilecek hile önleme sistemleri kullanır.\n- Bazı sunucular Bedrock istemcilerini açıkça yasaklar — her zaman sunucu kurallarını kontrol edin.\n- Bu özelliğin kullanılmasından kaynaklanabilecek hesap yasakları, askıya almalar veya hesapla ilgili diğer sorunlardan NetherLink sorumlu değildir.\n- Kendi riskinizle kullanın.",
+  "@howToJavaBody": {
+    "description": "Detailed steps for Java mode how-to modal"
+  },
   "language": "Türkçe",
   "@language": { "description": "Your language name in your own language" },
 
@@ -73,7 +92,7 @@
   "@addressLabel": {
     "description": "Form label for server address"
   },
-  "portLabel": "Port *",
+  "portLabel": "Bağlantı Noktası *",
   "@portLabel": {
     "description": "Form label for server port"
   },
@@ -184,7 +203,7 @@
   "noSavedServers": "Kaydedilen sunucu yok",
   "savedServers": "Kaydedilen sunucular",
   "serverAddressHint": "Sunucu Adresi",
-  "portHint": "Port",
+  "portHint": "Bağlantı Noktası",
   "manageServers": "Sunucuları yönet",
   "manageServersTooltip": "Sunucuları yönet",
   "stopBroadcasting": "Yayını Durdur",
@@ -210,7 +229,7 @@
     }
   },
   "relayUnableConnect": "Hiçbir NetherLink aktarım sunucusuna bağlanılamıyor. Daha sonra tekrar deneyin veya internet bağlantınızı kontrol edin.",
-  "howToXboxTitle": "Xbox / PS4-5 (LAN / Proxy)",
+  "howToXboxTitle": "Xbox / PS4-5 (LAN / vekil)",
   "@howToXboxTitle": {
     "description": "Title for the Xbox / PS4-5 how-to modal"
   },
@@ -293,5 +312,21 @@
   "helpFriendsModeBody": "Arkadaş modu için sorun giderme ipuçları:\n\n1. Aktarıcı arkadaş hesabının konsolda eklendiğinden/kabul edildiğinden emin olun (gerekiyorsa).\n2. Arkadaş modunu etkinleştirdikten sonra oyunu yeniden başlatmayı ve Arkadaşlar/LAN sekmesini yenilemeyi deneyin.\n\nSunucu arkadaşlarınıza hâlâ görünmüyorsa hataları belirlemek için Hata Ayıklama Modunu etkinleştirin ve kayıtları kontrol edin.",
   "@helpFriendsModeBody": {
     "description": "Detailed placeholder for Friends mode troubleshooting"
+  },
+  "changeLanguageTitle": "Dili değiştir",
+  "@changeLanguageTitle": {
+    "description": "Title for the language selection dialog"
+  },
+  "changeLanguage": "Dil",
+  "@changeLanguage": {
+    "description": "Label for the language button in the bottom nav"
+  },
+  "useSystemLanguage": "Sistem dilini kullan",
+  "@useSystemLanguage": {
+    "description": "Button that resets localization to the system/default locale"
+  },
+  "couldNotOpenUrl": "URL açılamadı",
+  "@couldNotOpenUrl": {
+    "description": "Snackbar message when launching an external URL fails"
   }
 }

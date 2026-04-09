@@ -20,6 +20,25 @@
                                                           }
                                        }
                   },
+    "more":  "المزيد",
+    "serverDetailsLabel":  "تفاصيل الخادم",
+    "start":  "ابدأ",
+    "labelJava":  "Java",
+    "startJavaMode":  "ابدأ وضع Java",
+    "javaInfoTitle":  "وضع Java",
+    "javaInfoText":  "اتصل بخوادم Java Edition",
+    "howToJavaTitle":  "وضع Java",
+    "@howToJavaTitle":  {
+                            "description":  "Title for the Java how-to modal"
+                        },
+    "howToJavaSubtitle":  "اتصل بخوادم Java Edition عبر NetherLink",
+    "@howToJavaSubtitle":  {
+                               "description":  "Short subtitle for Java menu tile"
+                           },
+    "howToJavaBody":  "وضع Java — خطوات سريعة:\n1. في التطبيق، اختر وضع Java.\n2. أدخل عنوان خادم Java Edition والمنفذ (الافتراضي: 25565).\n3. اضغط على \"ابدأ وضع Java\" — سيقوم NetherLink بربط الاتصال.\n4. افتح Minecraft Bedrock وانتقل إلى علامة تبويب الأصدقاء.\n5. اختر خادم LAN المسمى \"NetherLink\" للانضمام إلى خادم Java.\n\n⚠️ تحذيرات مهمة:\n- يلزم وجود حساب Java Edition صالح (Microsoft).\n- تستخدم بعض الخوادم أنظمة مكافحة الغش وقد تكتشف حسابك وتحظره.\n- بعض الخوادم تحظر عملاء Bedrock صراحةً — تحقق دائمًا من قواعد الخادم.\n- NetherLink غير مسؤول عن أي حظر أو تعليق أو أي مشكلات أخرى متعلقة بالحساب قد تنتج عن استخدام هذه الميزة.\n- استخدمها على مسؤوليتك الخاصة.",
+    "@howToJavaBody":  {
+                           "description":  "Detailed steps for Java mode how-to modal"
+                       },
     "language":  "العربية",
     "@language":  {
                       "description":  "Your language name in your own language"

@@ -33,7 +33,7 @@ class AppLocalizationsSw extends AppLocalizations {
   String get joinUs => 'Jiunge Nasi';
 
   @override
-  String get more => 'More';
+  String get more => 'Zaidi';
 
   @override
   String get website => 'Tovuti';
@@ -50,31 +50,31 @@ class AppLocalizationsSw extends AppLocalizations {
   }
 
   @override
-  String get serverDetailsLabel => 'Server Details';
+  String get serverDetailsLabel => 'Maelezo ya seva';
 
   @override
-  String get start => 'Start';
+  String get start => 'Anza';
 
   @override
   String get labelJava => 'Java';
 
   @override
-  String get startJavaMode => 'Start Java Mode';
+  String get startJavaMode => 'Anza hali ya Java';
 
   @override
-  String get javaInfoTitle => 'Java Mode';
+  String get javaInfoTitle => 'Hali ya Java';
 
   @override
-  String get javaInfoText => 'Connect to Java Edition servers';
+  String get javaInfoText => 'Unganisha kwenye seva za Java Edition';
 
   @override
-  String get howToJavaTitle => 'Java Mode';
+  String get howToJavaTitle => 'Hali ya Java';
 
   @override
-  String get howToJavaSubtitle => 'Connect to Java Edition servers via NetherLink';
+  String get howToJavaSubtitle => 'Unganisha kwenye seva za Java Edition kupitia NetherLink';
 
   @override
-  String get howToJavaBody => 'Java Mode — quick steps:\n1. In the app, select Java mode.\n2. Enter your Java Edition server address and port (default: 25565).\n3. Press \"Start Java Mode\" — NetherLink bridges the connection.\n4. Open Minecraft Bedrock and go to the Friends tab.\n5. Select the LAN server named \"NetherLink\" to join the Java server.\n\n⚠️ Important warnings:\n- A valid Java Edition account (Microsoft) is required.\n- Some servers use anti-cheat systems that may detect and ban your account.\n- Certain servers explicitly prohibit Bedrock clients — always check the server rules.\n- NetherLink is not responsible for any account bans, suspensions, or other account-related issues that may result from using this feature.\n- Use at your own risk.';
+  String get howToJavaBody => 'Hali ya Java — hatua za haraka:\n1. Kwenye programu, chagua hali ya Java.\n2. Weka anwani na port ya seva yako ya Java Edition (chaguomsingi: 25565).\n3. Bonyeza \"Anza hali ya Java\" — NetherLink itaunganisha muunganisho.\n4. Fungua Minecraft Bedrock na uende kwenye kichupo cha Marafiki.\n5. Chagua seva ya LAN inayoitwa \"NetherLink\" ili kujiunga na seva ya Java.\n\n⚠️ Maonyo muhimu:\n- Akaunti halali ya Java Edition (Microsoft) inahitajika.\n- Baadhi ya seva hutumia mifumo ya anti-cheat ambayo inaweza kugundua na kupiga marufuku akaunti yako.\n- Baadhi ya seva hukataza wazi wateja wa Bedrock — hakikisha unakagua sheria za seva kila wakati.\n- NetherLink haiwajibiki kwa marufuku, kusimamishwa au matatizo mengine yanayohusiana na akaunti yanayoweza kusababishwa na kutumia kipengele hiki.\n- Tumia kwa hatari yako mwenyewe.';
 
   @override
   String get language => 'Kiswahili';
@@ -119,7 +119,7 @@ class AppLocalizationsSw extends AppLocalizations {
   String get addressLabel => 'Anwani *';
 
   @override
-  String get portLabel => 'Port *';
+  String get portLabel => 'Porti *';
 
   @override
   String get descriptionLabel => 'Maelezo (Hiari)';
@@ -218,7 +218,7 @@ class AppLocalizationsSw extends AppLocalizations {
   String get serverAddressHint => 'Anwani ya Seva';
 
   @override
-  String get portHint => 'Port';
+  String get portHint => 'Porti';
 
   @override
   String get manageServers => 'Dhibiti seva';
@@ -274,7 +274,7 @@ class AppLocalizationsSw extends AppLocalizations {
   String get relayUnableConnect => 'Imeshindikana kuunganika kwa seva YOYOTE ya relay ya NetherLink. Jaribu tena baadaye au angalia intaneti yako.';
 
   @override
-  String get howToXboxTitle => 'Xbox / PS4-5 (LAN / Proxy)';
+  String get howToXboxTitle => 'Xbox / PS4-5 (LAN / proksi)';
 
   @override
   String get howToXboxSubtitle => 'Cheza kupitia utangazaji wa LAN au proxy';
