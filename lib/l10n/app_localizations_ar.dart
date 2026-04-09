@@ -47,31 +47,31 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String get serverDetailsLabel => 'Server Details';
+  String get serverDetailsLabel => 'تفاصيل الخادم';
 
   @override
-  String get start => 'Start';
+  String get start => 'ابدأ';
 
   @override
-  String get labelJava => 'Java';
+  String get labelJava => 'جافا';
 
   @override
-  String get startJavaMode => 'Start Java Mode';
+  String get startJavaMode => 'ابدأ وضع جافا';
 
   @override
-  String get javaInfoTitle => 'Java Mode';
+  String get javaInfoTitle => 'وضع جافا';
 
   @override
-  String get javaInfoText => 'Connect to Java Edition servers';
+  String get javaInfoText => 'اتصل بخوادم Java Edition';
 
   @override
-  String get howToJavaTitle => 'Java Mode';
+  String get howToJavaTitle => 'وضع جافا';
 
   @override
-  String get howToJavaSubtitle => 'Connect to Java Edition servers via NetherLink';
+  String get howToJavaSubtitle => 'اتصل بخوادم Java Edition عبر NetherLink';
 
   @override
-  String get howToJavaBody => 'Java Mode — quick steps:\n1. In the app, select Java mode.\n2. Enter your Java Edition server address and port (default: 25565).\n3. Press \"Start Java Mode\" — NetherLink bridges the connection.\n4. Open Minecraft Bedrock and go to the Friends tab.\n5. Select the LAN server named \"NetherLink\" to join the Java server.\n\n⚠️ Important warnings:\n- A valid Java Edition account (Microsoft) is required.\n- Some servers use anti-cheat systems that may detect and ban your account.\n- Certain servers explicitly prohibit Bedrock clients — always check the server rules.\n- NetherLink is not responsible for any account bans, suspensions, or other account-related issues that may result from using this feature.\n- Use at your own risk.';
+  String get howToJavaBody => 'وضع جافا — خطوات سريعة:\r\n1. في التطبيق، اختر وضع جافا.\r\n2. أدخل عنوان خادم Java Edition والمنفذ (الافتراضي: 25565).\r\n3. اضغط على \"ابدأ وضع جافا\" — يقوم NetherLink بربط الاتصال.\r\n4. افتح Minecraft Bedrock وانتقل إلى تبويب الأصدقاء.\r\n5. اختر خادم LAN المسمى \"NetherLink\" للانضمام إلى خادم جافا.\r\n\r\n⚠️ تحذيرات مهمة:\r\n- يلزم حساب Java Edition صالح (Microsoft).\r\n- تستخدم بعض الخوادم أنظمة مكافحة غش قد تكتشف حسابك وتحظره.\r\n- تمنع بعض الخوادم عملاء Bedrock صراحةً — تحقق دائمًا من قواعد الخادم.\r\n- NetherLink غير مسؤول عن أي حظر أو إيقاف أو أي مشاكل متعلقة بالحساب قد تنتج عن استخدام هذه الميزة.\r\n- استخدمها على مسؤوليتك الخاصة.';
 
   @override
   String get language => 'العربية';

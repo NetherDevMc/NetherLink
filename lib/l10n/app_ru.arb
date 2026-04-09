@@ -20,6 +20,15 @@
                                                           }
                                        }
                   },
+    "serverDetailsLabel":  "Данные сервера",
+    "start":  "Начать",
+    "labelJava":  "Java",
+    "startJavaMode":  "Запустить режим Java",
+    "javaInfoTitle":  "Режим Java",
+    "javaInfoText":  "Подключайтесь к серверам Java Edition",
+    "howToJavaTitle":  "Режим Java",
+    "howToJavaSubtitle":  "Подключайтесь к серверам Java Edition через NetherLink",
+    "howToJavaBody":  "Режим Java — быстрые шаги:\r\n1. В приложении выберите режим Java.\r\n2. Введите адрес и порт вашего сервера Java Edition (по умолчанию: 25565).\r\n3. Нажмите \"Запустить режим Java\" — NetherLink свяжет подключение.\r\n4. Откройте Minecraft Bedrock и перейдите на вкладку Friends.\r\n5. Выберите LAN-сервер с именем \"NetherLink\", чтобы подключиться к Java-серверу.\r\n\r\n⚠️ Важные предупреждения:\r\n- Требуется действующая учетная запись Java Edition (Microsoft).\r\n- Некоторые серверы используют античит-системы, которые могут обнаружить и заблокировать вашу учетную запись.\r\n- Некоторые серверы прямо запрещают клиентов Bedrock — всегда проверяйте правила сервера.\r\n- NetherLink не несет ответственности за блокировки, приостановки или другие проблемы с учетной записью, которые могут возникнуть при использовании этой функции.\r\n- Используйте на свой страх и риск.",
     "language":  "Русский",
     "@language":  {
                       "description":  "Your language name in your own language"
@@ -229,7 +238,7 @@
                                                    }
                               },
     "relayUnableConnect":  "Не удалось подключиться ни к одному relay-серверу NetherLink. Попробуйте позже или проверьте интернет.",
-    "howToXboxTitle":  "Xbox / PS4-5 (LAN / Proxy)",
+    "howToXboxTitle":  "Xbox / PS4-5 (LAN / прокси)",
     "@howToXboxTitle":  {
                             "description":  "Title for the Xbox / PS4-5 how-to modal"
                         },

@@ -20,6 +20,15 @@
                                                           }
                                        }
                   },
+    "serverDetailsLabel":  "Detail Server",
+    "start":  "Mulai",
+    "labelJava":  "Java",
+    "startJavaMode":  "Mulai Mode Java",
+    "javaInfoTitle":  "Mode Java",
+    "javaInfoText":  "Hubungkan ke server Java Edition",
+    "howToJavaTitle":  "Mode Java",
+    "howToJavaSubtitle":  "Hubungkan ke server Java Edition melalui NetherLink",
+    "howToJavaBody":  "Mode Java — langkah cepat:\r\n1. Di aplikasi, pilih mode Java.\r\n2. Masukkan alamat dan port server Java Edition Anda (default: 25565).\r\n3. Tekan \"Mulai Mode Java\" — NetherLink akan menjembatani koneksi.\r\n4. Buka Minecraft Bedrock dan masuk ke tab Friends.\r\n5. Pilih server LAN bernama \"NetherLink\" untuk bergabung ke server Java.\r\n\r\n⚠️ Peringatan penting:\r\n- Diperlukan akun Java Edition yang valid (Microsoft).\r\n- Beberapa server menggunakan sistem anti-cheat yang dapat mendeteksi dan memblokir akun Anda.\r\n- Beberapa server secara eksplisit melarang klien Bedrock — selalu periksa aturan server.\r\n- NetherLink tidak bertanggung jawab atas pemblokiran akun, penangguhan, atau masalah terkait akun lainnya yang mungkin timbul akibat penggunaan fitur ini.\r\n- Gunakan dengan risiko Anda sendiri.",
     "language":  "Indonesia",
     "@language":  {
                       "description":  "Your language name in your own language"
@@ -185,7 +194,7 @@
                                                                      }
                                                       }
                                  },
-    "nldServerLabel":  "NETHERLINK SERVER",
+    "nldServerLabel":  "Server NETHERLINK",
     "@nldServerLabel":  {
                             "description":  "Label text above the relay selector"
                         },
@@ -229,7 +238,7 @@
                                                    }
                               },
     "relayUnableConnect":  "Tidak dapat terhubung ke server relay NetherLink mana pun. Coba lagi nanti atau periksa internet Anda.",
-    "howToXboxTitle":  "Xbox / PS4-5 (LAN / Proxy)",
+    "howToXboxTitle":  "Xbox / PS4-5 (LAN / Proksi)",
     "@howToXboxTitle":  {
                             "description":  "Title for the Xbox / PS4-5 how-to modal"
                         },

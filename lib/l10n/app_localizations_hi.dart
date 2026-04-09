@@ -47,31 +47,31 @@ class AppLocalizationsHi extends AppLocalizations {
   }
 
   @override
-  String get serverDetailsLabel => 'Server Details';
+  String get serverDetailsLabel => 'सर्वर विवरण';
 
   @override
-  String get start => 'Start';
+  String get start => 'शुरू करें';
 
   @override
-  String get labelJava => 'Java';
+  String get labelJava => 'जावा';
 
   @override
-  String get startJavaMode => 'Start Java Mode';
+  String get startJavaMode => 'जावा मोड शुरू करें';
 
   @override
-  String get javaInfoTitle => 'Java Mode';
+  String get javaInfoTitle => 'जावा मोड';
 
   @override
-  String get javaInfoText => 'Connect to Java Edition servers';
+  String get javaInfoText => 'Java Edition सर्वरों से कनेक्ट करें';
 
   @override
-  String get howToJavaTitle => 'Java Mode';
+  String get howToJavaTitle => 'जावा मोड';
 
   @override
-  String get howToJavaSubtitle => 'Connect to Java Edition servers via NetherLink';
+  String get howToJavaSubtitle => 'NetherLink के माध्यम से Java Edition सर्वरों से कनेक्ट करें';
 
   @override
-  String get howToJavaBody => 'Java Mode — quick steps:\n1. In the app, select Java mode.\n2. Enter your Java Edition server address and port (default: 25565).\n3. Press \"Start Java Mode\" — NetherLink bridges the connection.\n4. Open Minecraft Bedrock and go to the Friends tab.\n5. Select the LAN server named \"NetherLink\" to join the Java server.\n\n⚠️ Important warnings:\n- A valid Java Edition account (Microsoft) is required.\n- Some servers use anti-cheat systems that may detect and ban your account.\n- Certain servers explicitly prohibit Bedrock clients — always check the server rules.\n- NetherLink is not responsible for any account bans, suspensions, or other account-related issues that may result from using this feature.\n- Use at your own risk.';
+  String get howToJavaBody => 'जावा मोड — त्वरित चरण:\r\n1. ऐप में जावा मोड चुनें।\r\n2. अपने Java Edition सर्वर का पता और पोर्ट दर्ज करें (डिफ़ॉल्ट: 25565)।\r\n3. \"जावा मोड शुरू करें\" दबाएँ — NetherLink कनेक्शन को ब्रिज करेगा।\r\n4. Minecraft Bedrock खोलें और Friends टैब पर जाएँ।\r\n5. Java सर्वर से जुड़ने के लिए \"NetherLink\" नाम वाले LAN सर्वर को चुनें।\r\n\r\n⚠️ महत्वपूर्ण चेतावनियाँ:\r\n- एक वैध Java Edition खाता (Microsoft) आवश्यक है।\r\n- कुछ सर्वर एंटी-चीट सिस्टम का उपयोग करते हैं जो आपके खाते का पता लगाकर उसे बैन कर सकते हैं।\r\n- कुछ सर्वर Bedrock क्लाइंट्स को स्पष्ट रूप से प्रतिबंधित करते हैं — हमेशा सर्वर के नियम जाँचें।\r\n- इस सुविधा के उपयोग से होने वाले किसी भी अकाउंट बैन, निलंबन या अन्य अकाउंट-संबंधित समस्याओं के लिए NetherLink ज़िम्मेदार नहीं है।\r\n- इसे अपने जोखिम पर उपयोग करें।';
 
   @override
   String get language => 'हिन्दी';
@@ -271,7 +271,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get relayUnableConnect => 'किसी भी NetherLink relay server से कनेक्ट नहीं हो सका। बाद में फिर प्रयास करें या अपना इंटरनेट जाँचें।';
 
   @override
-  String get howToXboxTitle => 'Xbox / PS4-5 (LAN / Proxy)';
+  String get howToXboxTitle => 'Xbox / PS4-5 (LAN / प्रॉक्सी)';
 
   @override
   String get howToXboxSubtitle => 'LAN ब्रॉडकास्ट या प्रॉक्सी के माध्यम से खेलें';

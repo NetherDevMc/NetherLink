@@ -20,6 +20,15 @@
                                                           }
                                        }
                   },
+    "serverDetailsLabel":  "Detalles del servidor",
+    "start":  "Iniciar",
+    "labelJava":  "Java",
+    "startJavaMode":  "Iniciar modo Java",
+    "javaInfoTitle":  "Modo Java",
+    "javaInfoText":  "Conéctate a servidores de Java Edition",
+    "howToJavaTitle":  "Modo Java",
+    "howToJavaSubtitle":  "Conéctate a servidores de Java Edition mediante NetherLink",
+    "howToJavaBody":  "Modo Java — pasos rápidos:\r\n1. En la aplicación, selecciona el modo Java.\r\n2. Introduce la dirección y el puerto de tu servidor de Java Edition (predeterminado: 25565).\r\n3. Pulsa \"Iniciar modo Java\" — NetherLink enlazará la conexión.\r\n4. Abre Minecraft Bedrock y ve a la pestaña Amigos.\r\n5. Selecciona el servidor LAN llamado \"NetherLink\" para unirte al servidor Java.\r\n\r\n⚠️ Advertencias importantes:\r\n- Se requiere una cuenta válida de Java Edition (Microsoft).\r\n- Algunos servidores usan sistemas antitrampas que pueden detectar y bloquear tu cuenta.\r\n- Algunos servidores prohíben explícitamente a los clientes de Bedrock; revisa siempre las reglas del servidor.\r\n- NetherLink no se hace responsable de bloqueos, suspensiones u otros problemas relacionados con la cuenta que puedan derivarse del uso de esta función.\r\n- Úsalo bajo tu propia responsabilidad.",
     "language":  "Español",
     "@language":  {
                       "description":  "Your language name in your own language"
@@ -229,7 +238,7 @@
                                                    }
                               },
     "relayUnableConnect":  "No se pudo conectar a NINGÚN servidor relay de NetherLink. Inténtalo más tarde o revisa tu conexión a internet.",
-    "howToXboxTitle":  "Xbox / PS4-5 (LAN / Proxy)",
+    "howToXboxTitle":  "Xbox / PS4-5 (LAN / proxy)",
     "@howToXboxTitle":  {
                             "description":  "Title for the Xbox / PS4-5 how-to modal"
                         },

@@ -20,6 +20,15 @@
                                                           }
                                        }
                   },
+    "serverDetailsLabel":  "Détails du serveur",
+    "start":  "Démarrer",
+    "labelJava":  "Java",
+    "startJavaMode":  "Démarrer le mode Java",
+    "javaInfoTitle":  "Mode Java",
+    "javaInfoText":  "Se connecter à des serveurs Java Edition",
+    "howToJavaTitle":  "Mode Java",
+    "howToJavaSubtitle":  "Se connecter aux serveurs Java Edition via NetherLink",
+    "howToJavaBody":  "Mode Java — étapes rapides :\r\n1. Dans l'application, sélectionnez le mode Java.\r\n2. Saisissez l'adresse et le port de votre serveur Java Edition (par défaut : 25565).\r\n3. Appuyez sur \"Démarrer le mode Java\" — NetherLink fera le pont pour la connexion.\r\n4. Ouvrez Minecraft Bedrock et allez dans l'onglet Amis.\r\n5. Sélectionnez le serveur LAN nommé \"NetherLink\" pour rejoindre le serveur Java.\r\n\r\n⚠️ Avertissements importants :\r\n- Un compte Java Edition valide (Microsoft) est requis.\r\n- Certains serveurs utilisent des systèmes anti-triche qui peuvent détecter et bannir votre compte.\r\n- Certains serveurs interdisent explicitement les clients Bedrock ; vérifiez toujours les règles du serveur.\r\n- NetherLink n'est pas responsable des bannissements, suspensions ou autres problèmes liés au compte pouvant résulter de l'utilisation de cette fonctionnalité.\r\n- Utilisez cette fonction à vos risques et périls.",
     "language":  "Français",
     "@language":  {
                       "description":  "Your language name in your own language"

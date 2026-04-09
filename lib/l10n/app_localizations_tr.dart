@@ -47,31 +47,31 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
-  String get serverDetailsLabel => 'Server Details';
+  String get serverDetailsLabel => 'Sunucu Ayrıntıları';
 
   @override
-  String get start => 'Start';
+  String get start => 'Başlat';
 
   @override
   String get labelJava => 'Java';
 
   @override
-  String get startJavaMode => 'Start Java Mode';
+  String get startJavaMode => 'Java Modunu Başlat';
 
   @override
-  String get javaInfoTitle => 'Java Mode';
+  String get javaInfoTitle => 'Java Modu';
 
   @override
-  String get javaInfoText => 'Connect to Java Edition servers';
+  String get javaInfoText => 'Java Edition sunucularına bağlan';
 
   @override
-  String get howToJavaTitle => 'Java Mode';
+  String get howToJavaTitle => 'Java Modu';
 
   @override
-  String get howToJavaSubtitle => 'Connect to Java Edition servers via NetherLink';
+  String get howToJavaSubtitle => 'NetherLink üzerinden Java Edition sunucularına bağlan';
 
   @override
-  String get howToJavaBody => 'Java Mode — quick steps:\n1. In the app, select Java mode.\n2. Enter your Java Edition server address and port (default: 25565).\n3. Press \"Start Java Mode\" — NetherLink bridges the connection.\n4. Open Minecraft Bedrock and go to the Friends tab.\n5. Select the LAN server named \"NetherLink\" to join the Java server.\n\n⚠️ Important warnings:\n- A valid Java Edition account (Microsoft) is required.\n- Some servers use anti-cheat systems that may detect and ban your account.\n- Certain servers explicitly prohibit Bedrock clients — always check the server rules.\n- NetherLink is not responsible for any account bans, suspensions, or other account-related issues that may result from using this feature.\n- Use at your own risk.';
+  String get howToJavaBody => 'Java Modu — hızlı adımlar:\n1. Uygulamada Java modunu seçin.\n2. Java Edition sunucu adresinizi ve portunuzu girin (varsayılan: 25565).\n3. \"Java Modunu Başlat\" düğmesine basın — NetherLink bağlantıyı köprüler.\n4. Minecraft Bedrock\'u açın ve Arkadaşlar sekmesine gidin.\n5. Java sunucusuna katılmak için \"NetherLink\" adlı LAN sunucusunu seçin.\n\n⚠️ Önemli uyarılar:\n- Geçerli bir Java Edition hesabı (Microsoft) gereklidir.\n- Bazı sunucular, hesabınızı algılayıp yasaklayabilecek hile önleme sistemleri kullanır.\n- Bazı sunucular Bedrock istemcilerini açıkça yasaklar — sunucu kurallarını her zaman kontrol edin.\n- Bu özelliğin kullanımından kaynaklanabilecek hesap yasakları, askıya almalar veya hesapla ilgili diğer sorunlardan NetherLink sorumlu değildir.\n- Kendi sorumluluğunuzda kullanın.';
 
   @override
   String get language => 'Türkçe';
@@ -271,7 +271,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get relayUnableConnect => 'Hiçbir NetherLink aktarım sunucusuna bağlanılamıyor. Daha sonra tekrar deneyin veya internet bağlantınızı kontrol edin.';
 
   @override
-  String get howToXboxTitle => 'Xbox / PS4-5 (LAN / Proxy)';
+  String get howToXboxTitle => 'Xbox / PS4-5 (LAN / Ara Sunucu)';
 
   @override
   String get howToXboxSubtitle => 'LAN yayını veya proxy ile oyna';
@@ -334,14 +334,14 @@ class AppLocalizationsTr extends AppLocalizations {
   String get helpFriendsModeBody => 'Arkadaş modu için sorun giderme ipuçları:\n\n1. Aktarıcı arkadaş hesabının konsolda eklendiğinden/kabul edildiğinden emin olun (gerekiyorsa).\n2. Arkadaş modunu etkinleştirdikten sonra oyunu yeniden başlatmayı ve Arkadaşlar/LAN sekmesini yenilemeyi deneyin.\n\nSunucu arkadaşlarınıza hâlâ görünmüyorsa hataları belirlemek için Hata Ayıklama Modunu etkinleştirin ve kayıtları kontrol edin.';
 
   @override
-  String get changeLanguageTitle => 'Change language';
+  String get changeLanguageTitle => 'Dili değiştir';
 
   @override
-  String get changeLanguage => 'Language';
+  String get changeLanguage => 'Dil';
 
   @override
-  String get useSystemLanguage => 'Use system language';
+  String get useSystemLanguage => 'Sistem dilini kullan';
 
   @override
-  String get couldNotOpenUrl => 'Could not open URL';
+  String get couldNotOpenUrl => 'URL açılamadı';
 }

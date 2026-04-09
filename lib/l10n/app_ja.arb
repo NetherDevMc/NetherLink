@@ -11,7 +11,7 @@
     "website":  "ウェブサイト",
     "howToUseMenu":  "使い方",
     "support":  "サポート",
-    "helpText":  "{appCreator} によって作成されました。\r\n\r\n使い方:\r\n1. Minecraft サーバーのアドレスとポートを入力します（デフォルト: 19132）\r\n   — またはドロップダウンから以前保存したサーバーを選択します\r\n2. （任意）現在地に最も近い Relay Server（EU または US）を選択します\r\n3. \"ブロードキャスト開始\" をクリックして開始します\r\n4. コンソール/デバイスで: Minecraft \u003e Play \u003e Friends\r\n5. \"NetherLink\" という名前の LAN サーバーが表示されます\r\n6. それをクリックすると、NetherLink 経由で外部サーバーに参加できます\r\n\r\nNintendo Switch（DNS モード）:\r\n1. 接続パネルで \"Nintendo Switch\" を有効にします\r\n2. Relay Server（EU または US）を選択します\r\n3. \"Send DNS Config\" をクリックすると、設定が relay に送信されます\r\n   （これは LAN サーバーをブロードキャストしません）\r\n4. Switch で NetherLink の DNS 設定を適用し、\r\n   NetherLink 用に使っているサーバー項目から参加します\r\n\r\nメモ:\r\n- LAN ブロードキャストでは、NetherLink とコンソールが同じローカルネットワーク上にある必要があります。\r\n- ヒント: 最良のパフォーマンスを得るには、最も近い relay サーバーを選択してください。",
+    "helpText":  "{appCreator} によって作成されました。\r\n\r\n使い方:\r\n1. Minecraft サーバーのアドレスとポートを入力します（デフォルト: 19132）\r\n   — またはドロップダウンから以前保存したサーバーを選択します\r\n2. （任意）現在地に最も近いリレーサーバー（EU または US）を選択します\r\n3. \"ブロードキャスト開始\" をクリックして開始します\r\n4. コンソール/デバイスで: Minecraft \u003e プレイ \u003e フレンド\r\n5. \"NetherLink\" という名前の LAN サーバーが表示されます\r\n6. それをクリックすると、NetherLink 経由で外部サーバーに参加できます\r\n\r\nNintendo Switch（DNS モード）:\r\n1. 接続パネルで \"Nintendo Switch\" を有効にします\r\n2. リレーサーバー（EU または US）を選択します\r\n3. \"DNS 設定を送信\" をクリックすると、設定がリレーに送信されます\r\n   （これは LAN サーバーをブロードキャストしません）\r\n4. Switch で NetherLink の DNS 設定を適用し、\r\n   NetherLink 用に使っているサーバー項目から参加します\r\n\r\nメモ:\r\n- LAN ブロードキャストでは、NetherLink とコンソールが同じローカルネットワーク上にある必要があります。\r\n- ヒント: 最良のパフォーマンスを得るには、最も近いリレーサーバーを選択してください。",
     "@helpText":  {
                       "description":  "Detailed help / instructions shown in the help dialog",
                       "placeholders":  {
@@ -20,6 +20,15 @@
                                                           }
                                        }
                   },
+    "serverDetailsLabel":  "サーバー詳細",
+    "start":  "開始",
+    "labelJava":  "Java",
+    "startJavaMode":  "Javaモードを開始",
+    "javaInfoTitle":  "Javaモード",
+    "javaInfoText":  "Java Edition サーバーに接続",
+    "howToJavaTitle":  "Javaモード",
+    "howToJavaSubtitle":  "NetherLink 経由で Java Edition サーバーに接続",
+    "howToJavaBody":  "Javaモード — クイック手順:\r\n1. アプリで Java モードを選択します。\r\n2. Java Edition サーバーのアドレスとポートを入力します（デフォルト: 25565）。\r\n3. \"Javaモードを開始\" を押します — NetherLink が接続を中継します。\r\n4. Minecraft Bedrock を開き、Friends タブに移動します。\r\n5. \"NetherLink\" という名前の LAN サーバーを選択して Java サーバーに参加します。\r\n\r\n⚠️ 重要な警告:\r\n- 有効な Java Edition アカウント（Microsoft）が必要です。\r\n- 一部のサーバーではアンチチートシステムにより、アカウントが検出されて BAN される可能性があります。\r\n- Bedrock クライアントを明示的に禁止しているサーバーもあります。必ずサーバーのルールを確認してください。\r\n- この機能の利用により発生するアカウントの BAN、停止、その他のアカウント関連の問題について、NetherLink は責任を負いません。\r\n- 自己責任で使用してください。",
     "language":  "日本語",
     "@language":  {
                       "description":  "Your language name in your own language"
@@ -96,7 +105,7 @@
     "@createdBy":  {
                        "description":  "Badge text on splash screen"
                    },
-    "bedrockBridge":  "Bedrock Bridge",
+    "bedrockBridge":  "Bedrock ブリッジ",
     "@bedrockBridge":  {
                            "description":  "Subtitle on splash screen"
                        },
@@ -176,7 +185,7 @@
                                                                      }
                                                      }
                                 },
-    "playInstructionsFriends":  "接続方法:\r\n1. コンソールで {friend} をフレンドとして追加します。\r\n2. Minecraft を開き、Friends タブに移動します。\r\n3. LAN Worlds の下にある自分のサーバーを探し、選択して参加します。",
+    "playInstructionsFriends":  "接続方法:\r\n1. コンソールで {friend} をフレンドとして追加します。\r\n2. Minecraft を開き、フレンドタブに移動します。\r\n3. LAN ワールドの下にある自分のサーバーを探し、選択して参加します。",
     "@playInstructionsFriends":  {
                                      "description":  "Instructions shown for Friends mode",
                                      "placeholders":  {
@@ -185,11 +194,11 @@
                                                                      }
                                                       }
                                  },
-    "nldServerLabel":  "NETHERLINK SERVER",
+    "nldServerLabel":  "NETHERLINK サーバー",
     "@nldServerLabel":  {
                             "description":  "Label text above the relay selector"
                         },
-    "selectRelayLabel":  "relay を選択 {name}",
+    "selectRelayLabel":  "リレーを選択 {name}",
     "@selectRelayLabel":  {
                               "description":  "Accessibility label for relay selection button",
                               "placeholders":  {
@@ -206,7 +215,7 @@
     "manageServersTooltip":  "サーバーを管理",
     "stopBroadcasting":  "ブロードキャスト停止",
     "startNintendoMode":  "Nintendo モード開始",
-    "startFriendsMode":  "Friends モード開始",
+    "startFriendsMode":  "フレンドモード開始",
     "startBroadcasting":  "ブロードキャスト開始",
     "modeLabel":  "モード",
     "labelXbox":  "Xbox/PS4-5",
@@ -215,12 +224,12 @@
     "nintendoInfoTitle":  "Nintendo Switch DNS モード",
     "nintendoInfoText":  "Nintendo モードで開始し、DNS を設定して注目サーバーに参加します。",
     "friendModeTitle":  "フレンドモード",
-    "friendModeText":  "NetherLink のフレンド bot をフレンドとして追加します。Friends モードを開始して遊びましょう",
+    "friendModeText":  "NetherLink のフレンド bot をフレンドとして追加します。フレンドモードを開始して遊びましょう",
     "selectedRelayCheck":  "選択済み",
     "@selectedRelayCheck":  {
                                 "description":  "Small label used when a relay is selected"
                             },
-    "relayFallbackWarning":  "警告: 元の relay が応答しませんでした。代替 relay を使用中です: {name}",
+    "relayFallbackWarning":  "警告: 元のリレーが応答しませんでした。代替リレーを使用中です: {name}",
     "@relayFallbackWarning":  {
                                   "placeholders":  {
                                                        "name":  {
@@ -228,16 +237,16 @@
                                                                 }
                                                    }
                               },
-    "relayUnableConnect":  "どの NetherLink relay サーバーにも接続できません。後でもう一度試すか、インターネット接続を確認してください。",
-    "howToXboxTitle":  "Xbox / PS4-5 (LAN / Proxy)",
+    "relayUnableConnect":  "どの NetherLink リレーサーバーにも接続できません。後でもう一度試すか、インターネット接続を確認してください。",
+    "howToXboxTitle":  "Xbox / PS4-5（LAN / プロキシ）",
     "@howToXboxTitle":  {
                             "description":  "Title for the Xbox / PS4-5 how-to modal"
                         },
-    "howToXboxSubtitle":  "LAN ブロードキャストまたは proxy 経由でプレイ",
+    "howToXboxSubtitle":  "LAN ブロードキャストまたはプロキシ経由でプレイ",
     "@howToXboxSubtitle":  {
                                "description":  "Short subtitle for Xbox / PS4-5 menu tile"
                            },
-    "howToXboxBody":  "接続方法（Xbox / PS4 / PS5）:\r\n1. NetherLink を実行しているデバイスとコンソールが同じローカルネットワーク上にあることを確認してください。\r\n2. アプリで Minecraft サーバーのアドレスとポートを入力し、\"ブロードキャスト開始\" を押します。\r\n3. コンソールで Minecraft → Play を開き、LAN Worlds または Friends タブを探してリストを更新します。\r\n4. \"NetherLink\" という名前の LAN サーバーを選択して参加します。\r\nメモ:\r\n- サーバーが表示されない場合は、両方のデバイスが同じサブネット上にあり、アプリがまだブロードキャスト中であることを確認してください。\r\n- 一部のコンソールやルーターでは LAN 検出がブロックされる場合があります。必要に応じてアプリやルーターの設定を切り替えてみてください。",
+    "howToXboxBody":  "接続方法（Xbox / PS4 / PS5）:\r\n1. NetherLink を実行しているデバイスとコンソールが同じローカルネットワーク上にあることを確認してください。\r\n2. アプリで Minecraft サーバーのアドレスとポートを入力し、\"ブロードキャスト開始\" を押します。\r\n3. コンソールで Minecraft → プレイ を開き、LAN ワールドまたはフレンドタブを探してリストを更新します。\r\n4. \"NetherLink\" という名前の LAN サーバーを選択して参加します。\r\nメモ:\r\n- サーバーが表示されない場合は、両方のデバイスが同じサブネット上にあり、アプリがまだブロードキャスト中であることを確認してください。\r\n- 一部のコンソールやルーターでは LAN 検出がブロックされる場合があります。必要に応じてアプリやルーターの設定を切り替えてみてください。",
     "@howToXboxBody":  {
                            "description":  "Detailed steps for Xbox/PS4-5 how-to modal"
                        },
@@ -245,15 +254,15 @@
     "@howToNintendoTitle":  {
                                 "description":  "Title for the Nintendo how-to modal"
                             },
-    "howToNintendoSubtitle":  "Switch 用 DNS relay 手順",
+    "howToNintendoSubtitle":  "Switch 用 DNS リレー手順",
     "@howToNintendoSubtitle":  {
                                    "description":  "Short subtitle for Nintendo menu tile"
                                },
-    "howToNintendoBody":  "Nintendo Switch — DNS モード（手順）:\r\n1. アプリで \"Nintendo\" モードを有効にし、Relay Server（EU または US）を選択します。\r\n2. \"Send DNS Config\" をタップして DNS IP を relay に送信します。\r\n3. Nintendo Switch で System Settings → Internet → Internet Settings → （使用中のネットワーク）→ Change Settings → DNS に進み、Primary DNS を relay IP に設定します。\r\n4. Minecraft を開いて公開サーバーに参加すると、relay DNS を使って自分のサーバーへリダイレクトされます。\r\nメモ:\r\n- DNS モードは LAN サーバーをブロードキャストせず、ゲーム通信を relay 経由でルーティングします。\r\n- 通常のネットワーク動作が必要な場合は、完了後に DNS を元に戻してください。",
+    "howToNintendoBody":  "Nintendo Switch — DNS モード（手順）:\r\n1. アプリで \"Nintendo\" モードを有効にし、リレーサーバー（EU または US）を選択します。\r\n2. \"DNS 設定を送信\" をタップして DNS IP をリレーに送信します。\r\n3. Nintendo Switch で「設定」→「インターネット」→「インターネット設定」→（使用中のネットワーク）→「設定の変更」→「DNS」に進み、優先 DNS をリレー IP に設定します。\r\n4. Minecraft を開いて公開サーバーに参加すると、リレー DNS を使って自分のサーバーへリダイレクトされます。\r\nメモ:\r\n- DNS モードは LAN サーバーをブロードキャストせず、ゲーム通信をリレー経由でルーティングします。\r\n- 通常のネットワーク動作が必要な場合は、完了後に DNS を元に戻してください。",
     "@howToNintendoBody":  {
                                "description":  "Detailed steps for Nintendo Switch DNS setup"
                            },
-    "howToFriendsTitle":  "Friends モード",
+    "howToFriendsTitle":  "フレンドモード",
     "@howToFriendsTitle":  {
                                "description":  "Title for the Friends-mode how-to modal"
                            },
@@ -261,7 +270,7 @@
     "@howToFriendsSubtitle":  {
                                   "description":  "Short subtitle for Friends menu tile"
                               },
-    "howToFriendsBody":  "フレンドモード — 簡単な手順:\r\n1. 必要に応じて、コンソールまたはプラットフォームで NetherLink のフレンドアカウントを追加します。\r\n2. アプリでフレンドモードを有効にし、relay 設定を送信します（該当する場合）。\r\n3. コンソールで Minecraft → Friends を開き、LAN Worlds を探します。そこに LAN ワールドとして自分のサーバーが表示されるはずです。\r\n4. それを選択して、友達と一緒に自分のサーバーへ参加します。\r\nメモ:\r\n- 自分と友達の両方が、フレンド表示を許可する同じ NAT/設定になっていることを確認してください。\r\n- フレンドモードはプラットフォームのフレンド機能に依存し、フレンド申請の承認が必要な場合があります。",
+    "howToFriendsBody":  "フレンドモード — 簡単な手順:\r\n1. 必要に応じて、コンソールまたはプラットフォームで NetherLink のフレンドアカウントを追加します。\r\n2. アプリでフレンドモードを有効にし、リレー設定を送信します（該当する場合）。\r\n3. コンソールで Minecraft → フレンド を開き、LAN ワールドを探します。そこに LAN ワールドとして自分のサーバーが表示されるはずです。\r\n4. それを選択して、友達と一緒に自分のサーバーへ参加します。\r\nメモ:\r\n- 自分と友達の両方が、フレンド表示を許可する同じ NAT/設定になっていることを確認してください。\r\n- フレンドモードはプラットフォームのフレンド機能に依存し、フレンド申請の承認が必要な場合があります。",
     "@howToFriendsBody":  {
                               "description":  "Detailed steps for Friends mode"
                           },
@@ -273,7 +282,7 @@
     "@helpNetherlinkSubtitle":  {
                                     "description":  "Short subtitle for NetherLink does not appear tile"
                                 },
-    "helpNetherlinkBody":  "コンソールにサーバーが表示されない場合は、次の手順を試してください:\r\n\r\n✅ 基本チェック:\r\n1. 同じ WiFi ネットワーク - スマホ/タブレットとコンソールは必ず同じ WiFi 上にある必要があります\r\n2. 正しいサーバーアドレス - IP とポート（デフォルト: 19132）を再確認してください\r\n3. ブロードキャストが有効 - NetherLink に \"ブロードキャスト中\" ステータスが表示されていることを確認してください\r\n\r\n🔄 すぐできる対処:\r\n• アプリを再起動: ブロードキャストを停止し、NetherLink を完全に閉じてから再度開いて試してください\r\n• コンソールを再起動: LAN ゲームを検出するには、コンソールの更新が必要なことがあります\r\n• Friends/LAN タブを確認: サーバーはサーバー一覧ではなく、\"Friends\" または \"LAN Games\" の下に表示されます\r\n• ブロードキャスト開始後 10〜15 秒待つ\r\n• VPN を無効化: VPN はローカルブロードキャストを妨げることがあります\r\n\r\n⚠️ よくある問題:\r\n\"No route found for user\" → 両方のデバイスが同じ Wi‑Fi 上にあることを確認してください（ゲストネットワークは避けてください）\r\n\"Unable to connect to NetherLink relay server\" → インターネット接続 / relay の状態を確認してください\r\n\r\n📱 まだ問題がありますか？ NetherLink でデバッグモードを有効にしてログを確認するか、別のサーバーを試してください。",
+    "helpNetherlinkBody":  "コンソールにサーバーが表示されない場合は、次の手順を試してください:\r\n\r\n✅ 基本チェック:\r\n1. 同じ WiFi ネットワーク - スマホ/タブレットとコンソールは必ず同じ WiFi 上にある必要があります\r\n2. 正しいサーバーアドレス - IP とポート（デフォルト: 19132）を再確認してください\r\n3. ブロードキャストが有効 - NetherLink に \"ブロードキャスト中\" ステータスが表示されていることを確認してください\r\n\r\n🔄 すぐできる対処:\r\n• アプリを再起動: ブロードキャストを停止し、NetherLink を完全に閉じてから再度開いて試してください\r\n• コンソールを再起動: LAN ゲームを検出するには、コンソールの更新が必要なことがあります\r\n• フレンド/LAN タブを確認: サーバーはサーバー一覧ではなく、\"フレンド\" または \"LAN ゲーム\" の下に表示されます\r\n• ブロードキャスト開始後 10〜15 秒待つ\r\n• VPN を無効化: VPN はローカルブロードキャストを妨げることがあります\r\n\r\n⚠️ よくある問題:\r\n\"No route found for user\" → 両方のデバイスが同じ Wi‑Fi 上にあることを確認してください（ゲストネットワークは避けてください）\r\n\"Unable to connect to NetherLink relay server\" → インターネット接続 / リレーの状態を確認してください\r\n\r\n📱 まだ問題がありますか？ NetherLink でデバッグモードを有効にしてログを確認するか、別のサーバーを試してください。",
     "@helpNetherlinkBody":  {
                                 "description":  "Detailed troubleshooting text for NetherLink not appearing"
                             },
@@ -293,15 +302,15 @@
     "@helpNintendoDnsTitle":  {
                                   "description":  "Title for Nintendo DNS troubleshooting"
                               },
-    "helpNintendoDnsSubtitle":  "よくある DNS / relay の問題",
+    "helpNintendoDnsSubtitle":  "よくある DNS / リレーの問題",
     "@helpNintendoDnsSubtitle":  {
                                      "description":  "Short subtitle for Nintendo DNS troubleshooting tile"
                                  },
-    "helpNintendoDnsBody":  "Nintendo DNS モードが動作しない場合は、次を確認してください:\r\n\r\n1. アプリから DNS 設定を送信したことを確認します（Send DNS Config）。\r\n2. Switch に relay IP をプライマリ DNS として適用したことを確認します。\r\n3. 選択した relay サーバー（EU/US）がオンラインで、過負荷でないことを確認します。\r\n4. 一部のネットワーク（例: captive portal）はカスタム DNS を妨げます。別のネットワークで試してください。\r\n\r\n問題が続く場合は、デバッグモードを有効にしてログを確認するか、フレンドモードの代替手段を試してください。",
+    "helpNintendoDnsBody":  "Nintendo DNS モードが動作しない場合は、次を確認してください:\r\n\r\n1. アプリから DNS 設定を送信したことを確認します（DNS 設定を送信）。\r\n2. Switch にリレー IP をプライマリ DNS として適用したことを確認します。\r\n3. 選択したリレーサーバー（EU/US）がオンラインで、過負荷でないことを確認します。\r\n4. 一部のネットワーク（例: captive portal）はカスタム DNS を妨げます。別のネットワークで試してください。\r\n\r\n問題が続く場合は、デバッグモードを有効にしてログを確認するか、フレンドモードの代替手段を試してください。",
     "@helpNintendoDnsBody":  {
                                  "description":  "Detailed placeholder for Nintendo DNS troubleshooting"
                              },
-    "helpFriendsModeTitle":  "Friends モードが動作しない",
+    "helpFriendsModeTitle":  "フレンドモードが動作しない",
     "@helpFriendsModeTitle":  {
                                   "description":  "Title for Friends mode troubleshooting"
                               },
@@ -309,7 +318,7 @@
     "@helpFriendsModeSubtitle":  {
                                      "description":  "Short subtitle for Friends-mode troubleshooting tile"
                                  },
-    "helpFriendsModeBody":  "フレンドモードのトラブルシューティング:\r\n\r\n1. relay フレンドアカウントがコンソールで追加/承認されていることを確認してください（必要な場合）。\r\n2. フレンドモードを有効にしたあと、ゲームを再起動して Friends/LAN タブを更新してみてください。\r\n\r\nそれでもサーバーが友達に表示されない場合は、デバッグモードを有効にしてログを確認し、エラーを特定してください。",
+    "helpFriendsModeBody":  "フレンドモードのトラブルシューティング:\r\n\r\n1. リレーフレンドアカウントがコンソールで追加/承認されていることを確認してください（必要な場合）。\r\n2. フレンドモードを有効にしたあと、ゲームを再起動してフレンド/LAN タブを更新してみてください。\r\n\r\nそれでもサーバーが友達に表示されない場合は、デバッグモードを有効にしてログを確認し、エラーを特定してください。",
     "@helpFriendsModeBody":  {
                                  "description":  "Detailed placeholder for Friends mode troubleshooting"
                              },

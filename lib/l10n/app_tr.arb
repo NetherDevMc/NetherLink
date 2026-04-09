@@ -18,6 +18,15 @@
       "appCreator": {}
     }
   },
+  "serverDetailsLabel": "Sunucu Ayrıntıları",
+  "start": "Başlat",
+  "labelJava": "Java",
+  "startJavaMode": "Java Modunu Başlat",
+  "javaInfoTitle": "Java Modu",
+  "javaInfoText": "Java Edition sunucularına bağlan",
+  "howToJavaTitle": "Java Modu",
+  "howToJavaSubtitle": "NetherLink üzerinden Java Edition sunucularına bağlan",
+  "howToJavaBody": "Java Modu — hızlı adımlar:\n1. Uygulamada Java modunu seçin.\n2. Java Edition sunucu adresinizi ve portunuzu girin (varsayılan: 25565).\n3. \"Java Modunu Başlat\" düğmesine basın — NetherLink bağlantıyı köprüler.\n4. Minecraft Bedrock'u açın ve Arkadaşlar sekmesine gidin.\n5. Java sunucusuna katılmak için \"NetherLink\" adlı LAN sunucusunu seçin.\n\n⚠️ Önemli uyarılar:\n- Geçerli bir Java Edition hesabı (Microsoft) gereklidir.\n- Bazı sunucular, hesabınızı algılayıp yasaklayabilecek hile önleme sistemleri kullanır.\n- Bazı sunucular Bedrock istemcilerini açıkça yasaklar — sunucu kurallarını her zaman kontrol edin.\n- Bu özelliğin kullanımından kaynaklanabilecek hesap yasakları, askıya almalar veya hesapla ilgili diğer sorunlardan NetherLink sorumlu değildir.\n- Kendi sorumluluğunuzda kullanın.",
   "language": "Türkçe",
   "@language": { "description": "Your language name in your own language" },
 
@@ -210,7 +219,7 @@
     }
   },
   "relayUnableConnect": "Hiçbir NetherLink aktarım sunucusuna bağlanılamıyor. Daha sonra tekrar deneyin veya internet bağlantınızı kontrol edin.",
-  "howToXboxTitle": "Xbox / PS4-5 (LAN / Proxy)",
+  "howToXboxTitle": "Xbox / PS4-5 (LAN / Ara Sunucu)",
   "@howToXboxTitle": {
     "description": "Title for the Xbox / PS4-5 how-to modal"
   },
@@ -293,5 +302,9 @@
   "helpFriendsModeBody": "Arkadaş modu için sorun giderme ipuçları:\n\n1. Aktarıcı arkadaş hesabının konsolda eklendiğinden/kabul edildiğinden emin olun (gerekiyorsa).\n2. Arkadaş modunu etkinleştirdikten sonra oyunu yeniden başlatmayı ve Arkadaşlar/LAN sekmesini yenilemeyi deneyin.\n\nSunucu arkadaşlarınıza hâlâ görünmüyorsa hataları belirlemek için Hata Ayıklama Modunu etkinleştirin ve kayıtları kontrol edin.",
   "@helpFriendsModeBody": {
     "description": "Detailed placeholder for Friends mode troubleshooting"
-  }
+  },
+  "changeLanguageTitle": "Dili değiştir",
+  "changeLanguage": "Dil",
+  "useSystemLanguage": "Sistem dilini kullan",
+  "couldNotOpenUrl": "URL açılamadı"
 }

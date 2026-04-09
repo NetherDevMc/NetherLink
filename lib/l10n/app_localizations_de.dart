@@ -47,7 +47,7 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
-  String get serverDetailsLabel => 'Server Details';
+  String get serverDetailsLabel => 'Serverdetails';
 
   @override
   String get start => 'Start';
@@ -56,22 +56,22 @@ class AppLocalizationsDe extends AppLocalizations {
   String get labelJava => 'Java';
 
   @override
-  String get startJavaMode => 'Start Java Mode';
+  String get startJavaMode => 'Java-Modus starten';
 
   @override
-  String get javaInfoTitle => 'Java Mode';
+  String get javaInfoTitle => 'Java-Modus';
 
   @override
-  String get javaInfoText => 'Connect to Java Edition servers';
+  String get javaInfoText => 'Mit Java-Edition-Servern verbinden';
 
   @override
-  String get howToJavaTitle => 'Java Mode';
+  String get howToJavaTitle => 'Java-Modus';
 
   @override
-  String get howToJavaSubtitle => 'Connect to Java Edition servers via NetherLink';
+  String get howToJavaSubtitle => 'Über NetherLink mit Java-Edition-Servern verbinden';
 
   @override
-  String get howToJavaBody => 'Java Mode — quick steps:\n1. In the app, select Java mode.\n2. Enter your Java Edition server address and port (default: 25565).\n3. Press \"Start Java Mode\" — NetherLink bridges the connection.\n4. Open Minecraft Bedrock and go to the Friends tab.\n5. Select the LAN server named \"NetherLink\" to join the Java server.\n\n⚠️ Important warnings:\n- A valid Java Edition account (Microsoft) is required.\n- Some servers use anti-cheat systems that may detect and ban your account.\n- Certain servers explicitly prohibit Bedrock clients — always check the server rules.\n- NetherLink is not responsible for any account bans, suspensions, or other account-related issues that may result from using this feature.\n- Use at your own risk.';
+  String get howToJavaBody => 'Java-Modus — Kurzanleitung:\r\n1. Wähle in der App den Java-Modus aus.\r\n2. Gib die Adresse und den Port deines Java-Edition-Servers ein (Standard: 25565).\r\n3. Drücke auf \"Java-Modus starten\" — NetherLink überbrückt die Verbindung.\r\n4. Öffne Minecraft Bedrock und gehe zum Freunde-Tab.\r\n5. Wähle den LAN-Server mit dem Namen \"NetherLink\" aus, um dem Java-Server beizutreten.\r\n\r\n⚠️ Wichtige Warnungen:\r\n- Ein gültiges Java-Edition-Konto (Microsoft) ist erforderlich.\r\n- Manche Server verwenden Anti-Cheat-Systeme, die dein Konto erkennen und sperren können.\r\n- Einige Server verbieten Bedrock-Clients ausdrücklich — prüfe immer die Serverregeln.\r\n- NetherLink ist nicht verantwortlich für Kontosperren, Suspendierungen oder andere kontobezogene Probleme, die durch die Nutzung dieser Funktion entstehen können.\r\n- Nutzung auf eigenes Risiko.';
 
   @override
   String get language => 'Deutsch';

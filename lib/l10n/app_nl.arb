@@ -11,7 +11,7 @@
   "website": "Website",
   "howToUseMenu": "Hoe gebruiken",
   "support": "Ondersteuning",
-  "helpText": "Gemaakt door {appCreator}.\n\nHoe te gebruiken:\n1. Voer uw Minecraft server adres en poort in (standaard: 19132)\n   - of selecteer een eerder opgeslagen server uit de dropdown\n2. (Optioneel) Kies een Relay server(EU of US) die het dichtst bij uw locatie is\n3. Klik op \"Start uitzending\"\n4 Om te starten ga op je console/apparaat: Minecraft > Play > Vrienden\n5. Je zou een LAN server moeten zien genaamd \"NetherLink\"\n6. Klik op de server om toe te treden tot uw externe server via NetherLink\n\nNintendo Switch (DNS-modus):\n1. Schakel \"Nintendo Switch\" in in het verbindingspaneel\n2. Selecteer een RelayServer (EU of US)\n3. Klik op \"Stuur DNS Config\" - dit stuurt uw configuratie naar het relais\n   (het zend NIET een LAN server)\n4. Op uw Switch, Pas uw NetherLink DNS setup toe en neem deel aan\n   met behulp van de server die u gebruikt voor NetherLink\n\nNotities:\n- voor LAN uitzendingen, Netherlink en console moeten op hetzelfde lokale netwerk zitten.\n- Tip: Kies de dichtstbijzijnde server voor de beste prestaties.",
+  "helpText": "Gemaakt door {appCreator}.\n\nZo gebruik je het:\n1. Voer het adres en de poort van je Minecraft-server in (standaard: 19132)\n   - of selecteer een eerder opgeslagen server uit de keuzelijst\n2. (Optioneel) Kies de relayserver (EU of US) die het dichtst bij je locatie is\n3. Klik op \"Uitzending starten\" om te beginnen\n4. Ga op je console/apparaat naar: Minecraft > Spelen > Vrienden\n5. Je zou een LAN-server met de naam \"NetherLink\" moeten zien\n6. Klik erop om via NetherLink verbinding te maken met je externe server\n\nNintendo Switch (DNS-modus):\n1. Schakel \"Nintendo Switch\" in het verbindingspaneel in\n2. Selecteer een relayserver (EU of US)\n3. Klik op \"DNS-configuratie verzenden\" - dit stuurt je configuratie naar de relay\n   (hiermee wordt GEEN LAN-server uitgezonden)\n4. Pas op je Switch de NetherLink-DNS-instellingen toe en maak verbinding\n   met de serververmelding die je voor NetherLink gebruikt\n\nOpmerkingen:\n- Voor LAN-uitzendingen moeten NetherLink en je console zich op hetzelfde lokale netwerk bevinden.\n- Tip: Kies de dichtstbijzijnde relayserver voor de beste prestaties.",
   "@helpText": {
     "description": "Detailed help / instructions shown in the help dialog",
     "placeholders": {
@@ -19,6 +19,15 @@
     }
   },
 
+  "serverDetailsLabel": "Servergegevens",
+  "start": "Start",
+  "labelJava": "Java",
+  "startJavaMode": "Start Java-modus",
+  "javaInfoTitle": "Java-modus",
+  "javaInfoText": "Verbind met Java Edition-servers",
+  "howToJavaTitle": "Java-modus",
+  "howToJavaSubtitle": "Verbind via NetherLink met Java Edition-servers",
+  "howToJavaBody": "Java-modus — snelle stappen:\n1. Selecteer in de app de Java-modus.\n2. Voer het adres en de poort van je Java Edition-server in (standaard: 25565).\n3. Druk op \"Start Java-modus\" — NetherLink overbrugt de verbinding.\n4. Open Minecraft Bedrock en ga naar het tabblad Vrienden.\n5. Selecteer de LAN-server met de naam \"NetherLink\" om lid te worden van de Java-server.\n\n⚠️ Belangrijke waarschuwingen:\n- Een geldig Java Edition-account (Microsoft) is vereist.\n- Sommige servers gebruiken anticheatsystemen die je account kunnen detecteren en verbannen.\n- Sommige servers verbieden Bedrock-clients uitdrukkelijk — controleer altijd de serverregels.\n- NetherLink is niet verantwoordelijk voor accountbans, schorsingen of andere accountgerelateerde problemen die kunnen ontstaan door het gebruik van deze functie.\n- Gebruik op eigen risico.",
   "language": "Nederlands",
   "@language": { "description": "Your language name in your own language" },
 
@@ -164,18 +173,18 @@
       "relayIp": {}
     }
   },
-  "playInstructionsFriends": "Hoe te verbinden:\n1. Voeg {friend} toe als vriend op je console.\n2. Open Minecraft en ga naar het tabblad Vrienden.\n3. Zoek naar je server onder LAN werelden en selecteer om mee te doen.",
+  "playInstructionsFriends": "Zo maak je verbinding:\n1. Voeg {friend} toe als vriend op je console.\n2. Open Minecraft en ga naar het tabblad Vrienden.\n3. Zoek je server onder LAN-werelden en selecteer deze om deel te nemen.",
   "@playInstructionsFriends": {
     "description": "Instructions shown for Friends mode",
     "placeholders": {
       "friend": {}
     }
   },
-  "nldServerLabel": "NETHERLINK SERVER",
+  "nldServerLabel": "NETHERLINK-server",
   "@nldServerLabel": {
     "description": "Label text above the relay selector"
   },
-  "selectRelayLabel": "Geselecteerd: {name}",
+  "selectRelayLabel": "Selecteer relay {name}",
   "@selectRelayLabel": {
     "description": "Accessibility label for relay selection button",
     "placeholders": {
@@ -190,7 +199,7 @@
   "manageServersTooltip": "Beheer servers",
   "stopBroadcasting": "Uitzenden stoppen",
   "startNintendoMode": "Nintendo Modus starten",
-  "startFriendsMode": "Start vrienden modus",
+  "startFriendsMode": "Vriendenmodus starten",
   "startBroadcasting": "Uitzending starten",
   "modeLabel": "Modus",
   "labelXbox": "Xbox/PS4-5",
@@ -204,14 +213,14 @@
   "@selectedRelayCheck": {
     "description": "Small label used when a relay is selected"
   },
-  "relayFallbackWarning": "Waarschuwing: origineel Relay heeft niet gereageerd. Fallback Relay in gebruik: {name}",
+  "relayFallbackWarning": "Waarschuwing: de oorspronkelijke relay reageerde niet. Vervangende relay in gebruik: {name}",
   "@relayFallbackWarning": {
     "placeholders": {
       "name": {}
     }
   },
-  "relayUnableConnect": "Kan geen verbinding maken met geen enkele NetherLink relay server. Probeer het later opnieuw of controleer je internet.",
-  "howToXboxTitle": "Xbox / PS4-5 (LAN / Proxy)",
+  "relayUnableConnect": "Kan geen verbinding maken met een NetherLink-relayserver. Probeer het later opnieuw of controleer je internetverbinding.",
+  "howToXboxTitle": "Xbox / PS4-5 (LAN / proxy)",
   "@howToXboxTitle": {
     "description": "Title for the Xbox / PS4-5 how-to modal"
   },
@@ -219,7 +228,7 @@
   "@howToXboxSubtitle": {
     "description": "Short subtitle for Xbox / PS4-5 menu tile"
   },
-  "howToXboxBody": "Hoe verbinding te maken (Xbox / PS4 / PS5):\n1. Zorg ervoor dat NetherLink en jouw console op hetzelfde lokale netwerk zitten.\n2. Voer in de app uw Minecraft serveradres en poort in en druk op \"Uitzending Starten\".\n3. In de console open Minecraft → Play → zoek naar LAN werelden of het tabblad Vrienden en ververs de lijst.\n4. Selecteer de LAN-server genaamd \"NetherLink\" om toe te treden.\nnotities:\n- Als de server niet verschijnt, bevestig dan dat beide apparaten op hetzelfde subnet staan en dat de app nog steeds wordt uitgezonden.\n- Sommige console modellen of routers kunnen LAN ontdekking blokkeren; probeer indien nodig de app of router aan te zetten.",
+  "howToXboxBody": "Zo maak je verbinding (Xbox / PS4 / PS5):\n1. Zorg ervoor dat het apparaat waarop NetherLink draait en je console zich op hetzelfde lokale netwerk bevinden.\n2. Voer in de app het adres en de poort van je Minecraft-server in en druk op \"Uitzending starten\".\n3. Open op de console Minecraft → Spelen → zoek naar LAN-werelden of het tabblad Vrienden en vernieuw de lijst.\n4. Selecteer de LAN-server met de naam \"NetherLink\" om deel te nemen.\nOpmerkingen:\n- Als de server niet verschijnt, controleer dan of beide apparaten zich op hetzelfde subnet bevinden en of de app nog steeds uitzendt.\n- Sommige consolemodellen of routers kunnen LAN-detectie blokkeren; probeer indien nodig de instellingen van de app of router aan te passen.",
   "@howToXboxBody": {
     "description": "Detailed steps for Xbox/PS4-5 how-to modal"
   },
@@ -231,7 +240,7 @@
   "@howToNintendoSubtitle": {
     "description": "Short subtitle for Nintendo menu tile"
   },
-  "howToNintendoBody": "Nintendo Switch - DNS modus (stap voor stap):\n1. In de app \"Nintendo\" modus inschakelen en selecteer een Relay Server (EU of US).\n2. Tik op \"Stuur DNS Config\" om de gegevens naar het relay te sturen.\n3. Op uw Nintendo Switch ga naar Systeeminstellingen → Internet → internetinstellingen → (uw netwerk) → Instellingen wijzigen → DNS en stel de primaire DNS in op het relais-IP.\n4. Open Minecraft en word lid van een openbare server; je wordt omgeleid naar je server met behulp van de relay DNS.\nOpmerkingen:\n- DNS-modus zend geen LAN-server uit; het stuurt spelverkeer door de relais.\n- Zet je DNS terug nadat je klaar bent als je een normaal netwerkgedrag nodig hebt.",
+  "howToNintendoBody": "Nintendo Switch - DNS-modus (stap voor stap):\n1. Schakel in de app de modus \"Nintendo\" in en selecteer een relayserver (EU of US).\n2. Tik op \"DNS-configuratie verzenden\" om het DNS-IP naar de relay te sturen.\n3. Ga op je Nintendo Switch naar Systeeminstellingen → Internet → Internetinstellingen → (je netwerk) → Instellingen wijzigen → DNS en stel de primaire DNS in op het relay-IP.\n4. Open Minecraft en maak verbinding met een openbare server; je wordt via de relay-DNS naar je eigen server doorgestuurd.\nOpmerkingen:\n- De DNS-modus zendt geen LAN-server uit; het spelverkeer wordt via de relay geleid.\n- Zet je DNS-instelling na afloop terug als je weer normaal netwerkgedrag wilt.",
   "@howToNintendoBody": {
     "description": "Detailed steps for Nintendo Switch DNS setup"
   },
@@ -243,7 +252,7 @@
   "@howToFriendsSubtitle": {
     "description": "Short subtitle for Friends menu tile"
   },
-  "howToFriendsBody": "Vrienden-modus - snelle stappen:\n1. Voeg het NetherLinkvriend-account (relay vriend) toe op uw console of platform indien nodig.\n2. Schakel in de app Vrienden modus in en stuur de relay configuratie.\n3. Open op je console Minecraft → Vrienden en zoek naar LAN Worlds - jouw server zou daar als een LAN-wereld moeten verschijnen.\n4. Selecteer het om je server te betreden.\nOpmerkingen:\n- Vriendschapsmodus is afhankelijk van de functies van het platform vriend en kan het vereisen dat je vriendschapsverzoeken accepteert.",
+  "howToFriendsBody": "Vriendenmodus - snelle stappen:\n1. Voeg indien nodig het NetherLink-vriendaccount (relay-vriend) toe op je console of platform.\n2. Schakel in de app de vriendenmodus in en verstuur de relayconfiguratie.\n3. Open op je console Minecraft → Vrienden en zoek naar LAN-werelden - je server zou daar als LAN-wereld moeten verschijnen.\n4. Selecteer deze om verbinding te maken met je server.\nOpmerkingen:\n- De vriendenmodus is afhankelijk van de vriendenfuncties van het platform en kan vereisen dat je vriendschapsverzoeken accepteert.",
   "@howToFriendsBody": {
     "description": "Detailed steps for Friends mode"
   },
@@ -255,7 +264,7 @@
   "@helpNetherlinkSubtitle": {
     "description": "Short subtitle for NetherLink does not appear tile"
   },
-  "helpNetherlinkBody": "Als de server niet verschijnt op je console, probeer dan deze stappen:\n\n✅ Basiscontroles:\n\n1. Zelfde wifi-netwerk – Je telefoon/tablet en console MOETEN op dezelfde wifi zitten\n2. Correct serveradres – Controleer het IP-adres en de poort (standaard: 19132)\n3. Broadcasting actief – Controleer of NetherLink de status \"Broadcasting\" toont\n\n🔄 Snelle oplossingen:\n• Herstart de app: Stop het uitzenden, sluit NetherLink volledig af, open het opnieuw en probeer het opnieuw\n• Herstart je console: Soms heeft de console een refresh nodig om LAN-games te detecteren\n• Controleer het tabblad Vrienden/LAN: De server verschijnt onder \"Vrienden\" of \"LAN-games\", NIET in de serverlijst\n• Wacht 10–15 seconden na het starten van het uitzenden\n• Schakel VPN’s uit: VPN’s kunnen lokale broadcasts blokkeren\n\n⚠️ Veelvoorkomende problemen:\n\"Geen route gevonden voor gebruiker\" → Zorg ervoor dat beide apparaten op dezelfde wifi zitten (vermijd gastnetwerken)\n\"Kan geen verbinding maken met de NetherLink relay-server\" → Controleer je internet / relay-status\n\n📱 Nog steeds problemen? Schakel de debugmodus in NetherLink in en bekijk de logs, of probeer een andere server.",
+  "helpNetherlinkBody": "Als de server niet op je console verschijnt, probeer dan deze stappen:\n\n✅ Basiscontroles:\n\n1. Zelfde wifi-netwerk – Je telefoon/tablet en console MOETEN op dezelfde wifi zitten\n2. Correct serveradres – Controleer het IP-adres en de poort (standaard: 19132)\n3. Uitzending actief – Controleer of NetherLink de status \"Uitzenden\" toont\n\n🔄 Snelle oplossingen:\n• Herstart de app: Stop het uitzenden, sluit NetherLink volledig af, open het opnieuw en probeer het opnieuw\n• Herstart je console: Soms heeft de console een vernieuwing nodig om LAN-games te detecteren\n• Controleer het tabblad Vrienden/LAN: De server verschijnt onder \"Vrienden\" of \"LAN-games\", NIET in de serverlijst\n• Wacht 10–15 seconden na het starten van het uitzenden\n• Schakel VPN’s uit: VPN’s kunnen lokale uitzendingen blokkeren\n\n⚠️ Veelvoorkomende problemen:\n\"Geen route gevonden voor gebruiker\" → Zorg ervoor dat beide apparaten op dezelfde wifi zitten (vermijd gastnetwerken)\n\"Kan geen verbinding maken met de NetherLink-relayserver\" → Controleer je internet / relaystatus\n\n📱 Nog steeds problemen? Schakel de debugmodus in NetherLink in en bekijk de logs, of probeer een andere server.",
   "@helpNetherlinkBody": {
     "description": "Detailed troubleshooting text for NetherLink not appearing"
   },
@@ -267,7 +276,7 @@
   "@helpMultiplayerFailedSubtitle": {
     "description": "Short subtitle for multiplayer failed tile"
   },
-  "helpMultiplayerFailedBody": "⚠️ Dit is geen probleem met NetherLink!\n\nNetherLink heeft je met succes doorgestuurd naar de server. Het bericht \"Multiplayer Verbinding Mislukt\" geeft aan dat de doelserver op dit moment niet bereikbaar is. Mogelijke redenen:\n\n• De doel Minecraft-server is offline of overgeladen\n• De server vereist een bijgewerkte clientversie of specifieke editie\n• Netwerkproblemen tussen het relais en de doelserver\n\nProbeer verbinding te maken met een andere server of neem contact op met de ondersteuning van de server. Als het probleem aanhoudt voor meerdere servers, schakel dan Debug Mode in NetherLink in en controleer de logs.",
+  "helpMultiplayerFailedBody": "⚠️ Dit is geen probleem met NetherLink!\n\nNetherLink heeft je met succes doorgestuurd naar de gevraagde server. Het bericht \"Multiplayer Verbinding Mislukt\" geeft aan dat de doelserver momenteel niet bereikbaar is. Mogelijke redenen:\n\n• De doel-Minecraft-server is offline of overbelast\n• De server vereist een bijgewerkte clientversie of een specifieke editie\n• Netwerkproblemen tussen de relay en de doelserver\n\nProbeer verbinding te maken met een andere server of neem contact op met de ondersteuning van die server. Als het probleem bij meerdere servers blijft optreden, schakel dan de debugmodus in NetherLink in en controleer de logs.",
   "@helpMultiplayerFailedBody": {
     "description": "Explanation shown when multiplayer connection failed appears"
   },
@@ -275,11 +284,11 @@
   "@helpNintendoDnsTitle": {
     "description": "Title for Nintendo DNS troubleshooting"
   },
-  "helpNintendoDnsSubtitle": "Voorkomende problemen met DNS / Relay (placeholder)",
+  "helpNintendoDnsSubtitle": "Veelvoorkomende DNS-/relayproblemen",
   "@helpNintendoDnsSubtitle": {
     "description": "Short subtitle for Nintendo DNS troubleshooting tile"
   },
-  "helpNintendoDnsBody": "Als Nintendo DNS modus niet werkt, controleer dan het volgende:\n\n1. Bevestig dat je DNS-configuratie hebt gestuurd (Send DNS Config).\n2. Controleer of u het relais-IP als primaire DNS heeft toegepast op de Switch.\n3. Zorg ervoor dat de relaisserver (EU/US) online is en niet overbelast.\n4. Sommige netwerken (bijv. captive portals) voorkomen aangepaste DNS — test op een ander netwerk.\n\nAls problemen aanhouden, schakel dan Debug Mode in en bekijk de logs of probeer het alternatief Vriends-modus.",
+  "helpNintendoDnsBody": "Als de Nintendo-DNS-modus niet werkt, controleer dan het volgende:\n\n1. Controleer of je de DNS-configuratie vanuit de app hebt verzonden (DNS-configuratie verzenden).\n2. Controleer of je het relay-IP als primaire DNS op de Switch hebt ingesteld.\n3. Zorg ervoor dat de geselecteerde relayserver (EU/US) online is en niet overbelast.\n4. Sommige netwerken (zoals captive portals) blokkeren aangepaste DNS — test op een ander netwerk.\n\nAls de problemen aanhouden, schakel dan de debugmodus in en controleer de logs of probeer als alternatief de vriendenmodus.",
   "@helpNintendoDnsBody": {
     "description": "Detailed placeholder for Nintendo DNS troubleshooting"
   },
@@ -287,12 +296,16 @@
   "@helpFriendsModeTitle": {
     "description": "Title for Friends mode troubleshooting"
   },
-  "helpFriendsModeSubtitle": "Veelvoorkomende vriend/vinden problemen (placeholder)",
+  "helpFriendsModeSubtitle": "Veelvoorkomende problemen met vrienden",
   "@helpFriendsModeSubtitle": {
     "description": "Short subtitle for Friends-mode troubleshooting tile"
   },
-  "helpFriendsModeBody": "Vrienden-modus probleemoplossingstips:\n\n1. Zorg ervoor dat de relay account is toegevoegd/geaccepteerd in de console (indien nodig).\n2. Zorg ervoor dat zowel jij als je vrienden zichtbaarheid / NAT instellingen hebben die aanwezigheid toestaan.\n3. Probeer het spel opnieuw te starten en het tabblad Vrienden/LAN te verversen na het inschakelen van Vrienden-modus.\n\nAls de server nog steeds niet bij vrienden verschijnt, schakel dan Debugmodus in en controleer de logs om fouten te identificeren.",
+  "helpFriendsModeBody": "Tips voor het oplossen van problemen met de vriendenmodus:\n\n1. Zorg ervoor dat het relay-vriendaccount is toegevoegd/geaccepteerd op de console (indien nodig).\n2. Zorg ervoor dat zowel jij als je vrienden zichtbaarheids-/NAT-instellingen hebben die aanwezigheid toestaan.\n3. Probeer het spel opnieuw te starten en het tabblad Vrienden/LAN te vernieuwen nadat je de vriendenmodus hebt ingeschakeld.\n\nAls de server nog steeds niet voor vrienden verschijnt, schakel dan de debugmodus in en controleer de logs om fouten te achterhalen.",
   "@helpFriendsModeBody": {
     "description": "Detailed placeholder for Friends mode troubleshooting"
-  }
+  },
+  "changeLanguageTitle": "Taal wijzigen",
+  "changeLanguage": "Taal",
+  "useSystemLanguage": "Systeemtaal gebruiken",
+  "couldNotOpenUrl": "Kon URL niet openen"
 }

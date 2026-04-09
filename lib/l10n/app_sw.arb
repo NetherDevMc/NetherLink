@@ -20,6 +20,15 @@
                                                           }
                                        }
                   },
+    "serverDetailsLabel":  "Maelezo ya seva",
+    "start":  "Anza",
+    "labelJava":  "Java",
+    "startJavaMode":  "Anza Hali ya Java",
+    "javaInfoTitle":  "Hali ya Java",
+    "javaInfoText":  "Unganisha kwenye seva za Java Edition",
+    "howToJavaTitle":  "Hali ya Java",
+    "howToJavaSubtitle":  "Unganisha kwenye seva za Java Edition kupitia NetherLink",
+    "howToJavaBody":  "Hali ya Java — hatua za haraka:\r\n1. Kwenye programu, chagua hali ya Java.\r\n2. Weka anwani na port ya seva yako ya Java Edition (chaguo-msingi: 25565).\r\n3. Bonyeza \"Anza Hali ya Java\" — NetherLink itaunganisha muunganisho huo.\r\n4. Fungua Minecraft Bedrock na uende kwenye kichupo cha Friends.\r\n5. Chagua seva ya LAN iitwayo \"NetherLink\" ili kujiunga na seva ya Java.\r\n\r\n⚠️ Maonyo muhimu:\r\n- Akaunti halali ya Java Edition (Microsoft) inahitajika.\r\n- Baadhi ya seva hutumia mifumo ya kuzuia udanganyifu ambayo inaweza kutambua na kupiga marufuku akaunti yako.\r\n- Baadhi ya seva hupiga marufuku wateja wa Bedrock moja kwa moja — hakikisha unakagua sheria za seva kila mara.\r\n- NetherLink haiwajibiki kwa marufuku za akaunti, kusimamishwa au matatizo mengine yanayohusiana na akaunti ambayo yanaweza kutokea kutokana na kutumia kipengele hiki.\r\n- Tumia kwa hatari yako mwenyewe.",
     "language":  "Kiswahili",
     "@language":  {
                       "description":  "Your language name in your own language"
@@ -229,7 +238,7 @@
                                                    }
                               },
     "relayUnableConnect":  "Imeshindikana kuunganika kwa seva YOYOTE ya relay ya NetherLink. Jaribu tena baadaye au angalia intaneti yako.",
-    "howToXboxTitle":  "Xbox / PS4-5 (LAN / Proxy)",
+    "howToXboxTitle":  "Xbox / PS4-5 (LAN / Proksi)",
     "@howToXboxTitle":  {
                             "description":  "Title for the Xbox / PS4-5 how-to modal"
                         },

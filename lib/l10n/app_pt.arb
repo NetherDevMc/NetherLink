@@ -20,6 +20,15 @@
                                                           }
                                        }
                   },
+    "serverDetailsLabel":  "Detalhes do servidor",
+    "start":  "Iniciar",
+    "labelJava":  "Java",
+    "startJavaMode":  "Iniciar modo Java",
+    "javaInfoTitle":  "Modo Java",
+    "javaInfoText":  "Conecte-se a servidores da Java Edition",
+    "howToJavaTitle":  "Modo Java",
+    "howToJavaSubtitle":  "Conecte-se a servidores da Java Edition via NetherLink",
+    "howToJavaBody":  "Modo Java — passos rápidos:\r\n1. No aplicativo, selecione o modo Java.\r\n2. Digite o endereço e a porta do seu servidor Java Edition (padrão: 25565).\r\n3. Toque em \"Iniciar modo Java\" — o NetherLink fará a ponte da conexão.\r\n4. Abra o Minecraft Bedrock e vá para a aba Amigos.\r\n5. Selecione o servidor LAN chamado \"NetherLink\" para entrar no servidor Java.\r\n\r\n⚠️ Avisos importantes:\r\n- É necessária uma conta Java Edition válida (Microsoft).\r\n- Alguns servidores usam sistemas antitrapaça que podem detectar e banir sua conta.\r\n- Alguns servidores proíbem explicitamente clientes Bedrock — sempre verifique as regras do servidor.\r\n- O NetherLink não se responsabiliza por banimentos, suspensões ou outros problemas relacionados à conta que possam resultar do uso deste recurso.\r\n- Use por sua conta e risco.",
     "language":  "Português",
     "@language":  {
                       "description":  "Your language name in your own language"
@@ -229,7 +238,7 @@
                                                    }
                               },
     "relayUnableConnect":  "Não foi possível conectar a NENHUM servidor relay do NetherLink. Tente novamente mais tarde ou verifique sua internet.",
-    "howToXboxTitle":  "Xbox / PS4-5 (LAN / Proxy)",
+    "howToXboxTitle":  "Xbox / PS4-5 (LAN / proxy)",
     "@howToXboxTitle":  {
                             "description":  "Title for the Xbox / PS4-5 how-to modal"
                         },
