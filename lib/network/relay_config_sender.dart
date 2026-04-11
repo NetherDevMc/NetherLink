@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'dart:convert';
 import 'dart:async';
+import 'broadcast_mode.dart';
 
 class RelayConfigSender {
   static final List<int> MAGIC = [0xFE, 0xED, 0xBE, 0xEF];
@@ -14,6 +15,7 @@ class RelayConfigSender {
     required int relayConfigPort,
     required String remoteServerIp,
     required int remoteServerPort,
+    required BroadcastMode mode,
   }) async {
     RawDatagramSocket? socket;
     bool receivedAck = false;
@@ -25,6 +27,7 @@ class RelayConfigSender {
       final packet = _encodePacket(
         remoteServerIp: remoteServerIp,
         remoteServerPort: remoteServerPort,
+        mode: mode,
       );
 
       final address = InternetAddress(relayIp);
@@ -86,6 +89,7 @@ class RelayConfigSender {
   static Uint8List _encodePacket({
     required String remoteServerIp,
     required int remoteServerPort,
+    required BroadcastMode mode,  
   }) {
     final ipBytes = utf8.encode(remoteServerIp);
 
@@ -101,6 +105,9 @@ class RelayConfigSender {
     // Port
     buffer.addByte(remoteServerPort >> 8);
     buffer.addByte(remoteServerPort & 0xFF);
+
+      // Mode
+    buffer.addByte(broadcastModeToByte(mode));
 
     return buffer.toBytes();
   }

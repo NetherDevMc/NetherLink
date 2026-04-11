@@ -16,6 +16,7 @@ import '../widgets/connection/connection_panel.dart';
 import '../widgets/dialogs/manage_servers_dialog.dart';
 import '../widgets/components/global_notice_banner.dart';
 import '../services/notification_service.dart';
+import '../network/broadcast_mode.dart';
 
 import '../widgets/navigation/bottom_nav_bar.dart';
 import '../widgets/navigation/howto_menu.dart';
@@ -362,6 +363,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         remoteHost,
         remotePortParsed,
         relayIp: _selectedRelayIp,
+        mode: BroadcastMode.values[mode.index], 
       );
       if (ok) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -408,6 +410,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       remotePortParsed,
       relayIp: _selectedRelayIp,
       isJava: mode == PanelMode.java,
+      mode: BroadcastMode.values[mode.index], 
+      
     );
     _broadcastingNotifier.value = _broadcastManager.isBroadcasting;
 

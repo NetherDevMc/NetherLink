@@ -6,6 +6,7 @@ import '../constants/app_constants.dart';
 import 'socket_handler.dart';
 import 'relay_config_sender.dart';
 import 'package:flutter/widgets.dart';
+import 'broadcast_mode.dart';
 
 class BroadcastManager {
   late Logger logger;
@@ -80,6 +81,7 @@ class BroadcastManager {
     String remoteHost,
     int remotePort, {
     String? relayIp,
+    required BroadcastMode mode,
   }) async {
     final List<String> relayIps = relayIp != null && relayIp.isNotEmpty
         ? [
@@ -103,6 +105,7 @@ class BroadcastManager {
         relayConfigPort: RELAY_CONFIG_PORT,
         remoteServerIp: remoteHost,
         remoteServerPort: remotePort,
+        mode: mode,
       );
 
       if (success) {
@@ -137,6 +140,7 @@ class BroadcastManager {
     int remotePort, {
     String? relayIp,
     bool isJava = false,
+    required BroadcastMode mode,
   }) async {
     final List<String> relayIps = relayIp != null && relayIp.isNotEmpty
         ? [
@@ -162,6 +166,7 @@ class BroadcastManager {
         relayConfigPort: RELAY_CONFIG_PORT,
         remoteServerIp: remoteHost,
         remoteServerPort: remotePort,
+        mode: mode,
       );
 
       if (success) {
