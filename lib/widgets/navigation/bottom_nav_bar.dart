@@ -175,6 +175,25 @@ class _BottomGlassSimpleNavBarState extends State<BottomGlassSimpleNavBar> {
                       widget.navigationController.showLanguageDialog(context);
                     },
                   ),
+                  const SizedBox(height: 6),
+                  _moreTile(
+                    ctx,
+                    customIcon: Image.asset(
+                      'assets/icons/aternos.png',
+                      width: 20,
+                      height: 20,
+                    ),
+                    color: const Color(0xFF52CAFF),
+                    label: 'Aternos',
+                    subtext: loc.aternosSubtext,
+                    onTap: () {
+                      Navigator.of(ctx).pop();
+                      widget.navigationController.openWebsiteWithCustomUrl(
+                        context,
+                        'https://aternos.org/',
+                      );
+                    },
+                  ),
                 ],
               ),
             ),
@@ -186,9 +205,11 @@ class _BottomGlassSimpleNavBarState extends State<BottomGlassSimpleNavBar> {
 
   Widget _moreTile(
     BuildContext ctx, {
-    required FaIconData icon,
+    FaIconData? icon,
+    Widget? customIcon,
     required Color color,
     required String label,
+    String? subtext,
     required VoidCallback onTap,
   }) {
     return Material(
@@ -213,17 +234,42 @@ class _BottomGlassSimpleNavBarState extends State<BottomGlassSimpleNavBar> {
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(color: color.withOpacity(0.35)),
                 ),
-                child: Center(child: FaIcon(icon, color: color, size: 15)),
+                child: Center(
+                  child:
+                      customIcon ??
+                      (icon != null
+                          ? FaIcon(icon, color: color, size: 15)
+                          : const SizedBox.shrink()),
+                ),
               ),
               const SizedBox(width: 14),
               Expanded(
-                child: Text(
-                  label,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 14,
-                  ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      label,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                      ),
+                    ),
+                    if (subtext != null)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 2),
+                        child: Text(
+                          subtext,
+                          style: TextStyle(
+                            color: Colors.white.withOpacity(0.57),
+                            fontWeight: FontWeight.w400,
+                            fontSize: 11,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                  ],
                 ),
               ),
               Icon(

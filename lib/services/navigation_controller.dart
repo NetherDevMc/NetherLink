@@ -83,6 +83,46 @@ class NavigationController {
     }
   }
 
+  Future<void> openWebsiteWithCustomUrl(
+    BuildContext context,
+    String url,
+  ) async {
+    final loc = AppLocalizations.of(context);
+    if (url.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(loc?.couldNotOpenUrl ?? 'Could not open website'),
+        ),
+      );
+      return;
+    }
+    final uri = Uri.tryParse(url);
+    if (uri == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(loc?.couldNotOpenUrl ?? 'Could not open website'),
+        ),
+      );
+      return;
+    }
+    try {
+      final opened = await launchUrl(uri, mode: LaunchMode.externalApplication);
+      if (!opened) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(loc?.couldNotOpenUrl ?? 'Could not open website'),
+          ),
+        );
+      }
+    } catch (_) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(loc?.couldNotOpenUrl ?? 'Could not open website'),
+        ),
+      );
+    }
+  }
+
   Future<void> openDiscord(BuildContext context) async {
     final uri = Uri.tryParse(discordUrl);
     final loc = AppLocalizations.of(context);

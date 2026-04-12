@@ -74,6 +74,9 @@ class AppLocalizationsHi extends AppLocalizations {
   String get howToJavaSubtitle => 'NetherLink के माध्यम से Java Edition सर्वरों से कनेक्ट करें';
 
   @override
+  String get aternosSubtext => 'अपना खुद का मुफ़्त Minecraft सर्वर बनाएँ';
+
+  @override
   String get howToJavaBody => 'जावा मोड — त्वरित चरण:\n1. ऐप में जावा मोड चुनें।\n2. अपने Java Edition सर्वर का पता और पोर्ट दर्ज करें (डिफ़ॉल्ट: 25565)।\n3. \"जावा मोड शुरू करें\" दबाएँ — NetherLink कनेक्शन को ब्रिज करेगा।\n4. Minecraft Bedrock खोलें और Friends टैब पर जाएँ।\n5. Java सर्वर से जुड़ने के लिए \"NetherLink\" नाम वाले LAN सर्वर को चुनें।\n\n⚠️ महत्वपूर्ण चेतावनियाँ:\n- एक वैध Java Edition खाता (Microsoft) आवश्यक है।\n- कुछ सर्वर anti-cheat सिस्टम का उपयोग करते हैं जो आपके खाते का पता लगाकर उसे बैन कर सकते हैं।\n- कुछ सर्वर Bedrock क्लाइंट को स्पष्ट रूप से प्रतिबंधित करते हैं — हमेशा सर्वर नियम जाँचें।\n- इस सुविधा के उपयोग से होने वाले किसी भी अकाउंट बैन, निलंबन या अन्य अकाउंट-संबंधित समस्याओं के लिए NetherLink जिम्मेदार नहीं है।\n- अपने जोखिम पर उपयोग करें।';
 
   @override

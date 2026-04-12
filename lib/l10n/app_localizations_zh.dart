@@ -74,6 +74,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get howToJavaSubtitle => '通过 NetherLink 连接到 Java Edition 服务器';
 
   @override
+  String get aternosSubtext => '创建你自己的免费 Minecraft 服务器';
+
+  @override
   String get howToJavaBody => 'Java 模式 — 快速步骤：\n1. 在应用中选择 Java 模式。\n2. 输入你的 Java Edition 服务器地址和端口（默认：25565）。\n3. 点击 \"启动 Java 模式\" —— NetherLink 会桥接该连接。\n4. 打开 Minecraft Bedrock 并前往好友标签页。\n5. 选择名为 \"NetherLink\" 的 LAN 服务器以加入 Java 服务器。\n\n⚠️ 重要警告：\n- 需要有效的 Java Edition 账户（Microsoft）。\n- 一些服务器使用反作弊系统，可能会检测并封禁你的账户。\n- 某些服务器明确禁止 Bedrock 客户端 —— 请务必查看服务器规则。\n- 对于因使用此功能而导致的账户封禁、停用或其他账户相关问题，NetherLink 不承担责任。\n- 请自行承担使用风险。';
 
   @override

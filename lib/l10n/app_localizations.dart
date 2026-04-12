@@ -249,6 +249,12 @@ abstract class AppLocalizations {
   /// **'Connect to Java Edition servers via NetherLink'**
   String get howToJavaSubtitle;
 
+  /// No description provided for @aternosSubtext.
+  ///
+  /// In en, this message translates to:
+  /// **'Create your own free Minecraft server'**
+  String get aternosSubtext;
+
   /// Detailed steps for Java mode how-to modal
   ///
   /// In en, this message translates to:

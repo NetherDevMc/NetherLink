@@ -74,6 +74,9 @@ class AppLocalizationsUr extends AppLocalizations {
   String get howToJavaSubtitle => 'NetherLink کے ذریعے Java Edition سرورز سے منسلک ہوں';
 
   @override
+  String get aternosSubtext => 'اپنا مفت مائن کرافٹ سرور بنائیں';
+
+  @override
   String get howToJavaBody => 'جاوا موڈ — فوری مراحل:\n1. ایپ میں جاوا موڈ منتخب کریں۔\n2. اپنے Java Edition سرور کا پتہ اور پورٹ درج کریں (ڈیفالٹ: 25565)۔\n3. \"جاوا موڈ شروع کریں\" دبائیں — NetherLink کنکشن کو جوڑ دے گا۔\n4. Minecraft Bedrock کھولیں اور Friends ٹیب پر جائیں۔\n5. Java سرور میں شامل ہونے کے لیے \"NetherLink\" نام کا LAN سرور منتخب کریں۔\n\n⚠️ اہم انتباہات:\n- ایک درست Java Edition اکاؤنٹ (Microsoft) درکار ہے۔\n- کچھ سرور anti-cheat سسٹمز استعمال کرتے ہیں جو آپ کے اکاؤنٹ کا پتا لگا کر اسے بین کر سکتے ہیں۔\n- کچھ سرور Bedrock کلائنٹس کو واضح طور پر منع کرتے ہیں — ہمیشہ سرور کے قواعد چیک کریں۔\n- اس خصوصیت کے استعمال سے پیدا ہونے والی کسی بھی پابندی، معطلی یا اکاؤنٹ سے متعلق دیگر مسائل کے لیے NetherLink ذمہ دار نہیں ہے۔\n- اسے اپنے ذمہ استعمال کریں۔';
 
   @override

@@ -100,9 +100,7 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   Future<void> _detectRelay() async {
-    debugPrint('📡 Detecting best relay via ping...');
     final bestIp = await RegionDetector.detectBestRelayIp();
-    debugPrint('🏆 Best relay detected: $bestIp');
     _detectedRelayIp = bestIp ?? AppConstants.relayServers[0]['ip'];
   }
 

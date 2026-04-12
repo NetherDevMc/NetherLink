@@ -9,6 +9,7 @@
     "ok":  "OK",
     "joinUs":  "Jiunge Nasi",
     "website":  "Tovuti",
+    "aternosSubtext": "Skapa din egen gratis Minecraft-server",
     "howToUseMenu":  "Jinsi ya kutumia",
     "support":  "Msaada",
     "helpText":  "Imetengenezwa na {appCreator}.\r\n\r\nJinsi ya kutumia:\r\n1. Weka anwani na port ya seva yako ya Minecraft (chaguo-msingi: 19132)\r\n   — au chagua seva iliyohifadhiwa awali kutoka kwenye menyu ya kushuka\r\n2. (Hiari) Chagua Relay Server (EU au US) iliyo karibu zaidi na eneo lako\r\n3. Bofya \"Anza Kutangaza\" ili kuanza\r\n4. Kwenye konsoli/kifaa chako: Minecraft \u003e Play \u003e Friends\r\n5. Unapaswa kuona seva ya LAN inayoitwa \"NetherLink\"\r\n6. Bofya ili kujiunga na seva yako ya nje kupitia NetherLink\r\n\r\nNintendo Switch (hali ya DNS):\r\n1. Washa \"Nintendo Switch\" kwenye paneli ya muunganisho\r\n2. Chagua Relay Server (EU au US)\r\n3. Bofya \"Send DNS Config\" — hii hutuma usanidi wako kwa relay\r\n   (hii HAITANGAZI seva ya LAN)\r\n4. Kwenye Switch yako, tumia mipangilio ya DNS ya NetherLink kisha jiunge\r\n   kwa kutumia ingizo la seva unalotumia kwa NetherLink\r\n\r\nVidokezo:\r\n- Kwa utangazaji wa LAN, NetherLink na konsoli lazima ziwe kwenye mtandao mmoja wa ndani.\r\n- Dokezo: Chagua seva ya relay iliyo karibu zaidi nawe kwa utendaji bora.",

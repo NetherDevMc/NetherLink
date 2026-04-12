@@ -9,6 +9,7 @@
     "ok":  "OK",
     "joinUs":  "加入我们",
     "website":  "网站",
+    "aternosSubtext": "创建你自己的免费 Minecraft 服务器",
     "howToUseMenu":  "使用方法",
     "support":  "支持",
     "helpText":  "由 {appCreator} 创建。\r\n\r\n使用方法：\r\n1. 输入你的 Minecraft 服务器地址和端口（默认：19132）\r\n   — 或从下拉菜单中选择之前保存的服务器\r\n2. （可选）选择离你位置最近的中继服务器（EU 或 US）\r\n3. 点击 \\\"开始广播\\\" 以开始\r\n4. 在你的主机/设备上：Minecraft \u003e 游玩 \u003e 好友\r\n5. 你应该会看到一个名为 \\\"NetherLink\\\" 的局域网服务器\r\n6. 点击它即可通过 NetherLink 加入你的外部服务器\r\n\r\nNintendo Switch（DNS 模式）：\r\n1. 在连接面板中启用 \\\"Nintendo Switch\\\"\r\n2. 选择一个中继服务器（EU 或 US）\r\n3. 点击 \\\"发送 DNS 配置\\\" — 这会将你的配置发送到中继服务器\r\n   （它不会广播局域网服务器）\r\n4. 在你的 Switch 上应用 NetherLink DNS 设置并加入\r\n   使用你为 NetherLink 所使用的服务器条目\r\n\r\n注意：\r\n- 进行局域网广播时，NetherLink 和主机必须位于同一局域网中。\r\n- 提示：选择离你最近的中继服务器以获得最佳性能。",

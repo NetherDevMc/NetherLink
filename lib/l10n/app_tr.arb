@@ -9,6 +9,7 @@
   "ok": "OK",
   "joinUs": "Bize Katılın",
   "website": "Websitesi",
+  "aternosSubtext": "Kendi ücretsiz Minecraft sunucunuzu oluşturun",
   "howToUseMenu": "Nasıl kullanılır",
   "support": "Destek",
   "helpText": "Yapan: {appCreator}\n\nKullanım Talimatları:\n1. Minecraft sunucu adresinizi ve portunuzu girin (varsayılan: 19132)\n   — veya daha önce kaydedilmiş bir sunucuyu açılır menüden seçin\n2. (İsteğe bağlı) Konumunuza en yakın aktarma sunucusunu (EU veya US) seçin\n3. Yayına başlamak için \"Yayına Başla\" düğmesine tıklayın\n4. Konsolunuz/cihazınızda: Minecraft > Oyna > Arkadaşlar\n5. \"NetherLink\" adlı bir LAN sunucusu görmelisiniz\n6. NetherLink üzerinden seçtiğiniz sunucunuya katılmak için üzerine tıklayın\n\nNintendo Switch (DNS modu):\n1. Bağlantı panelinde \"Nintendo Switch\"i etkinleştirin\n2. Bir  aktarma sunucusu  (EU veya US) seçin\n3. \"DNS Yapılandırmasını Gönder\" düğmesine tıklayın — bu yapılandırmanızı aktarıcıya gönderir\n   (LAN sunucusu yayınlamaz)\n4. Switch’inizde NetherLink DNS ayarlarınızı uygulayın ve NetherLink için kullandığınız sunucu girişini kullanarak katılın\n\nNotlar:\n- LAN yayını için NetherLink ve konsol aynı yerel ağda olmalıdır.\n- İpucu: En iyi performans için size en yakın aktarma sunucusunu seçin.",

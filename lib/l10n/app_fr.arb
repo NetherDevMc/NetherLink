@@ -9,6 +9,7 @@
     "ok":  "OK",
     "joinUs":  "Rejoignez-nous",
     "website":  "Site web",
+    "aternosSubtext": "Créez votre propre serveur Minecraft gratuit",
     "howToUseMenu":  "Comment utiliser",
     "support":  "Assistance",
     "helpText":  "Créé par {appCreator}.\r\n\r\nComment utiliser :\r\n1. Saisissez l\u0027adresse et le port de votre serveur Minecraft (par défaut : 19132)\r\n   — ou sélectionnez un serveur précédemment enregistré dans la liste déroulante\r\n2. (Optionnel) Choisissez un serveur relais (EU ou US) proche de votre position\r\n3. Cliquez sur \\\"Démarrer la diffusion\\\" pour commencer\r\n4. Sur votre console/appareil : Minecraft \u003e Jouer \u003e Amis\r\n5. Vous devriez voir un serveur LAN appelé \\\"NetherLink\\\"\r\n6. Cliquez dessus pour rejoindre votre serveur externe via NetherLink\r\n\r\nNintendo Switch (mode DNS) :\r\n1. Activez \\\"Nintendo Switch\\\" dans le panneau de connexion\r\n2. Sélectionnez un serveur relais (EU ou US)\r\n3. Cliquez sur \\\"Envoyer la configuration DNS\\\" — cela envoie votre configuration au relais\r\n   (cela ne diffuse PAS de serveur LAN)\r\n4. Sur votre Switch, appliquez votre configuration DNS NetherLink et rejoignez\r\n   en utilisant l\u0027entrée de serveur que vous utilisez pour NetherLink\r\n\r\nNotes :\r\n- Pour la diffusion LAN, NetherLink et la console doivent être sur le même réseau local.\r\n- Astuce : choisissez le serveur relais le plus proche de vous pour obtenir les meilleures performances.",
