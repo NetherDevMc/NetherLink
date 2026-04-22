@@ -2,16 +2,17 @@ class AppConstants {
   static const String websiteUrl = 'https://netherlink.net';
   static const String discordUrl = 'https://discord.gg/xvaNzE35Rs';
 
-  static const String defaultServerAddress = 'mc.cosmosmc.org';
-
   static const relayServers = [
     {
       'name': 'EU Server',
       'ip': '161.97.182.113',
+      'api': 'https://euapi.netherlink.net',
     },
     {
       'name': 'US Server',
       'ip': '217.77.15.138',
+      'api': 'https://usapi.netherlink.net',
+
     },
   ];
 

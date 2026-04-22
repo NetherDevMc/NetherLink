@@ -229,19 +229,6 @@ class _LanguageDialogContentState extends State<_LanguageDialogContent> {
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
       child: Row(
         children: [
-          Expanded(
-            child: _footerButton(
-              context,
-              icon: FontAwesomeIcons.rotateLeft,
-              label: widget.loc.useSystemLanguage,
-              color: Colors.white.withOpacity(0.6),
-              onTap: () async {
-                await clearSavedLocale();
-                widget.appLocaleNotifier.value = null;
-                if (context.mounted) Navigator.of(context).pop();
-              },
-            ),
-          ),
           const SizedBox(width: 10),
           Expanded(
             child: _footerButton(

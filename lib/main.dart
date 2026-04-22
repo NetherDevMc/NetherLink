@@ -23,6 +23,20 @@ class NetherLinkApp extends StatelessWidget {
           locale: locale,
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
+          localeResolutionCallback:
+              (Locale? platformLocale, Iterable<Locale> supportedLocales) {
+                if (locale != null) return locale;
+
+                if (platformLocale != null) {
+                  for (final supported in supportedLocales) {
+                    if (supported.languageCode == platformLocale.languageCode) {
+                      return supported;
+                    }
+                  }
+                }
+
+                return const Locale('en');
+              },
           scrollBehavior: const MaterialScrollBehavior().copyWith(
             overscroll: false,
             physics: const ClampingScrollPhysics(),

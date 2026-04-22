@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/widgets.dart';
 import 'package:path_provider/path_provider.dart';
+import '../l10n/app_localizations.dart';
 
 final ValueNotifier<Locale?> appLocale = ValueNotifier<Locale?>(null);
 
@@ -21,7 +22,14 @@ Future<void> loadSavedLocale() async {
     final Map<String, dynamic> decoded = jsonDecode(contents);
     final String? languageCode = decoded['languageCode'];
     if (languageCode != null && languageCode.isNotEmpty) {
-      appLocale.value = Locale(languageCode);
+      final supported = AppLocalizations.supportedLocales.any(
+        (l) => l.languageCode == languageCode,
+      );
+      if (supported) {
+        appLocale.value = Locale(languageCode);
+      } else {
+        appLocale.value = const Locale('en');
+      }
     }
   } catch (e) {
     return;

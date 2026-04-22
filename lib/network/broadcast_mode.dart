@@ -1,15 +1,15 @@
 enum BroadcastMode { lan, nintendo, friends, java }
 
-int broadcastModeToByte(BroadcastMode mode) {
+String broadcastModeToString(BroadcastMode mode) {
   switch (mode) {
     case BroadcastMode.lan:
-      return 0x00;
+      return "LAN";
     case BroadcastMode.nintendo:
-      return 0x01;
+      return "NINTENDO";
     case BroadcastMode.friends:
-      return 0x02;
+      return "FRIENDS";
     case BroadcastMode.java:
-      return 0x03;
+      return "JAVA";
   }
   
 }

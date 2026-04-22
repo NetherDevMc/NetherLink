@@ -51,12 +51,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   Map<String, String>? _currentNotice;
   Timer? _noticeTimer;
 
-  final TextEditingController _ipController = TextEditingController(
-    text: AppConstants.defaultServerAddress,
-  );
-  final TextEditingController _portController = TextEditingController(
-    text: SocketHandler.proxyPort.toString(),
-  );
+  final TextEditingController _ipController = TextEditingController();
+  final TextEditingController _portController = TextEditingController();
 
   final ScrollController _scroll_controller = ScrollController();
   final ScrollController _mainScrollController = ScrollController();
@@ -155,7 +151,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   Future<void> _fetchNotification() async {
-    final notice = await NotificationService.fetchNotice();
+    final notice = await NotificationService.fetchNotice(
+      _selectedRelayIp ?? '',
+    );
     if (mounted && notice != null) {
       setState(() => _currentNotice = notice);
       _noticeTimer?.cancel();
@@ -243,9 +241,25 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         logger.debug('Loaded ${servers.length} saved server(s)');
       }
       _userServersNotifier.value = servers;
+
+      _setDefaultServerIfNeeded(servers);
     } catch (e) {
       logger.error('Failed to load user servers: $e');
     }
+  }
+
+  void _setDefaultServerIfNeeded(List<UserServer> servers) {
+    if (_ipController.text.trim().isNotEmpty) return;
+
+    if (servers.isNotEmpty) {
+      final first = servers.first;
+      _ipController.text = first.address;
+      _portController.text = first.port.toString();
+      return;
+    }
+
+    _ipController.text = '';
+    _portController.text = '';
   }
 
   void _log(String message) {
@@ -363,7 +377,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         remoteHost,
         remotePortParsed,
         relayIp: _selectedRelayIp,
-        mode: BroadcastMode.values[mode.index], 
+        mode: BroadcastMode.values[mode.index],
       );
       if (ok) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -373,6 +387,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             duration: const Duration(seconds: 2),
           ),
         );
+
         final meta = _getRelayMeta(_selectedRelayIp);
         final relayName = meta['name'] ?? '-';
         final relayIp = meta['ip'] ?? '-';
@@ -405,13 +420,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       logger.error('Failed to enable wakelock: $e');
     }
 
-    final success = await _broadcastManager.startBroadcast(
+    final success = await _broadcast_manager_startBroadcast_helper(
       remoteHost,
       remotePortParsed,
-      relayIp: _selectedRelayIp,
-      isJava: mode == PanelMode.java,
-      mode: BroadcastMode.values[mode.index], 
-      
+      mode,
     );
     _broadcastingNotifier.value = _broadcastManager.isBroadcasting;
 
@@ -430,6 +442,20 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         ),
       );
     }
+  }
+
+  Future<bool> _broadcast_manager_startBroadcast_helper(
+    String remoteHost,
+    int remotePortParsed,
+    PanelMode mode,
+  ) async {
+    return await _broadcastManager.startBroadcast(
+      remoteHost,
+      remotePortParsed,
+      relayIp: _selectedRelayIp,
+      isJava: mode == PanelMode.java,
+      mode: BroadcastMode.values[mode.index],
+    );
   }
 
   Future<void> _stopBroadcast() async {

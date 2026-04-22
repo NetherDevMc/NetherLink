@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'package:wakelock_plus/wakelock_plus.dart';
 import '../util/Logger.dart';
@@ -7,6 +8,7 @@ import 'socket_handler.dart';
 import 'relay_config_sender.dart';
 import 'package:flutter/widgets.dart';
 import 'broadcast_mode.dart';
+import '../util/relay_helper.dart';
 
 class BroadcastManager {
   late Logger logger;
@@ -65,7 +67,7 @@ class BroadcastManager {
   void _logLocalIPAddresses() async {
     final addresses = await _getLocalIPAddresses();
     if (addresses.isNotEmpty) {
-      logger.info('═══════════════════════════════════════════');
+      logger.info('═════════════════════���═════════════════════');
       logger.info('📱 DEVICE IP ADDRESSES (for manual connection):');
       for (var addr in addresses) {
         logger.info(' IP: $addr');
@@ -77,62 +79,79 @@ class BroadcastManager {
     }
   }
 
+  String _formatRelayErrorMessage(int statusCode, String responseBody) {
+    if (statusCode == 403) {
+      try {
+        final parsed = json.decode(responseBody);
+        if (parsed is Map &&
+            parsed['message'] != null &&
+            (parsed['message'] as String).trim().isNotEmpty) {
+          final reason = (parsed['message'] as String).trim();
+          return 'Your IP/account has been blocked by NetherLink.\nReason: $reason\nIf you believe this is a mistake, join our discord.';
+        }
+      } catch (_) {}
+      return 'Your IP/account has been blocked by NetherLink. If you believe this is a mistake, join our discord.';
+    }
+
+    final bodySnippet = (responseBody.isNotEmpty && responseBody.length <= 200)
+        ? ' — ${responseBody.replaceAll('\n', ' ')}'
+        : '';
+    return 'Could not configure relay (status $statusCode)$bodySnippet. Try another relay or join our discord.';
+  }
+
   Future<bool> sendRelayConfigOnly(
     String remoteHost,
     int remotePort, {
     String? relayIp,
     required BroadcastMode mode,
   }) async {
-    final List<String> relayIps = relayIp != null && relayIp.isNotEmpty
-        ? [
-            relayIp,
-            ...AppConstants.relayServers
-                .map((e) => e['ip'] as String)
-                .where((ip) => ip != relayIp),
-          ]
-        : AppConstants.relayServers.map((e) => e['ip'] as String).toList();
-    const int RELAY_CONFIG_PORT = 19133;
+    if (relayIp == null || relayIp.isEmpty) {
+      logger.error('sendRelayConfigOnly called without relayIp — aborting.');
+      onRelayError?.call('No relay selected.');
+      return false;
+    }
 
-    for (int i = 0; i < relayIps.length; i++) {
-      final usedRelayIp = relayIps[i];
-      final usedRelayName = _relayNameForIp(usedRelayIp);
-      logger.info(
-        'Sending config (DNS mode) to NetherLink server "$usedRelayName" ($usedRelayIp)...',
-      );
+    final usedRelayIp = relayIp;
+    final usedRelayName = _relayNameForIp(usedRelayIp);
+    final usedApiBase = RelayHelper.apiBaseFor(usedRelayIp);
 
-      final success = await RelayConfigSender.sendConfigSimple(
-        relayIp: usedRelayIp,
-        relayConfigPort: RELAY_CONFIG_PORT,
+    logger.info(
+      'Sending config (DNS mode) to NetherLink server "$usedRelayName" ($usedRelayIp) via API $usedApiBase...',
+    );
+
+    try {
+      final result = await RelayConfigSender.sendConfigSimple(
+        base: usedApiBase,
         remoteServerIp: remoteHost,
         remoteServerPort: remotePort,
         mode: mode,
       );
 
-      if (success) {
+      if (result.success) {
         logger.info(
           '✅ Config sent successfully (DNS mode) to "$usedRelayName".',
         );
-        if (i > 0) {
-          logger.warning(
-            '⚠️ First relay(s) failed; using fallback relay: "$usedRelayName"',
-          );
-          onRelayError?.call(
-            "Warning: original relay did not respond. Fallback relay in use: $usedRelayName",
-          );
-        }
         return true;
       } else {
-        logger.warning(
-          'Relay config to "$usedRelayName" ($usedRelayIp) failed.',
+        final userMessage = _formatRelayErrorMessage(
+          result.statusCode,
+          result.body,
         );
+        logger.error(
+          'Relay rejected request (status ${result.statusCode}): ${result.body}',
+        );
+        onRelayError?.call(userMessage);
+        return false;
       }
+    } on TimeoutException catch (te) {
+      logger.warning('Timeout when sending config to $usedApiBase: $te');
+      onRelayError?.call('Timeout contacting relay.');
+      return false;
+    } catch (e, st) {
+      logger.error('Error sending config to $usedApiBase: $e\n$st');
+      onRelayError?.call('Error contacting relay.');
+      return false;
     }
-
-    logger.error('FAILED to connect to any NetherLink relay server');
-    onRelayError?.call(
-      'Unable to connect to ANY NetherLink relay server. Try again later or check your internet.',
-    );
-    return false;
   }
 
   Future<bool> startBroadcast(
@@ -142,89 +161,87 @@ class BroadcastManager {
     bool isJava = false,
     required BroadcastMode mode,
   }) async {
-    final List<String> relayIps = relayIp != null && relayIp.isNotEmpty
-        ? [
-            relayIp,
-            ...AppConstants.relayServers
-                .map((e) => e['ip'] as String)
-                .where((ip) => ip != relayIp),
-          ]
-        : AppConstants.relayServers.map((e) => e['ip'] as String).toList();
+    if (relayIp == null || relayIp.isEmpty) {
+      logger.error('startBroadcast called without relayIp — aborting.');
+      onRelayError?.call('No relay selected.');
+      return false;
+    }
 
-    final int relayClientPort = isJava ? 19134 : 19132;
-    const int RELAY_CONFIG_PORT = 19133;
+    final usedRelayIp = relayIp;
+    final usedRelayName = _relayNameForIp(usedRelayIp);
+    final usedApiBase = RelayHelper.apiBaseFor(usedRelayIp);
 
-    for (int i = 0; i < relayIps.length; i++) {
-      final usedRelayIp = relayIps[i];
-      final usedRelayName = _relayNameForIp(usedRelayIp);
-      logger.info(
-        'Sending config to NetherLink server "$usedRelayName" ($usedRelayIp)...',
-      );
+    logger.info(
+      'Sending config to NetherLink server "$usedRelayName" (socket target: $usedRelayIp) via API $usedApiBase...',
+    );
 
-      final success = await RelayConfigSender.sendConfigSimple(
-        relayIp: usedRelayIp,
-        relayConfigPort: RELAY_CONFIG_PORT,
+    try {
+      final result = await RelayConfigSender.sendConfigSimple(
+        base: usedApiBase,
         remoteServerIp: remoteHost,
         remoteServerPort: remotePort,
         mode: mode,
       );
 
-      if (success) {
-        await Future.delayed(const Duration(milliseconds: 200));
-        final relayAddress = InternetAddress(usedRelayIp);
-
-        logger.info('Connecting to NetherLink servers');
-        logger.info('NetherLink will forward to $remoteHost:$remotePort');
-        if (isJava) logger.info('Java mode: using relay port $relayClientPort');
-
-        socketHandler.setRemoteIp(relayAddress);
-        socketHandler.setRemotePort(relayClientPort);
-
-        await stopBroadcast();
-
-        _socketIPv4 = await RawDatagramSocket.bind(
-          InternetAddress.anyIPv4,
-          SocketHandler.proxyPort,
+      if (!result.success) {
+        final userMessage = _formatRelayErrorMessage(
+          result.statusCode,
+          result.body,
         );
-        _socketIPv4!.broadcastEnabled = true;
-        logger.info(
-          'UDP broadcast socket started on 0.0.0.0 (${SocketHandler.proxyPort})',
+        logger.error(
+          'Relay rejected request (status ${result.statusCode}): ${result.body}',
         );
-
-        socketHandler.setBroadcasting(true);
-
-        _subscriptionIPv4 = _socketIPv4!.listen(
-          (event) => socketHandler.handleSocketEvent(_socketIPv4!, event),
-          onError: (e, st) => logger.error('Socket error: $e'),
-          cancelOnError: false,
-        );
-
-        _isBroadcasting = true;
-        logger.info('NetherLink started broadcasting');
-        _logLocalIPAddresses();
-
-        if (i > 0) {
-          logger.warning(
-            '⚠️ First relay(s) failed; using fallback relay: "$usedRelayName"',
-          );
-          onRelayError?.call(
-            "Warning: original relay did not respond. Fallback relay in use: $usedRelayName",
-          );
-        }
-
-        return true;
-      } else {
-        logger.warning(
-          'Relay config to "$usedRelayName" ($usedRelayIp) failed.',
-        );
+        onRelayError?.call(userMessage);
+        return false;
       }
-    }
 
-    logger.error('FAILED to connect to any NetherLink relay server');
-    onRelayError?.call(
-      'Unable to connect to ANY NetherLink relay server. Try again later or check your internet.',
-    );
-    return false;
+      await Future.delayed(const Duration(milliseconds: 200));
+
+      final relayAddress = InternetAddress(usedRelayIp);
+      logger.info(
+        'Connecting to NetherLink servers (UDP target: ${relayAddress.address})',
+      );
+      logger.info('NetherLink will forward to $remoteHost:$remotePort');
+
+      final int relayClientPort = isJava ? 19134 : 19132;
+      if (isJava) logger.info('Java mode: using relay port $relayClientPort');
+
+      socketHandler.setRemoteIp(relayAddress);
+      socketHandler.setRemotePort(relayClientPort);
+
+      await stopBroadcast();
+
+      _socketIPv4 = await RawDatagramSocket.bind(
+        InternetAddress.anyIPv4,
+        SocketHandler.proxyPort,
+      );
+      _socketIPv4!.broadcastEnabled = true;
+      logger.info(
+        'UDP broadcast socket started on 0.0.0.0 (${SocketHandler.proxyPort})',
+      );
+
+      socketHandler.setBroadcasting(true);
+
+      _subscriptionIPv4 = _socketIPv4!.listen(
+        (event) => socketHandler.handleSocketEvent(_socketIPv4!, event),
+        onError: (e, st) => logger.error('Socket error: $e'),
+        cancelOnError: false,
+      );
+
+      _isBroadcasting = true;
+      logger.info('NetherLink started broadcasting');
+      _logLocalIPAddresses();
+
+      return true;
+    } on TimeoutException catch (te) {
+      logger.warning('Timeout when sending config to $usedApiBase: $te');
+      onRelayError?.call('Timeout contacting relay.');
+      return false;
+    } catch (e, st) {
+      logger.error('Error sending config to $usedApiBase: $e\n$st');
+      onRelayError?.call('Error contacting relay.');
+      return false;
+    }
   }
 
   Future<void> stopBroadcast() async {
