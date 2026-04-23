@@ -67,13 +67,13 @@ class BroadcastManager {
   void _logLocalIPAddresses() async {
     final addresses = await _getLocalIPAddresses();
     if (addresses.isNotEmpty) {
-      logger.info('═════════════════════���═════════════════════');
+      logger.info('══════════════════════════════════════════');
       logger.info('📱 DEVICE IP ADDRESSES (for manual connection):');
       for (var addr in addresses) {
         logger.info(' IP: $addr');
       }
       logger.info(' Port: ${SocketHandler.proxyPort}');
-      logger.info('═══════════════════════════════════════════');
+      logger.info('══════════════════════════════════════════');
     } else {
       logger.info('⚠️ Could not determine local IP addresses');
     }
@@ -202,8 +202,8 @@ class BroadcastManager {
         'Connecting to NetherLink servers (UDP target: ${relayAddress.address})',
       );
       logger.info('NetherLink will forward to $remoteHost:$remotePort');
-
-      final int relayClientPort = isJava ? 19134 : 19132;
+      //19136 beta relay
+      final int relayClientPort = isJava ? 19134 : 19136;
       if (isJava) logger.info('Java mode: using relay port $relayClientPort');
 
       socketHandler.setRemoteIp(relayAddress);
