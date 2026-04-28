@@ -6,12 +6,12 @@ class AppConstants {
     {
       'name': 'EU Server',
       'ip': '161.97.182.113',
-      'api': 'https://euapi.netherlink.net',
+      'api': 'https://eubackend.netherlink.net',
     },
     {
       'name': 'US Server',
       'ip': '217.77.15.138',
-      'api': 'https://usapi.netherlink.net',
+      'api': 'https://usbackend.netherlink.net',
 
     },
   ];

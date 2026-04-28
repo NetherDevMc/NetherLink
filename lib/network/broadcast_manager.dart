@@ -202,8 +202,7 @@ class BroadcastManager {
         'Connecting to NetherLink servers (UDP target: ${relayAddress.address})',
       );
       logger.info('NetherLink will forward to $remoteHost:$remotePort');
-      //19136 beta relay
-      final int relayClientPort = isJava ? 19134 : 19136;
+      final int relayClientPort = isJava ? 19134 : 19140;
       if (isJava) logger.info('Java mode: using relay port $relayClientPort');
 
       socketHandler.setRemoteIp(relayAddress);
