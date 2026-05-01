@@ -2,7 +2,7 @@ name: NetherLink
 description: "Broadcast a remote server as a local server ."
 
 publish_to: 'none'
-version: 3.5.2+19
+version: 3.5.3+20
 
 environment:
   sdk: ^3.8.1
@@ -38,7 +38,7 @@ msix_config:
   display_name: NetherLink
   publisher_display_name: Jens Collaert
   identity_name: JensCollaert.NetherLink
-  msix_version: 3.5.2.0
+  msix_version: 3.5.3.0
   publisher: CN=ED8BFBA1-D05A-4503-813F-9B89DB1BE8A2
   logo_path: windows\runner\resources\app_icon.ico
   store: true
