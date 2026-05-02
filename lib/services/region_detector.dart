@@ -6,7 +6,6 @@ import '../constants/app_constants.dart';
 class RelayPingResult {
   final String ip;
   final String base;
-  final String api;
   final String name;
   final int latencyMs;
   final String? version;
@@ -14,7 +13,6 @@ class RelayPingResult {
   const RelayPingResult({
     required this.ip,
     required this.base,
-    required this.api,
     required this.name,
     required this.latencyMs,
     this.version,
@@ -57,7 +55,6 @@ class RegionDetector {
     return RelayPingResult(
       ip: fallback['ip']!,
       base: fallback['base']!,
-      api: fallback['api']!,
       name: fallback['name']!,
       latencyMs: bestMs,
       version: null,
@@ -78,7 +75,6 @@ class RegionDetector {
         return RelayPingResult(
           ip: relay['ip']!,
           base: relay['base']!,
-          api: relay['api']!,
           name: relay['name']!,
           latencyMs: sw.elapsedMilliseconds,
           version: data['version'] as String?,

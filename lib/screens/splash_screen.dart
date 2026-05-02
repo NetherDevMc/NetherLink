@@ -70,19 +70,23 @@ class _SplashScreenState extends State<SplashScreen>
       vsync: this,
     )..repeat();
 
-    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-        CurvedAnimation(parent: _fadeController, curve: Curves.easeIn));
+    _fadeAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _fadeController, curve: Curves.easeIn));
     _scaleAnimation = Tween<double>(begin: 0.6, end: 1.0).animate(
-        CurvedAnimation(
-            parent: _scaleController, curve: Curves.easeOutCubic));
+      CurvedAnimation(parent: _scaleController, curve: Curves.easeOutCubic),
+    );
     _pulseAnimation = Tween<double>(begin: 0.85, end: 1.0).animate(
-        CurvedAnimation(
-            parent: _pulseController, curve: Curves.easeInOut));
-    _bgAnimation =
-        CurvedAnimation(parent: _bgController, curve: Curves.easeInOut);
+      CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
+    );
+    _bgAnimation = CurvedAnimation(
+      parent: _bgController,
+      curve: Curves.easeInOut,
+    );
     _shimmerAnimation = Tween<double>(begin: -2.0, end: 2.0).animate(
-        CurvedAnimation(
-            parent: _shimmerController, curve: Curves.easeInOut));
+      CurvedAnimation(parent: _shimmerController, curve: Curves.easeInOut),
+    );
 
     _startSequence();
   }
@@ -124,7 +128,7 @@ class _SplashScreenState extends State<SplashScreen>
       String? remoteVersion = _detectedRelay?.version;
 
       if (remoteVersion == null && _detectedRelay != null) {
-        remoteVersion = await _fetchVersionFallback(_detectedRelay!.api);
+        remoteVersion = await _fetchVersionFallback(_detectedRelay!.base);
       }
 
       if (remoteVersion != null && _appVersion.isNotEmpty) {
@@ -136,10 +140,10 @@ class _SplashScreenState extends State<SplashScreen>
     return false;
   }
 
-  Future<String?> _fetchVersionFallback(String apiBase) async {
+  Future<String?> _fetchVersionFallback(String base) async {
     try {
       final response = await http
-          .get(Uri.parse('$apiBase/version'))
+          .get(Uri.parse('$base/api/version'))
           .timeout(const Duration(seconds: 6));
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -196,8 +200,7 @@ class _SplashScreenState extends State<SplashScreen>
               decoration: BoxDecoration(
                 color: const Color(0xFF1B132C),
                 borderRadius: BorderRadius.circular(20),
-                border:
-                    Border.all(color: Colors.white.withOpacity(0.10)),
+                border: Border.all(color: Colors.white.withOpacity(0.10)),
                 boxShadow: [
                   BoxShadow(
                     color: AppTheme.primaryAccent.withOpacity(0.15),
@@ -254,8 +257,7 @@ class _SplashScreenState extends State<SplashScreen>
                         child: TextButton(
                           onPressed: () => Navigator.of(ctx).pop(true),
                           style: TextButton.styleFrom(
-                            padding:
-                                const EdgeInsets.symmetric(vertical: 14),
+                            padding: const EdgeInsets.symmetric(vertical: 14),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
                               side: BorderSide(
@@ -283,8 +285,7 @@ class _SplashScreenState extends State<SplashScreen>
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppTheme.primaryAccent,
                             foregroundColor: Colors.white,
-                            padding:
-                                const EdgeInsets.symmetric(vertical: 14),
+                            padding: const EdgeInsets.symmetric(vertical: 14),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
@@ -348,12 +349,21 @@ class _SplashScreenState extends State<SplashScreen>
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
                 colors: [
-                  Color.lerp(const Color(0xFF080810),
-                      const Color(0xFF0C0818), _bgAnimation.value)!,
-                  Color.lerp(const Color(0xFF0A0818),
-                      const Color(0xFF06060F), _bgAnimation.value)!,
-                  Color.lerp(const Color(0xFF060A14),
-                      const Color(0xFF0A0C1C), _bgAnimation.value)!,
+                  Color.lerp(
+                    const Color(0xFF080810),
+                    const Color(0xFF0C0818),
+                    _bgAnimation.value,
+                  )!,
+                  Color.lerp(
+                    const Color(0xFF0A0818),
+                    const Color(0xFF06060F),
+                    _bgAnimation.value,
+                  )!,
+                  Color.lerp(
+                    const Color(0xFF060A14),
+                    const Color(0xFF0A0C1C),
+                    _bgAnimation.value,
+                  )!,
                 ],
               ),
             ),
@@ -438,8 +448,9 @@ class _SplashScreenState extends State<SplashScreen>
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: AppTheme.primaryAccent
-                      .withOpacity(0.15 * _pulseAnimation.value),
+                  color: AppTheme.primaryAccent.withOpacity(
+                    0.15 * _pulseAnimation.value,
+                  ),
                   width: 1,
                 ),
               ),
@@ -450,7 +461,9 @@ class _SplashScreenState extends State<SplashScreen>
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 border: Border.all(
-                    color: Colors.white.withOpacity(0.06), width: 1),
+                  color: Colors.white.withOpacity(0.06),
+                  width: 1,
+                ),
               ),
             ),
             ClipOval(
@@ -470,8 +483,9 @@ class _SplashScreenState extends State<SplashScreen>
                       ],
                     ),
                     border: Border.all(
-                        color: Colors.white.withOpacity(0.15),
-                        width: 1.5),
+                      color: Colors.white.withOpacity(0.15),
+                      width: 1.5,
+                    ),
                     boxShadow: [
                       BoxShadow(
                         color: AppTheme.primaryAccent.withOpacity(0.3),
@@ -489,8 +503,7 @@ class _SplashScreenState extends State<SplashScreen>
                 return ShaderMask(
                   shaderCallback: (bounds) {
                     return LinearGradient(
-                      begin:
-                          Alignment(_shimmerAnimation.value - 1, -0.5),
+                      begin: Alignment(_shimmerAnimation.value - 1, -0.5),
                       end: Alignment(_shimmerAnimation.value, 0.5),
                       colors: [
                         Colors.white.withOpacity(0.6),
@@ -499,8 +512,11 @@ class _SplashScreenState extends State<SplashScreen>
                       ],
                     ).createShader(bounds);
                   },
-                  child: const Icon(Icons.track_changes_rounded,
-                      size: 52, color: Colors.white),
+                  child: const Icon(
+                    Icons.track_changes_rounded,
+                    size: 52,
+                    color: Colors.white,
+                  ),
                 );
               },
             ),
@@ -549,8 +565,7 @@ class _SplashScreenState extends State<SplashScreen>
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
         child: Container(
-          padding:
-              const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
           decoration: BoxDecoration(
             color: Colors.white.withOpacity(0.06),
             borderRadius: BorderRadius.circular(20),
@@ -579,7 +594,8 @@ class _SplashScreenState extends State<SplashScreen>
           child: CircularProgressIndicator(
             strokeWidth: 2,
             valueColor: AlwaysStoppedAnimation<Color>(
-                AppTheme.primaryAccent.withOpacity(0.7)),
+              AppTheme.primaryAccent.withOpacity(0.7),
+            ),
             backgroundColor: Colors.white.withOpacity(0.05),
           ),
         ),
@@ -608,13 +624,11 @@ class _SplashScreenState extends State<SplashScreen>
           opacity: _appVersion.isEmpty ? 0.0 : 1.0,
           duration: const Duration(milliseconds: 400),
           child: Container(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
             decoration: BoxDecoration(
               color: Colors.white.withOpacity(0.05),
               borderRadius: BorderRadius.circular(20),
-              border:
-                  Border.all(color: Colors.white.withOpacity(0.08)),
+              border: Border.all(color: Colors.white.withOpacity(0.08)),
             ),
             child: Text(
               'v$_appVersion',
@@ -688,7 +702,10 @@ class _GlassGridPainter extends CustomPainter {
     paint.color = color.withOpacity(0.4);
     for (double i = -size.height; i < size.width; i += spacing * 2.5) {
       canvas.drawLine(
-          Offset(i, 0), Offset(i + size.height, size.height), paint);
+        Offset(i, 0),
+        Offset(i + size.height, size.height),
+        paint,
+      );
     }
   }
 

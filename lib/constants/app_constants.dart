@@ -7,13 +7,11 @@ static const relayServers = [
     'name': 'EU Server',
     'ip': '161.97.182.113',
     'base': 'https://eubackend.netherlink.net',
-    'api': 'https://eubackend.netherlink.net/api',
   },
   {
     'name': 'US Server',
     'ip': '217.77.15.138',
     'base': 'https://usbackend.netherlink.net',
-    'api': 'https://usbackend.netherlink.net/api',
   },
 ];
 

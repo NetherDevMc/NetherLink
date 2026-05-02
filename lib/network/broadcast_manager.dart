@@ -102,18 +102,18 @@ class BroadcastManager {
     String remoteHost,
     int remotePort, {
     required String relayIp,
-    required String relayApi,
+    required String relayBase,
     required BroadcastMode mode,
   }) async {
     final usedRelayName = _relayNameForIp(relayIp);
 
     logger.info(
-      'Sending config (DNS mode) to NetherLink server "$usedRelayName" ($relayIp) via API $relayApi...',
+      'Sending config (DNS mode) to NetherLink server "$usedRelayName" ($relayIp) via API $relayBase...',
     );
 
     try {
       final result = await RelayConfigSender.sendConfigSimple(
-        base: relayApi,
+        base: relayBase,
         remoteServerIp: remoteHost,
         remoteServerPort: remotePort,
         mode: mode,
@@ -129,11 +129,11 @@ class BroadcastManager {
         return false;
       }
     } on TimeoutException catch (te) {
-      logger.warning('Timeout when sending config to $relayApi: $te');
+      logger.warning('Timeout when sending config to $relayBase: $te');
       onRelayError?.call('Timeout contacting relay.');
       return false;
     } catch (e, st) {
-      logger.error('Error sending config to $relayApi: $e\n$st');
+      logger.error('Error sending config to $relayBase: $e\n$st');
       onRelayError?.call('Error contacting relay.');
       return false;
     }
@@ -143,7 +143,7 @@ class BroadcastManager {
     String remoteHost,
     int remotePort, {
     required String relayIp,
-    required String relayApi,
+    required String relayBase,
     bool isJava = false,
     required BroadcastMode mode,
   }) async {
@@ -151,12 +151,12 @@ class BroadcastManager {
     final usedRelayName = _relayNameForIp(relayIp);
 
     logger.info(
-      'Sending config to NetherLink server "$usedRelayName" (socket target: $relayIp) via API $relayApi...',
+      'Sending config to NetherLink server "$usedRelayName" (socket target: $relayIp) via API $relayBase...',
     );
 
     try {
       final result = await RelayConfigSender.sendConfigSimple(
-        base: relayApi,
+        base: relayBase,
         remoteServerIp: remoteHost,
         remoteServerPort: remotePort,
         mode: mode,
@@ -201,11 +201,11 @@ class BroadcastManager {
 
       return true;
     } on TimeoutException catch (te) {
-      logger.warning('Timeout when sending config to $relayApi: $te');
+      logger.warning('Timeout when sending config to $relayBase: $te');
       onRelayError?.call('Timeout contacting relay.');
       return false;
     } catch (e, st) {
-      logger.error('Error sending config to $relayApi: $e\n$st');
+      logger.error('Error sending config to $relayBase: $e\n$st');
       onRelayError?.call('Error contacting relay.');
       return false;
     }

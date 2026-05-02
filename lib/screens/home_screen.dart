@@ -138,7 +138,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     return RelayPingResult(
       ip: first['ip']!,
       base: first['base']!,
-      api: first['api']!,
       name: first['name']!,
       latencyMs: 999999,
     );
@@ -376,7 +375,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         remoteHost,
         remotePortParsed,
         relayIp: _selectedRelay.ip,
-        relayApi: _selectedRelay.api,
+        relayBase: _selectedRelay.base,
         mode: BroadcastMode.values[mode.index],
       );
       if (ok) {
@@ -423,7 +422,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       remoteHost,
       remotePortParsed,
       relayIp: _selectedRelay.ip,
-      relayApi: _selectedRelay.api,
+      relayBase: _selectedRelay.base,
       isJava: mode == PanelMode.java,
       mode: BroadcastMode.values[mode.index],
     );
@@ -496,7 +495,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       _selectedRelay = RelayPingResult(
         ip: matched['ip']!,
         base: matched['base']!,
-        api: matched['api']!,
         name: matched['name']!,
         latencyMs: 0,
       );
