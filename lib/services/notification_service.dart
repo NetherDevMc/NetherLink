@@ -1,11 +1,9 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import '../util/relay_helper.dart';
 
 class NotificationService {
-  static Future<Map<String, String>?> fetchNotice(String relayIp) async {
-    final apiBase = RelayHelper.apiBaseFor(relayIp);
-    final uri = Uri.parse('$apiBase/notification');
+  static Future<Map<String, String>?> fetchNotice(String base) async {
+    final uri = Uri.parse('$base/notification');
 
     try {
       final response = await http.get(uri).timeout(const Duration(seconds: 5));
@@ -21,7 +19,7 @@ class NotificationService {
         };
       }
       return null;
-    } catch (_) {
+    } catch (e) {
       return null;
     }
   }

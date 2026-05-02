@@ -1,10 +1,14 @@
+import 'dart:convert';
+import 'dart:io';
 import 'dart:ui';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:package_info_plus/package_info_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../l10n/app_localizations.dart';
 import '../theme/app_theme.dart';
 import '../services/region_detector.dart';
-import '../constants/app_constants.dart';
 import 'home_screen.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -28,7 +32,18 @@ class _SplashScreenState extends State<SplashScreen>
   late Animation<double> _bgAnimation;
   late Animation<double> _shimmerAnimation;
 
-  String? _detectedRelayIp;
+  RelayPingResult? _detectedRelay;
+  String _appVersion = '';
+  bool _isCheckingUpdate = false;
+  bool _pendingUpdate = false;
+
+  static const String _androidStoreUrl =
+      'https://play.google.com/store/apps/details?id=net.netherdev.netherLink';
+  static const String _iosStoreUrl =
+      'https://apps.apple.com/be/app/netherlink/id6747323142';
+  static const String _windowsStoreUrl =
+      'https://apps.microsoft.com/detail/9NSFPT6D8PTR';
+  static const String _fallbackUrl = 'https://api.jouwapp.com';
 
   @override
   void initState() {
@@ -55,23 +70,19 @@ class _SplashScreenState extends State<SplashScreen>
       vsync: this,
     )..repeat();
 
-    _fadeAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(parent: _fadeController, curve: Curves.easeIn));
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+        CurvedAnimation(parent: _fadeController, curve: Curves.easeIn));
     _scaleAnimation = Tween<double>(begin: 0.6, end: 1.0).animate(
-      CurvedAnimation(parent: _scaleController, curve: Curves.easeOutCubic),
-    );
+        CurvedAnimation(
+            parent: _scaleController, curve: Curves.easeOutCubic));
     _pulseAnimation = Tween<double>(begin: 0.85, end: 1.0).animate(
-      CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
-    );
-    _bgAnimation = CurvedAnimation(
-      parent: _bgController,
-      curve: Curves.easeInOut,
-    );
+        CurvedAnimation(
+            parent: _pulseController, curve: Curves.easeInOut));
+    _bgAnimation =
+        CurvedAnimation(parent: _bgController, curve: Curves.easeInOut);
     _shimmerAnimation = Tween<double>(begin: -2.0, end: 2.0).animate(
-      CurvedAnimation(parent: _shimmerController, curve: Curves.easeInOut),
-    );
+        CurvedAnimation(
+            parent: _shimmerController, curve: Curves.easeInOut));
 
     _startSequence();
   }
@@ -81,27 +92,236 @@ class _SplashScreenState extends State<SplashScreen>
     await Future.delayed(const Duration(milliseconds: 200));
     _scaleController.forward();
 
+    final info = await PackageInfo.fromPlatform();
+    if (mounted) {
+      setState(() => _appVersion = info.version);
+    }
+
     await Future.wait([
-      _detectRelay(),
+      _detectRelayAndCheckUpdate().then((hasUpdate) {
+        _pendingUpdate = hasUpdate;
+      }),
       Future.delayed(const Duration(milliseconds: 2800)),
     ]);
 
-    if (mounted) {
-      Navigator.of(context).pushReplacement(
-        PageRouteBuilder(
-          pageBuilder: (_, animation, __) =>
-              HomeScreen(initialRelayIp: _detectedRelayIp),
-          transitionsBuilder: (_, animation, __, child) =>
-              FadeTransition(opacity: animation, child: child),
-          transitionDuration: const Duration(milliseconds: 600),
-        ),
-      );
+    if (!mounted) return;
+
+    if (_pendingUpdate) {
+      final shouldContinue = await _showUpdateDialog();
+      if (!mounted) return;
+      if (!shouldContinue) return;
+    }
+
+    _navigateToHome();
+  }
+
+  Future<bool> _detectRelayAndCheckUpdate() async {
+    if (mounted) setState(() => _isCheckingUpdate = true);
+
+    try {
+      _detectedRelay = await RegionDetector.detectBestRelay();
+
+      String? remoteVersion = _detectedRelay?.version;
+
+      if (remoteVersion == null && _detectedRelay != null) {
+        remoteVersion = await _fetchVersionFallback(_detectedRelay!.api);
+      }
+
+      if (remoteVersion != null && _appVersion.isNotEmpty) {
+        return _isNewerVersion(_appVersion, remoteVersion);
+      }
+    } finally {
+      if (mounted) setState(() => _isCheckingUpdate = false);
+    }
+    return false;
+  }
+
+  Future<String?> _fetchVersionFallback(String apiBase) async {
+    try {
+      final response = await http
+          .get(Uri.parse('$apiBase/version'))
+          .timeout(const Duration(seconds: 6));
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return data['version'] as String?;
+      }
+    } catch (_) {}
+    return null;
+  }
+
+  bool _isNewerVersion(String current, String remote) {
+    final currentParts = current.split('.').map(int.tryParse).toList();
+    final remoteParts = remote.split('.').map(int.tryParse).toList();
+
+    final length = currentParts.length > remoteParts.length
+        ? currentParts.length
+        : remoteParts.length;
+
+    for (int i = 0; i < length; i++) {
+      final c = i < currentParts.length ? (currentParts[i] ?? 0) : 0;
+      final r = i < remoteParts.length ? (remoteParts[i] ?? 0) : 0;
+      if (r > c) return true;
+      if (r < c) return false;
+    }
+    return false;
+  }
+
+  String get _storeUrl {
+    if (kIsWeb) return _fallbackUrl;
+    if (Platform.isAndroid) return _androidStoreUrl;
+    if (Platform.isIOS) return _iosStoreUrl;
+    if (Platform.isWindows) return _windowsStoreUrl;
+    return _fallbackUrl;
+  }
+
+  Future<void> _openStore() async {
+    final uri = Uri.parse(_storeUrl);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
     }
   }
 
-  Future<void> _detectRelay() async {
-    final bestIp = await RegionDetector.detectBestRelayIp();
-    _detectedRelayIp = bestIp ?? AppConstants.relayServers[0]['ip'];
+  Future<bool> _showUpdateDialog() async {
+    final result = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => Dialog(
+        backgroundColor: Colors.transparent,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(20),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+            child: Container(
+              padding: const EdgeInsets.all(28),
+              decoration: BoxDecoration(
+                color: const Color(0xFF1B132C),
+                borderRadius: BorderRadius.circular(20),
+                border:
+                    Border.all(color: Colors.white.withOpacity(0.10)),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppTheme.primaryAccent.withOpacity(0.15),
+                    blurRadius: 40,
+                    spreadRadius: 2,
+                  ),
+                ],
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 60,
+                    height: 60,
+                    decoration: BoxDecoration(
+                      color: AppTheme.primaryAccent.withOpacity(0.15),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: AppTheme.primaryAccent.withOpacity(0.35),
+                      ),
+                    ),
+                    child: Center(
+                      child: Icon(
+                        Icons.system_update_rounded,
+                        color: AppTheme.primaryAccent,
+                        size: 28,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  const Text(
+                    'Update Available',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    'A new version of the app is available.\nUpdate now for the latest features and fixes.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Colors.white.withOpacity(0.55),
+                      fontSize: 13,
+                      height: 1.6,
+                    ),
+                  ),
+                  const SizedBox(height: 28),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextButton(
+                          onPressed: () => Navigator.of(ctx).pop(true),
+                          style: TextButton.styleFrom(
+                            padding:
+                                const EdgeInsets.symmetric(vertical: 14),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              side: BorderSide(
+                                color: Colors.white.withOpacity(0.12),
+                              ),
+                            ),
+                          ),
+                          child: Text(
+                            'Later',
+                            style: TextStyle(
+                              color: Colors.white.withOpacity(0.45),
+                              fontWeight: FontWeight.w500,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () {
+                            Navigator.of(ctx).pop(false);
+                            _openStore();
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppTheme.primaryAccent,
+                            foregroundColor: Colors.white,
+                            padding:
+                                const EdgeInsets.symmetric(vertical: 14),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            elevation: 0,
+                          ),
+                          child: const Text(
+                            'Update Now',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w700,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    return result ?? true;
+  }
+
+  void _navigateToHome() {
+    Navigator.of(context).pushReplacement(
+      PageRouteBuilder(
+        pageBuilder: (_, animation, __) =>
+            HomeScreen(initialRelay: _detectedRelay),
+        transitionsBuilder: (_, animation, __, child) =>
+            FadeTransition(opacity: animation, child: child),
+        transitionDuration: const Duration(milliseconds: 600),
+      ),
+    );
   }
 
   @override
@@ -128,21 +348,12 @@ class _SplashScreenState extends State<SplashScreen>
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
                 colors: [
-                  Color.lerp(
-                    const Color(0xFF080810),
-                    const Color(0xFF0C0818),
-                    _bgAnimation.value,
-                  )!,
-                  Color.lerp(
-                    const Color(0xFF0A0818),
-                    const Color(0xFF06060F),
-                    _bgAnimation.value,
-                  )!,
-                  Color.lerp(
-                    const Color(0xFF060A14),
-                    const Color(0xFF0A0C1C),
-                    _bgAnimation.value,
-                  )!,
+                  Color.lerp(const Color(0xFF080810),
+                      const Color(0xFF0C0818), _bgAnimation.value)!,
+                  Color.lerp(const Color(0xFF0A0818),
+                      const Color(0xFF06060F), _bgAnimation.value)!,
+                  Color.lerp(const Color(0xFF060A14),
+                      const Color(0xFF0A0C1C), _bgAnimation.value)!,
                 ],
               ),
             ),
@@ -227,9 +438,8 @@ class _SplashScreenState extends State<SplashScreen>
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: AppTheme.primaryAccent.withOpacity(
-                    0.15 * _pulseAnimation.value,
-                  ),
+                  color: AppTheme.primaryAccent
+                      .withOpacity(0.15 * _pulseAnimation.value),
                   width: 1,
                 ),
               ),
@@ -240,9 +450,7 @@ class _SplashScreenState extends State<SplashScreen>
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: Colors.white.withOpacity(0.06),
-                  width: 1,
-                ),
+                    color: Colors.white.withOpacity(0.06), width: 1),
               ),
             ),
             ClipOval(
@@ -262,9 +470,8 @@ class _SplashScreenState extends State<SplashScreen>
                       ],
                     ),
                     border: Border.all(
-                      color: Colors.white.withOpacity(0.15),
-                      width: 1.5,
-                    ),
+                        color: Colors.white.withOpacity(0.15),
+                        width: 1.5),
                     boxShadow: [
                       BoxShadow(
                         color: AppTheme.primaryAccent.withOpacity(0.3),
@@ -282,7 +489,8 @@ class _SplashScreenState extends State<SplashScreen>
                 return ShaderMask(
                   shaderCallback: (bounds) {
                     return LinearGradient(
-                      begin: Alignment(_shimmerAnimation.value - 1, -0.5),
+                      begin:
+                          Alignment(_shimmerAnimation.value - 1, -0.5),
                       end: Alignment(_shimmerAnimation.value, 0.5),
                       colors: [
                         Colors.white.withOpacity(0.6),
@@ -291,11 +499,8 @@ class _SplashScreenState extends State<SplashScreen>
                       ],
                     ).createShader(bounds);
                   },
-                  child: const Icon(
-                    Icons.track_changes_rounded,
-                    size: 52,
-                    color: Colors.white,
-                  ),
+                  child: const Icon(Icons.track_changes_rounded,
+                      size: 52, color: Colors.white),
                 );
               },
             ),
@@ -344,7 +549,8 @@ class _SplashScreenState extends State<SplashScreen>
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+          padding:
+              const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
           decoration: BoxDecoration(
             color: Colors.white.withOpacity(0.06),
             borderRadius: BorderRadius.circular(20),
@@ -373,8 +579,7 @@ class _SplashScreenState extends State<SplashScreen>
           child: CircularProgressIndicator(
             strokeWidth: 2,
             valueColor: AlwaysStoppedAnimation<Color>(
-              AppTheme.primaryAccent.withOpacity(0.7),
-            ),
+                AppTheme.primaryAccent.withOpacity(0.7)),
             backgroundColor: Colors.white.withOpacity(0.05),
           ),
         ),
@@ -385,7 +590,9 @@ class _SplashScreenState extends State<SplashScreen>
             return Opacity(
               opacity: 0.3 + (_pulseAnimation.value * 0.4),
               child: Text(
-                loc.initializing,
+                _isCheckingUpdate
+                    ? 'CHECKING FOR UPDATES...'
+                    : loc.initializing,
                 style: TextStyle(
                   fontSize: 12,
                   color: Colors.white.withOpacity(0.5),
@@ -395,6 +602,30 @@ class _SplashScreenState extends State<SplashScreen>
               ),
             );
           },
+        ),
+        const SizedBox(height: 20),
+        AnimatedOpacity(
+          opacity: _appVersion.isEmpty ? 0.0 : 1.0,
+          duration: const Duration(milliseconds: 400),
+          child: Container(
+            padding:
+                const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.05),
+              borderRadius: BorderRadius.circular(20),
+              border:
+                  Border.all(color: Colors.white.withOpacity(0.08)),
+            ),
+            child: Text(
+              'v$_appVersion',
+              style: TextStyle(
+                fontSize: 11,
+                color: Colors.white.withOpacity(0.30),
+                letterSpacing: 1.5,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
         ),
       ],
     );
@@ -457,10 +688,7 @@ class _GlassGridPainter extends CustomPainter {
     paint.color = color.withOpacity(0.4);
     for (double i = -size.height; i < size.width; i += spacing * 2.5) {
       canvas.drawLine(
-        Offset(i, 0),
-        Offset(i + size.height, size.height),
-        paint,
-      );
+          Offset(i, 0), Offset(i + size.height, size.height), paint);
     }
   }
 
